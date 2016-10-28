@@ -7,25 +7,29 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Date;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import se.esss.litterbox.its.cernmod.protocol.CernModulator;
+import se.esss.litterbox.icetray.IceCubeDeviceList;
+import se.esss.litterbox.icetray.IceCubeDeviceProtocolReader;
 import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
 
 public class CernModulatorLocalControl  extends SimpleMqttClient
 {
 	private Socket clientSocket;
-	private CernModulator cernModulator = null;
+	private IceCubeDeviceList cernModulatorSettingList = null;
+	private IceCubeDeviceList cernModulatorReadingList = null;
 
 	public Socket getClientSocket() {return clientSocket;}
 	public void setClientSocket(Socket clientSocket) {this.clientSocket = clientSocket;}
 	
-	public CernModulatorLocalControl(String brokerUrl, String brokerKey, String brokerSecret) throws Exception 
+	public CernModulatorLocalControl(String brokerUrl, String brokerKey, String brokerSecret, URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception 
 	{
 		super(brokerUrl, brokerKey, brokerSecret);
-		cernModulator = new CernModulator();
+		cernModulatorSettingList = new IceCubeDeviceList(IceCubeDeviceProtocolReader.readProtocolFile(cernmodSettingProtocolUrl));
+		cernModulatorReadingList = new IceCubeDeviceList(IceCubeDeviceProtocolReader.readProtocolFile(cernmodReadingProtocolUrl));
 	}
 	public static void sendBytes(byte[] myByteArray, Socket socket) throws Exception 
 	{
@@ -48,30 +52,30 @@ public class CernModulatorLocalControl  extends SimpleMqttClient
 		System.out.println("    Message Recieved - Topic:" + topic + " at " + new Date().toString());
 		if (topic.equals("its/cernmodulator/toModulator/set/forget"))
 		{
-			cernModulator.putSettingData(mqttMessage.getPayload());
-        	sendBytes(cernModulator.getSettingData(), clientSocket);
+			cernModulatorSettingList.putByteArray(mqttMessage.getPayload());
+        	sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
     		System.out.println("    ...data sent");
             System.out.println("    Awaiting command...");
 		}
 		if (topic.equals("its/cernmodulator/toModulator/set/read"))
 		{
-			cernModulator.putSettingData(mqttMessage.getPayload());
-        	sendBytes(cernModulator.getSettingData(), clientSocket);
+			cernModulatorSettingList.putByteArray(mqttMessage.getPayload());
+        	sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
     		System.out.println("    ...data sent");
     		System.out.println("    reading data...");
-    		byte[] readData = receiveBytes(clientSocket, cernModulator.numberOfBytesInReadingList());
-    		cernModulator.putReadingData(readData);
-			this.publishMessage("its", "cernmodulator/fromModulator/echo/read", "cernModulatorLocalControl", cernModulator.getReadingData(), 0);
+    		byte[] readData = receiveBytes(clientSocket, cernModulatorReadingList.numberOfBytes());
+    		cernModulatorReadingList.putByteArray(readData);
+			this.publishMessage("its", "cernmodulator/fromModulator/echo/read", "cernModulatorLocalControl", cernModulatorReadingList.getByteArray(), 0);
     		System.out.println("    ...data read.");
             System.out.println("    Awaiting command...");
 		}
 		if (topic.equals("its/cernmodulator/toModulator/echo/set"))
 		{
-			this.publishMessage("its", "cernmodulator/fromModulator/echo/set", "cernModulatorLocalControl", cernModulator.getSettingData(), 0);
+			this.publishMessage("its", "cernmodulator/fromModulator/echo/set", "cernModulatorLocalControl", cernModulatorSettingList.getByteArray(), 0);
 		}
 		if (topic.equals("its/cernmodulator/toModulator/echo/read"))
 		{
-			this.publishMessage("its", "cernmodulator/fromModulator/echo/read", "cernModulatorLocalControl", cernModulator.getReadingData(), 0);
+			this.publishMessage("its", "cernmodulator/fromModulator/echo/read", "cernModulatorLocalControl", cernModulatorReadingList.getByteArray(), 0);
 		}
 
 	}
@@ -85,7 +89,9 @@ public class CernModulatorLocalControl  extends SimpleMqttClient
 		Socket clientSocket = serverSocket.accept();
     	System.out.println("...Client accepted");
         System.out.println("Awaiting command...");
-        CernModulatorLocalControl cernModulatorLocalControl = new CernModulatorLocalControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
+		URL cernmodSettingUrl = new URL("http://192.168.0.105:8080/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
+		URL cernmodReadingUrl = new URL("http://192.168.0.105:8080/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
+        CernModulatorLocalControl cernModulatorLocalControl = new CernModulatorLocalControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", cernmodSettingUrl, cernmodReadingUrl);
         cernModulatorLocalControl.setEchoInfo(false);
         cernModulatorLocalControl.setClientSocket(clientSocket);
         cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", "cernModulatorLocalControl", 0);
