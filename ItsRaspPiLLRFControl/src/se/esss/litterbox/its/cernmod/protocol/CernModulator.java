@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.cernmod;
+package se.esss.litterbox.its.cernmod.protocol;
 
 import java.util.ArrayList;
 

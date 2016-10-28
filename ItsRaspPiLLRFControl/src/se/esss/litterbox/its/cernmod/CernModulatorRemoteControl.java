@@ -2,6 +2,8 @@ package se.esss.litterbox.its.cernmod;
 
 import java.util.Date;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import se.esss.litterbox.its.cernmod.protocol.CernModulator;
 import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
 
 public class CernModulatorRemoteControl  extends SimpleMqttClient
