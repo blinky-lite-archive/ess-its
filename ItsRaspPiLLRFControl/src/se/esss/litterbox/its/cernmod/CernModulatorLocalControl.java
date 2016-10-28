@@ -88,19 +88,7 @@ public class CernModulatorLocalControl  extends SimpleMqttClient
         cernModulatorLocalControl.setEchoInfo(false);
         cernModulatorLocalControl.setClientSocket(clientSocket);
         cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", "cernModulatorLocalControl", 0);
-/*        try 
-        ( 
-                ServerSocket serverSocket = new ServerSocket(portNumber, 20, addr);
-        		Socket clientSocket = serverSocket.accept();
-        ) 
-        {
-        	System.out.println("...Client accepted");
-	        System.out.println("Awaiting command...");
-	        CernModulatorLocalControl cernModulatorLocalControl = new CernModulatorLocalControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
-	        cernModulatorLocalControl.setEchoInfo(false);
-	        cernModulatorLocalControl.setClientSocket(clientSocket);
-	        cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", "cernModulatorLocalControl", 0);
-        }
-*/         
+        
+        serverSocket.close();
 	}
 }
