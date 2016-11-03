@@ -12,8 +12,8 @@ import java.util.Date;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import se.esss.litterbox.icetray.IceCubeDeviceList;
-import se.esss.litterbox.icetray.IceCubeDeviceProtocolReader;
+import se.esss.litterbox.icetray.icecubedevice.FileToStringArray;
+import se.esss.litterbox.icetray.icecubedevice.IceCubeDeviceList;
 import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
 
 public class CernModulatorLocalControl  extends SimpleMqttClient
@@ -28,8 +28,8 @@ public class CernModulatorLocalControl  extends SimpleMqttClient
 	public CernModulatorLocalControl(String brokerUrl, String brokerKey, String brokerSecret, URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception 
 	{
 		super(brokerUrl, brokerKey, brokerSecret);
-		cernModulatorSettingList = new IceCubeDeviceList(IceCubeDeviceProtocolReader.readProtocolFile(cernmodSettingProtocolUrl));
-		cernModulatorReadingList = new IceCubeDeviceList(IceCubeDeviceProtocolReader.readProtocolFile(cernmodReadingProtocolUrl));
+		cernModulatorSettingList = new IceCubeDeviceList(FileToStringArray.fileToStringArray(cernmodSettingProtocolUrl));
+		cernModulatorReadingList = new IceCubeDeviceList(FileToStringArray.fileToStringArray(cernmodReadingProtocolUrl));
 	}
 	public static void sendBytes(byte[] myByteArray, Socket socket) throws Exception 
 	{
