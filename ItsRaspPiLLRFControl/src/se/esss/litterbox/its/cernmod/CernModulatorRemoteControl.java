@@ -1,71 +1,75 @@
 package se.esss.litterbox.its.cernmod;
 
 import java.net.URL;
-import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import se.esss.litterbox.icetray.icecubedevice.FileToStringArray;
 import se.esss.litterbox.icetray.icecubedevice.IceCubeDeviceList;
-import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
+import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
 
-public class CernModulatorRemoteControl  extends SimpleMqttClient
+public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 {
 	private IceCubeDeviceList cernModulatorSettingList = null;
 	private IceCubeDeviceList cernModulatorReadingList = null;
 
 	public IceCubeDeviceList getCernModulatorSettingList() {return cernModulatorSettingList;}
 	public IceCubeDeviceList getCernModulatorReadingList() {return cernModulatorReadingList;}
-	CountDownLatch latch = null;
-
-	public CernModulatorRemoteControl(String brokerUrl, String brokerKey, String brokerSecret, URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception 
+	
+	public CernModulatorRemoteControl(String clientID, String brokerUrl, String brokerKey, String brokerSecret) 
 	{
-		super(brokerUrl, brokerKey, brokerSecret);
+		super(clientID, brokerUrl, brokerKey, brokerSecret);
+	}
+	public void setupDeviceLists(URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception
+	{
 		cernModulatorSettingList = new IceCubeDeviceList(FileToStringArray.fileToStringArray(cernmodSettingProtocolUrl));
 		cernModulatorReadingList = new IceCubeDeviceList(FileToStringArray.fileToStringArray(cernmodReadingProtocolUrl));
 	}
-
 	@Override
-	public void newMessage(String topic, MqttMessage mqttMessage) throws Exception 
+	public void connectionLost(Throwable arg0) 
 	{
-		System.out.println("    Message Recieved - Topic:" + topic + " at " + new Date().toString());
-		if (topic.equals("its/cernmodulator/fromModulator/echo/set"))
+	}
+	@Override
+	public void newMessage(String domain, String topic, byte[] message) 
+	{
+		setStatus(getId() + "  on domain: " + domain + " recieved message on topic: " + topic);
+		if (domain.equals("its"))
 		{
-			cernModulatorSettingList.putByteArray(mqttMessage.getPayload());
-			byte[] data = cernModulatorSettingList.getByteArray();
-			for (int ii = 0; ii < data.length; ++ii) System.out.println("Byte = " + ii + " value = " + (data[ii] & 0xff));
-			latch.countDown();
-//			unsubscribe("cernmodulator/fromModulator/#");
-			 			
-		}
-		if (topic.equals("its/cernmodulator/fromModulator/echo/read"))
-		{
-			cernModulatorReadingList.putByteArray(mqttMessage.getPayload());
-			byte[] data = cernModulatorReadingList.getByteArray();
-			for (int ii = 0; ii < data.length; ++ii) System.out.println("Byte = " + ii + " value = " + (data[ii] & 0xff));
-			unsubscribe("cernmodulator/fromModulator/#");
+			if (topic.equals("cernmodulator/fromModulator/echo/set"))
+			{
+				try
+				{
+					cernModulatorSettingList.putByteArray(message);
+					getDisconnectLatch().countDown();
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+			if (topic.equals("cernmodulator/fromModulator/echo/read"))
+			{
+				try
+				{
+					cernModulatorReadingList.putByteArray(message);
+					getDisconnectLatch().countDown();
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
 		}
 	}
-
 	public static void main(String[] args) throws Exception 
 	{
+		CernModulatorRemoteControl cernModulatorRemoteControl = new CernModulatorRemoteControl("cernModulatorRemoteControlSubscriber", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
 		URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
 		URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
-		CernModulatorRemoteControl cernModulatorRemoteControl = new CernModulatorRemoteControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", cernmodSettingUrl, cernmodReadingUrl);
-		cernModulatorRemoteControl.subscribe("its", "cernmodulator/fromModulator/#", "cernModulatorRemoteControl", 0);
-		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").setValue("38.0");
-		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps current").setValue("28.0");
-		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps power").setValue("138.0");
+		cernModulatorRemoteControl.setupDeviceLists(cernmodSettingUrl, cernmodReadingUrl);
+		cernModulatorRemoteControl.subscribe("its", "cernmodulator/fromModulator/#", 0);
+		
+		cernModulatorRemoteControl.setStatus("Before set cathode voltage at " + cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").getValue());
+
+		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").setValue("37.0");
+		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps current").setValue("27.0");
+		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps power").setValue("137.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("send mon values").setValue("1");
-
-		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/set/read", "cernModulatorRemoteControl", cernModulatorRemoteControl.getCernModulatorSettingList().getByteArray(), 0);
+		
+		cernModulatorRemoteControl.publishMessage("cernModulatorRemoteControlSubscriberPublisher", "its", "cernmodulator/toModulator/set/read", cernModulatorRemoteControl.getCernModulatorSettingList().getByteArray(), 0);
+		cernModulatorRemoteControl.setAndWaitforDisconnectLatch(0);
 		String noMessage = " ";
-		cernModulatorRemoteControl.latch = new CountDownLatch(1);
-		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/echo/set", "cernModulatorRemoteControl", noMessage.getBytes(), 0);
-		cernModulatorRemoteControl.latch.await();
-		System.out.println("Booger");
-
+		cernModulatorRemoteControl.publishMessage("cernModulatorRemoteControlSubscriberPublisher", "its", "cernmodulator/toModulator/echo/set", noMessage.getBytes(), 0);
+		cernModulatorRemoteControl.setStatus("After set cathode voltage at " + cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").getValue());
 	}
-
 }

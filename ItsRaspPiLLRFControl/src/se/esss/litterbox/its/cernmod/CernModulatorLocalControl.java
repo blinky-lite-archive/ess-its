@@ -1,22 +1,16 @@
 package se.esss.litterbox.its.cernmod;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Date;
-
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import se.esss.litterbox.icetray.icecubedevice.FileToStringArray;
 import se.esss.litterbox.icetray.icecubedevice.IceCubeDeviceList;
-import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
+import se.esss.litterbox.its.utilities.Utilities;
+import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
 
-public class CernModulatorLocalControl  extends SimpleMqttClient
+public class CernModulatorLocalControl extends SimpleMqttSubscriber
 {
 	private Socket clientSocket;
 	private IceCubeDeviceList cernModulatorSettingList = null;
@@ -24,78 +18,91 @@ public class CernModulatorLocalControl  extends SimpleMqttClient
 
 	public Socket getClientSocket() {return clientSocket;}
 	public void setClientSocket(Socket clientSocket) {this.clientSocket = clientSocket;}
-	
-	public CernModulatorLocalControl(String brokerUrl, String brokerKey, String brokerSecret, URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception 
+
+	public CernModulatorLocalControl(String clientID, String brokerUrl, String brokerKey, String brokerSecret) 
 	{
-		super(brokerUrl, brokerKey, brokerSecret);
+		super(clientID, brokerUrl, brokerKey, brokerSecret);
+	}
+	public void setupDeviceLists(URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception
+	{
 		cernModulatorSettingList = new IceCubeDeviceList(FileToStringArray.fileToStringArray(cernmodSettingProtocolUrl));
 		cernModulatorReadingList = new IceCubeDeviceList(FileToStringArray.fileToStringArray(cernmodReadingProtocolUrl));
 	}
-	public static void sendBytes(byte[] myByteArray, Socket socket) throws Exception 
+	@Override
+	public void connectionLost(Throwable arg0) 
 	{
-	    OutputStream out = socket.getOutputStream(); 
-	    DataOutputStream dos = new DataOutputStream(out);
-	    dos.write(myByteArray, 0, myByteArray.length);
-	}
-	public static byte[] receiveBytes(Socket socket, int len) throws Exception
-	{
-	    InputStream in = socket.getInputStream();
-	    DataInputStream dis = new DataInputStream(in);
-
-	    byte[] data = new byte[len];
-	    dis.readFully(data);
-	    return data;
+		try
+		{
+			Thread.sleep(5000);
+			subscribe("its", "cernmodulator/toModulator/#", 0);
+		} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 	}
 	@Override
-	public void newMessage(String topic, MqttMessage mqttMessage) throws Exception 
+	public void newMessage(String domain, String topic, byte[] message) 
 	{
-		System.out.println("    Message Recieved - Topic:" + topic + " at " + new Date().toString());
-		if (topic.equals("its/cernmodulator/toModulator/set/forget"))
+		setStatus(getId() + "  on domain: " + domain + " recieved message on topic: " + topic);
+		if (domain.equals("its"))
 		{
-			cernModulatorSettingList.putByteArray(mqttMessage.getPayload());
-        	sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
-    		System.out.println("    ...data sent");
-            System.out.println("    Awaiting command...");
+			if (topic.equals("cernmodulator/toModulator/set/forget"))
+			{
+				try
+				{
+					cernModulatorSettingList.putByteArray(message);
+		        	Utilities.sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
+		        	setStatus("...data sent");
+		        	setStatus("Awaiting command...");
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+			if (topic.equals("cernmodulator/toModulator/set/read"))
+			{
+				try
+				{
+					cernModulatorSettingList.putByteArray(message);
+					Utilities.sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
+					setStatus("...data sent");
+					setStatus("reading data...");
+		    		byte[] readData = Utilities.receiveBytes(clientSocket, cernModulatorReadingList.numberOfBytes());
+		    		cernModulatorReadingList.putByteArray(readData);
+					publishMessage(getId() + "Publisher", domain,  "cernmodulator/fromModulator/echo/read", cernModulatorReadingList.getByteArray(), 0);
+					setStatus("...data read.");
+					setStatus("Awaiting command...");
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+			if (topic.equals("cernmodulator/toModulator/echo/set"))
+			{
+				try
+				{
+					publishMessage(getId() + "Publisher", domain,  "cernmodulator/fromModulator/echo/set", cernModulatorSettingList.getByteArray(), 0);
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+			if (topic.equals("cernmodulator/toModulator/echo/read"))
+			{
+				try
+				{
+					publishMessage(getId() + "Publisher", domain,  "cernmodulator/fromModulator/echo/read", cernModulatorReadingList.getByteArray(), 0);
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
 		}
-		if (topic.equals("its/cernmodulator/toModulator/set/read"))
-		{
-			cernModulatorSettingList.putByteArray(mqttMessage.getPayload());
-        	sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
-    		System.out.println("    ...data sent");
-    		System.out.println("    reading data...");
-    		byte[] readData = receiveBytes(clientSocket, cernModulatorReadingList.numberOfBytes());
-    		cernModulatorReadingList.putByteArray(readData);
-			this.publishMessage("its", "cernmodulator/fromModulator/echo/read", "cernModulatorLocalControl", cernModulatorReadingList.getByteArray(), 0);
-    		System.out.println("    ...data read.");
-            System.out.println("    Awaiting command...");
-		}
-		if (topic.equals("its/cernmodulator/toModulator/echo/set"))
-		{
-			this.publishMessage("its", "cernmodulator/fromModulator/echo/set", "cernModulatorLocalControl", cernModulatorSettingList.getByteArray(), 0);
-		}
-		if (topic.equals("its/cernmodulator/toModulator/echo/read"))
-		{
-			this.publishMessage("its", "cernmodulator/fromModulator/echo/read", "cernModulatorLocalControl", cernModulatorReadingList.getByteArray(), 0);
-		}
-
 	}
 	public static void main(String[] args) throws Exception 
 	{
+		System.out.println("Integration Test Stand CernModulatorLocalControl ver 1.1 David McGinnis 05-Nov-2016 14:36");
 		int portNumber = 8000;
         InetAddress addr = InetAddress.getByName("192.168.5.4");
-		System.out.println("Integration Test Stand CernModulatorLocalControl ver 1.0 David McGinnis 27-Oct-2016 14:41");
-        System.out.println("Waiting for client to accept...");
-        ServerSocket serverSocket = new ServerSocket(portNumber, 20, addr);
-		Socket clientSocket = serverSocket.accept();
-    	System.out.println("...Client accepted");
-        System.out.println("Awaiting command...");
+        CernModulatorLocalControl cernModulatorLocalControl = new CernModulatorLocalControl("cernModulatorLocalControlSubscriber", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
 		URL cernmodSettingUrl = new URL("http://192.168.0.105:8080/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
 		URL cernmodReadingUrl = new URL("http://192.168.0.105:8080/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
-        CernModulatorLocalControl cernModulatorLocalControl = new CernModulatorLocalControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", cernmodSettingUrl, cernmodReadingUrl);
-        cernModulatorLocalControl.setEchoInfo(false);
-        cernModulatorLocalControl.setClientSocket(clientSocket);
-        cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", "cernModulatorLocalControl", 0);
-        
+		cernModulatorLocalControl.setupDeviceLists(cernmodSettingUrl, cernmodReadingUrl);
+		cernModulatorLocalControl.setStatus("Waiting for client to accept...");
+		ServerSocket serverSocket = new ServerSocket(portNumber, 20, addr);
+		Socket clientSocket = serverSocket.accept();
+		cernModulatorLocalControl.setStatus("...Client accepted");
+		cernModulatorLocalControl.setStatus("Awaiting command...");
+		cernModulatorLocalControl.setClientSocket(clientSocket);
+		cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", 0);
+		
         serverSocket.close();
 	}
+
+
 }

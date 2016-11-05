@@ -1,49 +1,54 @@
 package se.esss.litterbox.its.llrf;
 
-import java.util.Date;
+import se.esss.litterbox.its.utilities.Utilities;
+import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
 
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
-
-public class LlrfLocalControl extends SimpleMqttClient
+public class LlrfLocalControl extends SimpleMqttSubscriber
 {
 
-	public LlrfLocalControl(String brokerUrl, String brokerKey, String brokerSecret) 
+	public LlrfLocalControl(String clientID, String brokerUrl, String brokerKey, String brokerSecret) 
 	{
-		super(brokerUrl, brokerKey, brokerSecret);
+		super(clientID, brokerUrl, brokerKey, brokerSecret);
 	}
 	@Override
-	public void newMessage(String topic, MqttMessage mqttMessage) throws Exception
+	public void connectionLost(Throwable arg0) {}
+	@Override
+	public void newMessage(String domain, String topic, byte[] message) 
 	{
-		System.out.println("    Message Recieved - Topic:" + topic + " at " + new Date().toString());
-		if (topic.equals("its/llrf/onOff"))
+		setStatus(getId() + "  on domain: " + domain + " recieved message on topic: " + topic);
+		if (domain.equals("its"))
 		{
-			String cmd = "python /home/pi/its/llrfLocalControl/onOff.py " + new String(mqttMessage.getPayload());
-			System.out.println("    Executing: " + cmd + "\n");
-			SimpleMqttClient.runExternalProcess(cmd, true, true);
-		}
-		if (topic.equals("its/llrf/setup"))
-		{
-			String cmd = "python /home/pi/its/llrfLocalControl/setup.py " + new String(mqttMessage.getPayload());
-			System.out.println("    Executing: " + cmd + "\n");
-			SimpleMqttClient.runExternalProcess(cmd, true, true);
-		}
-		if (topic.equals("its/llrf/ask/status"))
-		{
-			String cmd = "python /home/pi/its/llrfLocalControl/read.py ";
-			System.out.println("    Executing: " + cmd + "\n");
-			String[] info  = SimpleMqttClient.runExternalProcess(cmd, true, true);
-			this.publishMessage("raspPiLLrf", "pulser/send/status", "localControlPulser", info[0].getBytes(), 0);
-		}
-		
+			if (topic.equals("llrf/onOff"))
+			{
+				String cmd = "python /home/pi/its/llrfLocalControl/onOff.py " + new String(message);
+				setStatus("Executing: " + cmd );
+				try {Utilities.runExternalProcess(cmd, true, true);} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+			if (topic.equals("llrf/setup"))
+			{
+				String cmd = "python /home/pi/its/llrfLocalControl/setup.py " + new String(message);
+				setStatus("Executing: " + cmd );
+				try {Utilities.runExternalProcess(cmd, true, true);} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+			if (topic.equals("llrf/ask/status"))
+			{
+				String cmd = "python /home/pi/its/llrfLocalControl/read.py ";
+				setStatus("Executing: " + cmd );
+				try 
+				{
+					String[] info = Utilities.runExternalProcess(cmd, true, true);
+					publishMessage(getId() + "Publisher", domain, "llrf/send/status", info[0].getBytes(), 0);
+				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			}
+		}		
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		System.out.println("Integration Test Stand LlrfLocalControl ver 1.0 David McGinnis 27-Oct-2016 09:28");
-		LlrfLocalControl llrfLocalControl = new LlrfLocalControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
-		llrfLocalControl.subscribe("its", "llrf/#", "llrfLocalControl", 0);
-		System.out.println("Ready for messages....");
-		llrfLocalControl.setEchoInfo(false);
+		System.out.println("Integration Test Stand LlrfLocalControl ver 1.1 David McGinnis 05-Nov-2016 13:39");
+		LlrfLocalControl llrfLocalControl = new LlrfLocalControl("llrfLocalControlSubscriber", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
+		llrfLocalControl.subscribe("its", "llrf/#", 0);
+		llrfLocalControl.setStatus("Ready for messages");
 	}
+
 
 }

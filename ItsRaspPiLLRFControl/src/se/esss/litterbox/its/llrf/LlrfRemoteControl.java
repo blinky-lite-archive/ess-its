@@ -1,33 +1,40 @@
 package se.esss.litterbox.its.llrf;
 
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
 
-import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
-
-public class LlrfRemoteControl  extends SimpleMqttClient
+public class LlrfRemoteControl  extends SimpleMqttSubscriber
 {
-	public LlrfRemoteControl(String brokerUrl, String brokerKey, String brokerSecret) 
-	{
-		super(brokerUrl, brokerKey, brokerSecret);
-	}
 
+	public LlrfRemoteControl(String clientID, String brokerUrl, String brokerKey, String brokerSecret) 
+	{
+		super(clientID, brokerUrl, brokerKey, brokerSecret);
+	}
 	@Override
-	public void newMessage(String topic, MqttMessage mqttMessage) 
+	public void connectionLost(Throwable arg0) {}
+	@Override
+	public void newMessage(String domain, String topic, byte[] message) 
 	{
-		System.out.println("| Topic:" + topic);
-		System.out.println("| Message: " + new String(mqttMessage.getPayload()));
+		setStatus(getId() + "  on domain: " + domain + " recieved message on topic: " + topic);
+		if (domain.equals("its"))
+		{
+			if (topic.equals("llrf/send/status"))
+			{
+				setStatus("LLRF Status: " + new String(message));
+				getDisconnectLatch().countDown();
+			}
+		}
 	}
-
 	public static void main(String[] args) throws Exception 
 	{
-		LlrfRemoteControl llrfRemoteControl = new LlrfRemoteControl("tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
+		LlrfLocalControl llrfLocalControl = new LlrfLocalControl("llrfRemoteControlSubscriber", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
 		String message = "-frq 10.0 -mrt 0.60 -rpw 0.1 -ech false";
-		llrfRemoteControl.publishMessage("its", "llrf/setup", "llrfRemoteControl", message.getBytes(), 0);
+		llrfLocalControl.publishMessage("llrfRemoteControlSubscriberPublisher", "its", "llrf/setup", message.getBytes(), 0);
 		message = "-mod on -rf on";
-		llrfRemoteControl.publishMessage("its", "llrf/onOff", "llrfRemoteControl", message.getBytes(), 0);
-		llrfRemoteControl.subscribe("its", "llrf/send/status", "llrfRemoteControl", 0);
+		llrfLocalControl.publishMessage("llrfRemoteControlSubscriberPublisher", "its", "llrf/onOff", message.getBytes(), 0);
+		llrfLocalControl.setAndWaitforDisconnectLatch(0);
+		llrfLocalControl.subscribe("its", "llrf/send/status", 0);
 		message = "";
-		llrfRemoteControl.publishMessage("its", "llrf/ask/status", "llrfRemoteControl", message.getBytes(), 0);
+		llrfLocalControl.publishMessage("llrfRemoteControlSubscriberPublisher", "its", "llrf/ask/status", message.getBytes(), 0);
 	}
 
 
