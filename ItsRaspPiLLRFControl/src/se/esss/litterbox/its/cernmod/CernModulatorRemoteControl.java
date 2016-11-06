@@ -14,9 +14,9 @@ public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 	public IceCubeDeviceList getCernModulatorSettingList() {return cernModulatorSettingList;}
 	public IceCubeDeviceList getCernModulatorReadingList() {return cernModulatorReadingList;}
 	
-	public CernModulatorRemoteControl(String clientID, String brokerUrl, String brokerKey, String brokerSecret) 
+	public CernModulatorRemoteControl(String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret) 
 	{
-		super(clientID, brokerUrl, brokerKey, brokerSecret);
+		super(clientIdBase, brokerUrl, brokerKey, brokerSecret);
 	}
 	public void setupDeviceLists(URL cernmodSettingProtocolUrl, URL cernmodReadingProtocolUrl) throws Exception
 	{
@@ -30,7 +30,7 @@ public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 	@Override
 	public void newMessage(String domain, String topic, byte[] message) 
 	{
-		setStatus(getId() + "  on domain: " + domain + " recieved message on topic: " + topic);
+		setStatus(getClientId() + "  on domain: " + domain + " recieved message on topic: " + topic);
 		if (domain.equals("its"))
 		{
 			if (topic.equals("cernmodulator/fromModulator/echo/set"))
@@ -53,7 +53,7 @@ public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		CernModulatorRemoteControl cernModulatorRemoteControl = new CernModulatorRemoteControl("cernModulatorRemoteControlSubscriber", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
+		CernModulatorRemoteControl cernModulatorRemoteControl = new CernModulatorRemoteControl("cernModulatorRemoteControl", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
 		URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
 		URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
 		cernModulatorRemoteControl.setupDeviceLists(cernmodSettingUrl, cernmodReadingUrl);
@@ -66,10 +66,10 @@ public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps power").setValue("137.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("send mon values").setValue("1");
 		
-		cernModulatorRemoteControl.publishMessage("cernModulatorRemoteControlSubscriberPublisher", "its", "cernmodulator/toModulator/set/read", cernModulatorRemoteControl.getCernModulatorSettingList().getByteArray(), 0);
+		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/set/read", cernModulatorRemoteControl.getCernModulatorSettingList().getByteArray(), 0);
 		cernModulatorRemoteControl.setAndWaitforDisconnectLatch(0);
 		String noMessage = " ";
-		cernModulatorRemoteControl.publishMessage("cernModulatorRemoteControlSubscriberPublisher", "its", "cernmodulator/toModulator/echo/set", noMessage.getBytes(), 0);
+		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/echo/set", noMessage.getBytes(), 0);
 		cernModulatorRemoteControl.setStatus("After set cathode voltage at " + cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").getValue());
 	}
 }

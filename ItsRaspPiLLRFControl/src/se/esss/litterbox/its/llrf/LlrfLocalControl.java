@@ -6,16 +6,16 @@ import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
 public class LlrfLocalControl extends SimpleMqttSubscriber
 {
 
-	public LlrfLocalControl(String clientID, String brokerUrl, String brokerKey, String brokerSecret) 
+	public LlrfLocalControl(String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret) 
 	{
-		super(clientID, brokerUrl, brokerKey, brokerSecret);
+		super(clientIdBase, brokerUrl, brokerKey, brokerSecret);
 	}
 	@Override
 	public void connectionLost(Throwable arg0) {}
 	@Override
 	public void newMessage(String domain, String topic, byte[] message) 
 	{
-		setStatus(getId() + "  on domain: " + domain + " recieved message on topic: " + topic);
+		setStatus(getClientId() + "  on domain: " + domain + " recieved message on topic: " + topic);
 		if (domain.equals("its"))
 		{
 			if (topic.equals("llrf/onOff"))
@@ -37,7 +37,7 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 				try 
 				{
 					String[] info = Utilities.runExternalProcess(cmd, true, true);
-					publishMessage(getId() + "Publisher", domain, "llrf/send/status", info[0].getBytes(), 0);
+					publishMessage(domain, "llrf/send/status", info[0].getBytes(), 0);
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
 		}		
@@ -45,7 +45,7 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 	public static void main(String[] args) throws Exception 
 	{
 		System.out.println("Integration Test Stand LlrfLocalControl ver 1.1 David McGinnis 05-Nov-2016 13:39");
-		LlrfLocalControl llrfLocalControl = new LlrfLocalControl("llrfLocalControlSubscriber", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
+		LlrfLocalControl llrfLocalControl = new LlrfLocalControl("llrfLocalControl", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
 		llrfLocalControl.subscribe("its", "llrf/#", 0);
 		llrfLocalControl.setStatus("Ready for messages");
 	}
