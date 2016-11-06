@@ -11,7 +11,18 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 		super(clientIdBase, brokerUrl, brokerKey, brokerSecret);
 	}
 	@Override
-	public void connectionLost(Throwable arg0) {}
+	public void connectionLost(Throwable arg0) 
+	{
+		while (!isConnected())
+		{
+			try
+			{
+				Thread.sleep(5000);
+				setStatus("Lost connection. Trying to reconnect." );
+				subscribe("its", "llrf/#", 0);
+			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+		}
+	}
 	@Override
 	public void newMessage(String domain, String topic, byte[] message) 
 	{

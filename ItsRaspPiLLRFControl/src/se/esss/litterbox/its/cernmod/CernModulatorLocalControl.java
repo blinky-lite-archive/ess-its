@@ -31,11 +31,15 @@ public class CernModulatorLocalControl extends SimpleMqttSubscriber
 	@Override
 	public void connectionLost(Throwable arg0) 
 	{
-		try
+		while (!isConnected())
 		{
-			Thread.sleep(5000);
-			subscribe("its", "cernmodulator/toModulator/#", 0);
-		} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+			try
+			{
+				Thread.sleep(5000);
+				setStatus("Lost connection. Trying to reconnect." );
+				subscribe("its", "cernmodulator/toModulator/#", 0);
+			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
+		}
 	}
 	@Override
 	public void newMessage(String domain, String topic, byte[] message) 
@@ -43,43 +47,33 @@ public class CernModulatorLocalControl extends SimpleMqttSubscriber
 		setStatus(getClientId() + "  on domain: " + domain + " recieved message on topic: " + topic);
 		if (domain.equals("its"))
 		{
-			if (topic.equals("cernmodulator/toModulator/set/forget"))
+			if (topic.equals("cernmodulator/toModulator/put/set"))
 			{
 				try
 				{
 					cernModulatorSettingList.putByteArray(message);
-		        	Utilities.sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
-		        	setStatus("...data sent");
-		        	setStatus("Awaiting command...");
-				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
-			}
-			if (topic.equals("cernmodulator/toModulator/set/read"))
-			{
-				try
-				{
-					cernModulatorSettingList.putByteArray(message);
+					cernModulatorSettingList.getDevice("send mon values").setValue("1");
 					Utilities.sendBytes(cernModulatorSettingList.getByteArray(), clientSocket);
-					setStatus("...data sent");
+		        	setStatus("...data sent");
 					setStatus("reading data...");
 		    		byte[] readData = Utilities.receiveBytes(clientSocket, cernModulatorReadingList.numberOfBytes());
 		    		cernModulatorReadingList.putByteArray(readData);
-					publishMessage(domain,  "cernmodulator/fromModulator/echo/read", cernModulatorReadingList.getByteArray(), 0);
 					setStatus("...data read.");
-					setStatus("Awaiting command...");
+		        	setStatus("Awaiting command...");
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
-			if (topic.equals("cernmodulator/toModulator/echo/set"))
+			if (topic.equals("cernmodulator/toModulator/get/set"))
 			{
 				try
 				{
-					publishMessage(domain,  "cernmodulator/fromModulator/echo/set", cernModulatorSettingList.getByteArray(), 0);
+					publishMessage(domain,  "cernmodulator/fromModulator/get/set", cernModulatorSettingList.getByteArray(), 0);
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
-			if (topic.equals("cernmodulator/toModulator/echo/read"))
+			if (topic.equals("cernmodulator/toModulator/get/read"))
 			{
 				try
 				{
-					publishMessage(domain,  "cernmodulator/fromModulator/echo/read", cernModulatorReadingList.getByteArray(), 0);
+					publishMessage(domain,  "cernmodulator/fromModulator/get/read", cernModulatorReadingList.getByteArray(), 0);
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
 		}

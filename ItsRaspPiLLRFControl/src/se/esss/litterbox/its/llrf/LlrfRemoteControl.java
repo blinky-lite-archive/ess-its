@@ -31,10 +31,11 @@ public class LlrfRemoteControl  extends SimpleMqttSubscriber
 		llrfRemoteControl.publishMessage("its", "llrf/setup", message.getBytes(), 0);
 		message = "-mod on -rf on";
 		llrfRemoteControl.publishMessage("its", "llrf/onOff", message.getBytes(), 0);
-		llrfRemoteControl.setAndWaitforDisconnectLatch(0);
 		llrfRemoteControl.subscribe("its", "llrf/send/status", 0);
 		message = "";
+		llrfRemoteControl.setDisconnectLatch(1);
 		llrfRemoteControl.publishMessage("its", "llrf/ask/status", message.getBytes(), 0);
+		llrfRemoteControl.waitforDisconnectLatch(0);
 	}
 
 
