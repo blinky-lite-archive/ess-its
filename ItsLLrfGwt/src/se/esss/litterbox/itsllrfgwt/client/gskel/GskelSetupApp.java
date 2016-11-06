@@ -57,7 +57,6 @@ public class GskelSetupApp
 		gskelTabLayoutPanel = new GskelTabLayoutPanel(gskelTabLayoutPanelHeightBarHeightPx, this, getGskelTabLayoutPanelWidth(), getGskelTabLayoutPanelHeight());
 		statusTextArea = new GskelStatusTextArea(Window.getClientWidth() - 10, statusTextAreaHeight);
 	    statusTextArea.setMaxBufferSize(100);
-	    statusTextArea.addStatus("Welcome! Version: " + version + " Last updated on: " + versionDate + " by " + author);
 
         optionDialog =  new GskelOptionDialog();
         messageDialog =  new GskelMessageDialog();
@@ -78,6 +77,10 @@ public class GskelSetupApp
 		RootLayoutPanel.get().add(vp1);
 		Window.addResizeHandler(new GskelResizeHandler(this));
 
+	}
+	public void echoVersionInfo()
+	{
+	    statusTextArea.addStatus("Welcome! Version: " + version + " Last updated on: " + versionDate + " by " + author);
 	}
 	public void setLogoImage(String logoImageUrl)
 	{

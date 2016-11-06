@@ -9,5 +9,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("entrypointapp")
 public interface EntryPointAppService extends RemoteService 
 {
-	String[] gskelServerTest(String name, boolean debug, String[] debugResponse) throws Exception;
+	String[] getStringArrayFromProtocol(boolean settings, boolean debug) throws Exception;
+	byte[]   echoSettings(boolean debug) throws Exception;
 }

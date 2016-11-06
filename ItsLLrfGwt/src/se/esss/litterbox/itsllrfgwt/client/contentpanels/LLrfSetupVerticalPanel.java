@@ -18,6 +18,7 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 	public void tabLayoutPanelInterfaceAction(String message) 
 	{
 		if (!superCreated) return;
+		getStatusTextArea().addStatus("Tab " + this.getTabValue() + " " + message);
 	}
 	@Override
 	public void optionDialogInterfaceAction(String choiceButtonText) 
