@@ -183,9 +183,9 @@ v cap short circuit il,23,4,bool,1,0,0,1,inactive il
 hvps sum fault kept,23,5,bool,1,0,0,1,inactive il
 tank p lolo,23,6,bool,1,0,0,1,inactive il
 tank p hihi,23,7,bool,1,0,0,1,inactive il
-state off,24,0,byte,1,0,0,3,0 = not active; 1 = transition to this state in progress; 2 = active; 3 = not accessible
-state standby,25,0,byte,1,0,0,3,0 = not active; 1 = transition to this state in progress; 2 = active; 3 = not accessible
-state on,26,0,byte,1,0,0,3,0 = not active; 1 = transition to this state in progress; 2 = active; 3 = not accessible
+state off,24,0,byte,1,0,0,3,0=not active; 1=in transition; 2=active; 3=not accessible
+state standby,25,0,byte,1,0,0,3,0=not active; 1=in transition; 2=active; 3=not accessible
+state on,26,0,byte,1,0,0,3,0=not active; 1=in transition; 2=active; 3=not accessible
 v,27,0,float,100,0,0,6,0 – 6 kV
 i,29,0,float,10,0,0,54,0 – 54 A
 p,31,0,float,10,0,0,225,0 – 225 kW

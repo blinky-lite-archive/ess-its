@@ -1,6 +1,6 @@
 Name,Byte Start,bit,type,multiplier,value,min,max,Comments
 reset,1,0,bool,1,0,0,1,reset
-send mon values,1,1,bool,1,0,0,1,send monitor values
+send mon values,1,1,bool,1,1,1,1,send monitor values
 send pulse data,1,2,bool,1,0,0,1,send pulsdata of last five pulses
 state,2,0,byte,1,0,0,2,0 = off; 1 = standby; 2 = on
 trigger pulsewidth,3,0,float,1,800,560,2800,uS
