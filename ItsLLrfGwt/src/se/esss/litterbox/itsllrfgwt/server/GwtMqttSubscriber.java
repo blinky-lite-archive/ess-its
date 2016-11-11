@@ -53,16 +53,37 @@ public class GwtMqttSubscriber extends SimpleMqttSubscriber
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
-		URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
-		GwtMqttSubscriber gwtMqttSubscriber = new GwtMqttSubscriber("cernModulatorGwtRemoteControl", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
-		gwtMqttSubscriber.setupDeviceLists(cernmodSettingUrl, cernmodReadingUrl);
-		gwtMqttSubscriber.subscribe("its", "cernmodulator/fromModulator/#", 0);
-		System.out.println(gwtMqttSubscriber.getCernModulatorSettingList().getDevice("cathode voltage").csvLine());
+		String settingsListProtocolUrlString = "https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv";
+		String readingsListProtocolUrlString = "https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv";
+		String brokerUrl = "tcp://broker.shiftr.io:1883";
+		String brokerKey = "c8ac7600";
+		String brokerSecret = "1e45295ac35335a5";
+		String domain = "its";
+		String clientID = "cernModulatorWebApp";
+		int subscribeWaitTimeSecs = 10;
+		
+		GwtMqttSubscriber gwtMqttSubscriber = new GwtMqttSubscriber(clientID, brokerUrl, brokerKey, brokerSecret);
+		gwtMqttSubscriber.setupDeviceLists(new URL(settingsListProtocolUrlString), new URL(readingsListProtocolUrlString));
+		gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0);
 		String noMessage = " ";
 		gwtMqttSubscriber.setDisconnectLatch(1);
-		gwtMqttSubscriber.publishMessage("its", "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0);
-		gwtMqttSubscriber.waitforDisconnectLatch(0);
-		System.out.println(gwtMqttSubscriber.getCernModulatorSettingList().getDevice("cathode voltage").csvLine());
+		gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0);
+		gwtMqttSubscriber.waitforDisconnectLatch(subscribeWaitTimeSecs);
+		byte[][] setReadData = new byte[2][];
+		setReadData[0] = gwtMqttSubscriber.getCernModulatorSettingList().getByteArray();
+		gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0);
+		gwtMqttSubscriber.setDisconnectLatch(1);
+		gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/read", noMessage.getBytes(), 0);
+		gwtMqttSubscriber.waitforDisconnectLatch(subscribeWaitTimeSecs);
+		setReadData[1] = gwtMqttSubscriber.getCernModulatorReadingList().getByteArray();
+
+		gwtMqttSubscriber.getCernModulatorSettingList().putByteArray(setReadData[0]);
+		gwtMqttSubscriber.getCernModulatorReadingList().putByteArray(setReadData[1]);
+
+		for (int ii = 0; ii < gwtMqttSubscriber.getCernModulatorSettingList().numDevices(); ++ii) 
+			System.out.println(gwtMqttSubscriber.getCernModulatorSettingList().getDevice(ii).getName() + " " + gwtMqttSubscriber.getCernModulatorSettingList().getDevice(ii).getValue());
+		for (int ii = 0; ii < gwtMqttSubscriber.getCernModulatorReadingList().numDevices(); ++ii) 
+			System.out.println(gwtMqttSubscriber.getCernModulatorReadingList().getDevice(ii).getName() + " " + gwtMqttSubscriber.getCernModulatorReadingList().getDevice(ii).getValue());
+
 	}
 }

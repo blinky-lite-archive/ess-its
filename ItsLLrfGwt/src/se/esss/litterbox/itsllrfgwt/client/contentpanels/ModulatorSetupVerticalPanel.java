@@ -2,33 +2,75 @@ package se.esss.litterbox.itsllrfgwt.client.contentpanels;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
+import se.esss.litterbox.itsllrfgwt.client.callbacks.GetModulatorProtocolslAsyncCallback;
+import se.esss.litterbox.itsllrfgwt.client.callbacks.PutModulatorSettingsAsyncCallback;
+import se.esss.litterbox.itsllrfgwt.client.callbacks.GetModulatorStateAsyncCallback;
+import se.esss.litterbox.itsllrfgwt.client.contentpanels.icecube.IceCubeReadingDisplayListCaptionPanel;
 import se.esss.litterbox.itsllrfgwt.client.contentpanels.icecube.IceCubeSettingDisplay;
 import se.esss.litterbox.itsllrfgwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.itsllrfgwt.client.gskel.GskelVerticalPanel;
+import se.esss.litterbox.itsllrfgwt.client.handlers.ModulatorButtonClickHandler;
 import se.esss.litterbox.itsllrfgwt.shared.IceCubeDeviceList;
 
 public class ModulatorSetupVerticalPanel extends GskelVerticalPanel 
 {
-	boolean superCreated = false;
+	private boolean superCreated = false;
 	private IceCubeDeviceList settingDeviceList = null;
+	private IceCubeDeviceList readingDeviceList = null;
 	private ArrayList<IceCubeSettingDisplay>  settingDeviceDisplayList = new ArrayList<IceCubeSettingDisplay>();
-	boolean successfulSetup = false;
+	private ArrayList<IceCubeReadingDisplayListCaptionPanel>  iceCubeReadingDisplayListCaptionPanelList = new ArrayList<IceCubeReadingDisplayListCaptionPanel>();
+	private boolean successfulSetup = false;
+	private HorizontalPanel settingsReadingsHorizontalPanel;
+	private ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel1;
+	private ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel2;
+	private ModulatorDisplayVerticalPanel modulatorHVPSVerticalPanel;
+	private ModulatorDisplayVerticalPanel modulatorReadbacksVerticalPanel;
+	private boolean gettingModulatorState = false;
+
+	public boolean isGettingModulatorState() {return gettingModulatorState;}
+	public ModulatorDisplayVerticalPanel getModulatorReadbacksVerticalPanel() {return modulatorReadbacksVerticalPanel;}
+	public ModulatorDisplayVerticalPanel getModulatorHVPSVerticalPanel() {return modulatorHVPSVerticalPanel;}
+	public ModulatorDisplayVerticalPanel getModulatorInterLocksVerticalPanel1() {return modulatorInterLocksVerticalPanel1;}
+	public ModulatorDisplayVerticalPanel getModulatorInterLocksVerticalPanel2() {return modulatorInterLocksVerticalPanel2;}
+	public HorizontalPanel getSettingsReadingsHorizontalPanel() {return settingsReadingsHorizontalPanel;}
+	public boolean isSuperCreated() {return superCreated;}
+	public IceCubeDeviceList getSettingDeviceList() {return settingDeviceList;}
+	public IceCubeDeviceList getReadingDeviceList() {return readingDeviceList;}
+	public ArrayList<IceCubeSettingDisplay> getSettingDeviceDisplayList() {return settingDeviceDisplayList;}
+	public boolean isSuccessfulSetup() {return successfulSetup;}
+
+	public void setGettingModulatorState(boolean gettingModulatorState) {this.gettingModulatorState = gettingModulatorState;}
+	public void setSuperCreated(boolean superCreated) {this.superCreated = superCreated;}
+	public void setSettingDeviceList(IceCubeDeviceList settingDeviceList) {this.settingDeviceList = settingDeviceList;}
+	public void setReadingDeviceList(IceCubeDeviceList readingDeviceList) {this.readingDeviceList = readingDeviceList;}
+	public void setSettingDeviceDisplayList(ArrayList<IceCubeSettingDisplay> settingDeviceDisplayList) {this.settingDeviceDisplayList = settingDeviceDisplayList;}
+	public void setSuccessfulSetup(boolean successfulSetup) {this.successfulSetup = successfulSetup;}
+	public void setModulatorInterLocksVerticalPanel1(ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel1) {this.modulatorInterLocksVerticalPanel1 = modulatorInterLocksVerticalPanel1;}
+	public void setModulatorInterLocksVerticalPanel2(ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel2) {this.modulatorInterLocksVerticalPanel2 = modulatorInterLocksVerticalPanel2;}
+	public void setModulatorHVPSVerticalPanel(ModulatorDisplayVerticalPanel modulatorHVPSVerticalPanel) {this.modulatorHVPSVerticalPanel = modulatorHVPSVerticalPanel;}
+	public void setModulatorReadbacksVerticalPanel(ModulatorDisplayVerticalPanel modulatorReadbacksVerticalPanel) {this.modulatorReadbacksVerticalPanel = modulatorReadbacksVerticalPanel;}
 
 	public ModulatorSetupVerticalPanel(String tabTitle, GskelSetupApp setupApp) 
 	{
 		super(tabTitle, tabTitle, setupApp);
 		getStatusTextArea().addStatus("Getting Setting Device Protocol file");
-		getEntryPointAppService().getStringArrayFromProtocol(true, getSetupApp().isDebug(), new ArrayListFromProtocolAsyncCallback(this));
-		HorizontalPanel settingsPanel = new HorizontalPanel();
-		add(settingsPanel);
+		getEntryPointAppService().getModulatorProtocols(getSetupApp().isDebug(), new GetModulatorProtocolslAsyncCallback(this));
+		settingsReadingsHorizontalPanel = new HorizontalPanel();
+		add(settingsReadingsHorizontalPanel);
+		Window.addResizeHandler(new ModulatorSetupVerticalPanelResizeHandler());
 	}
 
 	@Override
@@ -36,7 +78,7 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 	{
 		if (!superCreated) return;
 //		getStatusTextArea().addStatus("Tab " + this.getTabValue() + " " + message);
-		upDateSettings();
+		getModulatorState();
 	}
 
 	@Override
@@ -45,16 +87,27 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		// TODO Auto-generated method stub
 
 	}
-	private void upDateSettings()
+	public void getModulatorState()
 	{
+		if (gettingModulatorState) return;
 		if(successfulSetup)
 		{
-			getStatusTextArea().addStatus("Getting Settings Echo");
-			getEntryPointAppService().echoSettings(getSetupApp().isDebug(), new EchoSettingsAsyncCallback(this));
+			gettingModulatorState = true;
+			getStatusTextArea().addStatus("Getting last known modulator state");
+			getEntryPointAppService().getModulatorState(getSetupApp().isDebug(), new GetModulatorStateAsyncCallback(this));
 
 		}
 	}
-	private void setupSettingsDisplayPanel()
+	public void putSettings()
+	{
+		if(successfulSetup)
+		{
+			getStatusTextArea().addStatus("Putting Settings to modulator");
+			for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) settingDeviceDisplayList.get(ii).updateDeviceFromSettingDisplay();
+			getEntryPointAppService().putModulatorSettings(getSettingDeviceList().getByteArray(), getSetupApp().isDebug(), new PutModulatorSettingsAsyncCallback(this));
+		}
+	}
+	public CaptionPanel settingsCaptionPanel()
 	{
 		Grid settingGrid = new Grid(settingDeviceList.numDevices() + 1, 5);
 		settingGrid.setWidget(0, 0, new Label("Name"));
@@ -70,80 +123,127 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		
 		HTMLTable.CellFormatter formatter = settingGrid.getCellFormatter();
 		formatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
-		formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);		
-		add(settingGrid);
+		formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);	
+
+		Button refreshModulatorSettingsButton = new Button("Refresh");
+		refreshModulatorSettingsButton.addClickHandler(new ModulatorButtonClickHandler("Refresh", this));
+		Button setModulatorSettingsButton = new Button("Set");
+		setModulatorSettingsButton.addClickHandler(new ModulatorButtonClickHandler("Set", this));
+
+		Grid buttonGrid = new Grid(1, 2);
+		buttonGrid.setWidth("100%");
+		buttonGrid.setWidget(0, 0, refreshModulatorSettingsButton);
+		buttonGrid.setWidget(0, 1, setModulatorSettingsButton);
+		HTMLTable.CellFormatter formatter2 = buttonGrid.getCellFormatter();
+		formatter2.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
+		formatter2.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+		refreshModulatorSettingsButton.setWidth("10.0em");
+		setModulatorSettingsButton.setWidth("10.0em");
+
+
+		CaptionPanel actionsCaptionPanel = new CaptionPanel("Actions");
+		actionsCaptionPanel.add(buttonGrid);
+		CaptionPanel settingsCaptionPanel = new CaptionPanel("Settings");
+		settingsCaptionPanel.add(settingGrid);
+		VerticalPanel vp1 = new VerticalPanel();
+		vp1.add(actionsCaptionPanel);
+		vp1.add(settingsCaptionPanel);
+		CaptionPanel actionsSettingsCaptionPanel = new CaptionPanel("Modulator Settings");
+		actionsSettingsCaptionPanel.add(vp1);
+		return actionsSettingsCaptionPanel;
 		
 	}
-	public void refreshSettingsDisplay()
+	public void setupReadingsDisplayPanels() 
 	{
-		for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) settingDeviceDisplayList.get(ii).refreshSetting();
-	}
-	public static class ArrayListFromProtocolAsyncCallback implements AsyncCallback<String[]>
-	{
-		private ModulatorSetupVerticalPanel modulatorSetupVerticalPanel = null;
-		public ArrayListFromProtocolAsyncCallback(ModulatorSetupVerticalPanel modulatorSetupVerticalPanel)
+		try
 		{
-			this.modulatorSetupVerticalPanel =  modulatorSetupVerticalPanel;
-		}
-
-		@Override
-		public void onFailure(Throwable caught) 
-		{
-			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Failure: Getting Protocol file");
-			modulatorSetupVerticalPanel.getStatusTextArea().addStatus(caught.getMessage());
-			modulatorSetupVerticalPanel.successfulSetup = false;
-			modulatorSetupVerticalPanel.superCreated = true;
-		}
-
-		@Override
-		public void onSuccess(String[] result) 
-		{
-			try 
-			{
-				modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Success: Getting Protocol file");
-				modulatorSetupVerticalPanel.settingDeviceList = new IceCubeDeviceList(result);
-				modulatorSetupVerticalPanel.successfulSetup = true;
-				modulatorSetupVerticalPanel.superCreated = true;
-
-//				modulatorSetupVerticalPanel.getStatusTextArea().addStatus(modulatorSetupVerticalPanel.settingDeviceList.getDevice("cathode voltage").csvLine());
-				modulatorSetupVerticalPanel.setupSettingsDisplayPanel();
-				modulatorSetupVerticalPanel.upDateSettings();
-				
-			} catch (Exception e) 
-			{
-				modulatorSetupVerticalPanel.getStatusTextArea().addStatus(e.getMessage());
-			}
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("General Interlocks", readingDeviceList, 0, 39));	//0
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("HVPS Status", readingDeviceList, 40, 66));			//1
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("HVPS Kept Errors", readingDeviceList, 67, 110));	//2
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Bias", readingDeviceList, 111, 117));				//3
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Water Pressure", readingDeviceList, 118, 119));	//4
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Temperature", readingDeviceList, 120, 134));		//5
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Flow Switches", readingDeviceList, 135, 138));		//6
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Mixed", readingDeviceList, 139, 143));				//7
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Panels", readingDeviceList, 144, 152));			//8
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Interlock Rack", readingDeviceList, 153, 177));	//9
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Trigger", readingDeviceList, 178, 183));			//10
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("States", readingDeviceList, 184, 186));			//11
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("HVPS", readingDeviceList, 187, 205));				//12
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Mixed", readingDeviceList, 206, 208));				//13
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Bias", readingDeviceList, 209, 211));				//14
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Water", readingDeviceList, 212, 212));				//15
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Temperature", readingDeviceList, 213, 217));		//16
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Mixed", readingDeviceList, 218, 219));				//17
+			iceCubeReadingDisplayListCaptionPanelList.add(new IceCubeReadingDisplayListCaptionPanel("Samples", readingDeviceList, 220, 232));			//18
+			VerticalPanel vp1 = new VerticalPanel();
+			vp1.add(iceCubeReadingDisplayListCaptionPanelList.get(11));
+			vp1.add(iceCubeReadingDisplayListCaptionPanelList.get(18));
+			settingsReadingsHorizontalPanel.add(vp1);
 			
+			VerticalPanel interlockVerticalPanel1 = new VerticalPanel();
+			interlockVerticalPanel1.add(iceCubeReadingDisplayListCaptionPanelList.get(3));
+			interlockVerticalPanel1.add(iceCubeReadingDisplayListCaptionPanelList.get(4));
+			interlockVerticalPanel1.add(iceCubeReadingDisplayListCaptionPanelList.get(5));
+			VerticalPanel interlockVerticalPanel2 = new VerticalPanel();
+			interlockVerticalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(6));
+			interlockVerticalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(7));
+			interlockVerticalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(10));
+			HorizontalPanel interlockHorizontalPanel = new HorizontalPanel();
+			interlockHorizontalPanel.add(iceCubeReadingDisplayListCaptionPanelList.get(0));
+			interlockHorizontalPanel.add(interlockVerticalPanel1);
+			interlockHorizontalPanel.add(interlockVerticalPanel2);
+			modulatorInterLocksVerticalPanel1.add(interlockHorizontalPanel);
+			
+			HorizontalPanel interlockHorizontalPanel2 = new HorizontalPanel();
+			interlockHorizontalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(8));
+			interlockHorizontalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(9));
+			modulatorInterLocksVerticalPanel2.add(interlockHorizontalPanel2);
+
+			HorizontalPanel hvpsHorizontalPanel = new HorizontalPanel();
+			hvpsHorizontalPanel.add(iceCubeReadingDisplayListCaptionPanelList.get(12));
+			hvpsHorizontalPanel.add(iceCubeReadingDisplayListCaptionPanelList.get(1));
+			hvpsHorizontalPanel.add(iceCubeReadingDisplayListCaptionPanelList.get(2));
+			modulatorHVPSVerticalPanel.add(hvpsHorizontalPanel);
+			
+			VerticalPanel readbackVerticalPanel1 = new VerticalPanel();
+			readbackVerticalPanel1.add(iceCubeReadingDisplayListCaptionPanelList.get(13));
+			readbackVerticalPanel1.add(iceCubeReadingDisplayListCaptionPanelList.get(14));
+			readbackVerticalPanel1.add(iceCubeReadingDisplayListCaptionPanelList.get(15));
+			VerticalPanel readbackVerticalPanel2 = new VerticalPanel();
+			readbackVerticalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(16));
+			readbackVerticalPanel2.add(iceCubeReadingDisplayListCaptionPanelList.get(17));
+			HorizontalPanel readbackHorizontalPanel = new HorizontalPanel();
+			readbackHorizontalPanel.add(readbackVerticalPanel1);
+			readbackHorizontalPanel.add(readbackVerticalPanel2);
+			modulatorReadbacksVerticalPanel.add(readbackHorizontalPanel);
 		}
+		catch (Exception e) {getStatusTextArea().addStatus("Error: " + e.getMessage());}
 		
 	}
-	public static class EchoSettingsAsyncCallback implements AsyncCallback<byte[]>
+	public void updateSettingsDisplayFromDevices()
 	{
-		private ModulatorSetupVerticalPanel modulatorSetupVerticalPanel = null;
-		public EchoSettingsAsyncCallback(ModulatorSetupVerticalPanel modulatorSetupVerticalPanel)
+		getStatusTextArea().addStatus("Updating Settings Display From Devices");
+		for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) 
 		{
-			this.modulatorSetupVerticalPanel =  modulatorSetupVerticalPanel;
+			settingDeviceDisplayList.get(ii).updateSettingDisplayFromDevice();
 		}
-		@Override
-		public void onFailure(Throwable caught) 
+	}
+	public void updateReadingsDisplayFromDevices()
+	{
+		getStatusTextArea().addStatus("Updating Readings Display From Devices");
+		for (int ii = 0; ii < iceCubeReadingDisplayListCaptionPanelList.size(); ++ii) 
 		{
-			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Failure: Getting Settings Echo");
-			modulatorSetupVerticalPanel.getStatusTextArea().addStatus(caught.getMessage());
+			iceCubeReadingDisplayListCaptionPanelList.get(ii).updateReadingsDisplayFromDevices();
 		}
+	}
+	public class ModulatorSetupVerticalPanelResizeHandler implements ResizeHandler
+	{
 		@Override
-		public void onSuccess(byte[] result) 
+		public void onResize(ResizeEvent event) 
 		{
-			try 
-			{
-				modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Success: Getting Settings Echo");
-				modulatorSetupVerticalPanel.settingDeviceList.putByteArray(result);
-				modulatorSetupVerticalPanel.refreshSettingsDisplay();
-//				modulatorSetupVerticalPanel.getStatusTextArea().addStatus(modulatorSetupVerticalPanel.settingDeviceList.getDevice("cathode voltage").csvLine());
-			} catch (Exception e) 
-			{
-				modulatorSetupVerticalPanel.getStatusTextArea().addStatus(e.getMessage());
-			}
-			
+//			getStatusTextArea().addStatus("Got a resize");
+			getModulatorState();
 		}
 	}
 }

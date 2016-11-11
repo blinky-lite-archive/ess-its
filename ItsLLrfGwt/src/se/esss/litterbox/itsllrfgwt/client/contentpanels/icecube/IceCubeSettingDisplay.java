@@ -12,13 +12,15 @@ import se.esss.litterbox.itsllrfgwt.shared.IceCubeDevice;
 
 public class IceCubeSettingDisplay 
 {
-	private IceCubeDevice icecubeDevice = null;
+	private IceCubeDevice iceCubeDevice = null;
 	private CheckBox enabledCheckBox = new CheckBox();
 	private TextBox settingTextBox = new TextBox();
 	
+	public IceCubeDevice getIceCubeDevice() {return iceCubeDevice;}
+	
 	public IceCubeSettingDisplay(IceCubeDevice icecubeDevice, Grid settingGrid, int displayRow)
 	{
-		this.icecubeDevice  = icecubeDevice;
+		this.iceCubeDevice  = icecubeDevice;
 		settingTextBox.setSize("3.0em", "1.0em");
 		HTMLTable.CellFormatter formatter = settingGrid.getCellFormatter();
 		formatter.setHorizontalAlignment(displayRow, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -46,15 +48,68 @@ public class IceCubeSettingDisplay
 		}
 
 	}
-	public void refreshSetting()
+	public void updateSettingDisplayFromDevice()
 	{
-		if (!icecubeDevice.getType().equals("bool"))
+		if (!iceCubeDevice.getType().equals("bool"))
 		{
-			settingTextBox.setText(icecubeDevice.getValue());
+			settingTextBox.setText(iceCubeDevice.getValue());
 		}
 		else
 		{
-			if (Integer.parseInt(icecubeDevice.getValue()) == 0)
+			if (Integer.parseInt(iceCubeDevice.getValue()) == 0)
+			{
+				enabledCheckBox.setValue(false);
+			}
+			else
+			{
+				enabledCheckBox.setValue(true);
+			}
+		}
+	}
+	public void updateDeviceFromSettingDisplay()
+	{
+		if (iceCubeDevice.getType().equals("float"))
+		{
+			try
+			{
+				double val = Double.parseDouble(settingTextBox.getText());
+				double minVal = Double.parseDouble(iceCubeDevice.getMin());
+				double maxVal = Double.parseDouble(iceCubeDevice.getMax());
+				if (val > maxVal) val = maxVal;
+				if (val < minVal) val = minVal;
+				iceCubeDevice.setValue(Double.toString(val));
+				settingTextBox.setText(iceCubeDevice.getValue());
+			} catch (NumberFormatException nfe)
+			{
+				settingTextBox.setText(iceCubeDevice.getValue());
+			}
+		}
+		if (iceCubeDevice.getType().equals("int") || iceCubeDevice.getType().equals("byte"))
+		{
+			try
+			{
+				int val = Integer.parseInt(settingTextBox.getText());
+				int minVal = Integer.parseInt(iceCubeDevice.getMin());
+				int maxVal = Integer.parseInt(iceCubeDevice.getMax());
+				if (val > maxVal) val = maxVal;
+				if (val < minVal) val = minVal;
+				iceCubeDevice.setValue(Integer.toString(val));
+				settingTextBox.setText(iceCubeDevice.getValue());
+			} catch (NumberFormatException nfe)
+			{
+				settingTextBox.setText(iceCubeDevice.getValue());
+			}
+		}
+		if (iceCubeDevice.getType().equals("bool"))
+		{
+			int val = 0;
+			if (enabledCheckBox.getValue()) val = 1;
+			int minVal = Integer.parseInt(iceCubeDevice.getMin());
+			int maxVal = Integer.parseInt(iceCubeDevice.getMax());
+			if (val > maxVal) val = maxVal;
+			if (val < minVal) val = minVal;
+			iceCubeDevice.setValue(Integer.toString(val));
+			if (Integer.parseInt(iceCubeDevice.getValue()) == 0)
 			{
 				enabledCheckBox.setValue(false);
 			}
