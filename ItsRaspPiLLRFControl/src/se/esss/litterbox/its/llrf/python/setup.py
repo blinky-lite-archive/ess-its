@@ -12,8 +12,10 @@ modVolt = 3.0
 rfPulseWidth = 0.5
 rfVolt = 1.0
 echo = False
+setupTekScope = True
 sigGen =  usbtmc.Instrument(2391, 11271)
 tekScope =  usbtmc.Instrument(1689, 927)
+rfSigGen =  usbtmc.Instrument(2733, 72)
 
 noArg = (len(sys.argv) - 1) / 2 
 if noArg > 0:
@@ -32,7 +34,7 @@ if freq > 14.0: freq = 14.0
 sigGen.write("OUTPUT1 0")
 sigGen.write("OUTPUT2 0")
 time.sleep(1)
-
+if setupTekScope:
 tekScope.write("*RST")
 if echo: print(tekScope.ask("*IDN?"))
 cmd = "CH1:PROBE:GAIN 1"
@@ -111,5 +113,8 @@ sigGen.write("OUTPUT1 0")
 sigGen.write("OUTPUT2 0")
 time.sleep(1)
 tekScope.write("TRIGGER FORCE")
+
+
+
 print "0"
 

@@ -60,7 +60,7 @@ public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 		
 		cernModulatorRemoteControl.setStatus("Before set cathode voltage at " + cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").getValue());
 
-		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").setValue("41.0");
+		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").setValue("51.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps current").setValue("30.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps power").setValue("140.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("send mon values").setValue("1");
