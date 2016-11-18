@@ -37,7 +37,8 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 			{
 				Thread.sleep(5000);
 				setStatus("Lost connection. Trying to reconnect." );
-				subscribe("its", "llrf/#", 0);
+				boolean cleanSession = true;
+				subscribe("its", "llrf/#", 0, cleanSession);
 			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 		}
 	}
@@ -69,15 +70,20 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 				try 
 				{
 					getRfPowReading();
-					publishMessage(domain, "llrf/send/status", llrfDataJson.writeJsonString().getBytes(), 0);
+					boolean retained = false;
+					publishMessage(domain, "llrf/send/status", llrfDataJson.writeJsonString().getBytes(), 0, retained);
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
 		}		
 	}
 	private void getRfPowReading() throws Exception
 	{
-		String[] powerData = rfPowMeter.read("FETC1:SCAL:POW:AVG?");
-		llrfDataJson.setRfPowRead(Double.parseDouble(powerData[0]));
+		String[] powerData = rfPowMeter.read("FETC1?");
+		double rfPowRead1 = Double.parseDouble(powerData[0]);
+		powerData = rfPowMeter.read("FETC2?");
+		double rfPowRead2 = Double.parseDouble(powerData[0]);
+		llrfDataJson.setRfPowRead1(rfPowRead1);
+		llrfDataJson.setRfPowRead2(rfPowRead2);
 	}
 
 	private void setupLLRF() throws Exception
@@ -103,21 +109,27 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 		sigGen.write("*RST");
 		rfSigGen.write("*RST");
 		rfPowMeter.write("SYST:PRES");
+		rfSigGen.write("OUTP OFF");
 		
 		tekScope.write("CH1:PROBE:GAIN 1");
 		tekScope.write("CH1:VOLTS " + Double.toString(modPulseVolt * 0.5));
-		tekScope.write("CH1:OFFSET " + Double.toString(modPulseVolt));
+		tekScope.write("CH1:OFFSET " + Double.toString(1.5 * modPulseVolt));
 		tekScope.write("CH2:PROBE:GAIN 1");
-		tekScope.write("CH2:VOLTS " + Double.toString(rfPulseVolt * 0.5));
-		tekScope.write("CH2:OFFSET " + Double.toString(rfPulseVolt));
+		tekScope.write("CH2:VOLTS 0.005");
+		tekScope.write("CH2:COUP AC");
 		tekScope.write("CH3:PROBE:GAIN 1");
 		tekScope.write("CH3:VOLTS 0.005");
+		tekScope.write("CH3:COUP AC");
+		tekScope.write("CH4:PROBE:GAIN 1");
+		tekScope.write("CH4:VOLTS 0.5");
+		tekScope.write("CH4:OFFSET 1.5");
 		tekScope.write("TRIGGER:A:EDGE:SOURCE CH1");
 		tekScope.write("TRIGGER:A:LEVEL:CH1 " + Double.toString(rfPulseVolt * 0.25));
 		tekScope.write("TRIGGER:A:MODE NORMAL");
 		tekScope.write("SELECT:CH1 ON");
 		tekScope.write("SELECT:CH2 ON");
 		tekScope.write("SELECT:CH3 ON");
+		tekScope.write("SELECT:CH4 ON");
 		tekScope.write("HORIZONTAL:SCALE " + Double.toString(horScale2));
 		tekScope.write("HORIZONTAL:DELAY:TIME " + Double.toString(horScale2 * 4.0));
 
@@ -161,9 +173,14 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 		rfPowMeter.write("SENS1:CORR:DCYC " + Double.toString(dutcycle));
 		rfPowMeter.write("SENS1:CORR:DCYC:STAT ON");
 		rfPowMeter.write("SENS1:POW:AVG:APER " + Double.toString(1.0 / llrfDataJson.getModRepRate()));
+		rfPowMeter.write("SENS2:FREQ " + Double.toString(llrfDataJson.getRfFreq()) + " MHZ");
+		rfPowMeter.write("SENS2:CORR:DCYC " + Double.toString(dutcycle));
+		rfPowMeter.write("SENS2:CORR:DCYC:STAT ON");
+		rfPowMeter.write("SENS2:POW:AVG:APER " + Double.toString(1.0 / llrfDataJson.getModRepRate()));
 	}
 	private void changeLLRF(LlrfDataJson newLlrfDataJson) throws Exception
 	{
+		rfSigGen.write("OUTP OFF");
 		if ((llrfDataJson.getModRepRate() != newLlrfDataJson.getModRepRate()) || (llrfDataJson.getRfPulseWidth() != newLlrfDataJson.getRfPulseWidth()) || (llrfDataJson.getModRiseTime() != newLlrfDataJson.getModRiseTime()))
 		{
 			double phase = -0.36 * (newLlrfDataJson.getModRiseTime() + modPulseWidth) * newLlrfDataJson.getModRepRate();
@@ -214,17 +231,6 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 				sigGen.write("OUTPUT2 0");
 			}
 		}
-		if (llrfDataJson.isRfPowOn() != newLlrfDataJson.isRfPowOn() )
-		{
-			if (newLlrfDataJson.isRfPowOn())
-			{
-				rfSigGen.write("OUTP ON");
-			}
-			else
-			{
-				rfSigGen.write("OUTP OFF");
-			}
-		}
 		if (llrfDataJson.getRfPowLvl() != newLlrfDataJson.getRfPowLvl() )
 		{
 			rfSigGen.write("POW " + Double.toString(newLlrfDataJson.getRfPowLvl()));
@@ -233,15 +239,26 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 		{
 			rfSigGen.write("FREQ " + Double.toString(newLlrfDataJson.getRfFreq()) + "MHZ");
 			rfPowMeter.write("SENS1:FREQ " + Double.toString(newLlrfDataJson.getRfFreq()) + " MHZ");
+			rfPowMeter.write("SENS2:FREQ " + Double.toString(newLlrfDataJson.getRfFreq()) + " MHZ");
 		}		
+		if (newLlrfDataJson.isRfPowOn())
+		{
+			rfSigGen.write("OUTP ON");
+		}
+		else
+		{
+			rfSigGen.write("OUTP OFF");
+		}
 		if ((llrfDataJson.getModRepRate() != newLlrfDataJson.getModRepRate()) || (llrfDataJson.getRfPulseWidth() != newLlrfDataJson.getRfPulseWidth()) )
 		{
 			double dutcycle = Math.round(100.0 * newLlrfDataJson.getModRepRate() * newLlrfDataJson.getRfPulseWidth() * 0.1) / 100.0;
 			rfPowMeter.write("SENS1:CORR:DCYC " + Double.toString(dutcycle));
+			rfPowMeter.write("SENS2:CORR:DCYC " + Double.toString(dutcycle));
 		}
 		if (llrfDataJson.getModRepRate() != newLlrfDataJson.getModRepRate() )
 		{
 			rfPowMeter.write("SENS1:POW:AVG:APER " + Double.toString(1.0 / newLlrfDataJson.getModRepRate()));
+			rfPowMeter.write("SENS2:POW:AVG:APER " + Double.toString(1.0 / newLlrfDataJson.getModRepRate()));
 		}
 
 		llrfDataJson.setDataFromJsonString(newLlrfDataJson.writeJsonString());
@@ -250,7 +267,8 @@ public class LlrfLocalControl extends SimpleMqttSubscriber
 	{
 		System.out.println("Integration Test Stand LlrfLocalControl ver 2.0 David McGinnis 10-Nov-2016 09:34");
 		LlrfLocalControl llrfLocalControl = new LlrfLocalControl("llrfLocalControl", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
-		llrfLocalControl.subscribe("its", "llrf/#", 0);
+		boolean cleanSession = true;
+		llrfLocalControl.subscribe("its", "llrf/#", 0, cleanSession);
 		llrfLocalControl.setStatus("Ready for messages");
 	}
 

@@ -37,7 +37,8 @@ public class CernModulatorLocalControl extends SimpleMqttSubscriber
 			{
 				Thread.sleep(5000);
 				setStatus("Lost connection. Trying to reconnect." );
-				subscribe("its", "cernmodulator/toModulator/#", 0);
+				boolean cleanSession = true;
+				subscribe("its", "cernmodulator/toModulator/#", 0, cleanSession);
 			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 		}
 	}
@@ -66,14 +67,16 @@ public class CernModulatorLocalControl extends SimpleMqttSubscriber
 			{
 				try
 				{
-					publishMessage(domain,  "cernmodulator/fromModulator/get/set", cernModulatorSettingList.getByteArray(), 0);
+					boolean retained = false;
+					publishMessage(domain,  "cernmodulator/fromModulator/get/set", cernModulatorSettingList.getByteArray(), 0, retained);
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
 			if (topic.equals("cernmodulator/toModulator/get/read"))
 			{
 				try
 				{
-					publishMessage(domain,  "cernmodulator/fromModulator/get/read", cernModulatorReadingList.getByteArray(), 0);
+					boolean retained = false;
+					publishMessage(domain,  "cernmodulator/fromModulator/get/read", cernModulatorReadingList.getByteArray(), 0, retained);
 				} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 			}
 		}
@@ -86,6 +89,8 @@ public class CernModulatorLocalControl extends SimpleMqttSubscriber
         CernModulatorLocalControl cernModulatorLocalControl = new CernModulatorLocalControl("cernModulatorLocalControl", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
 		URL cernmodSettingUrl = new URL("http://192.168.0.105:8080/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
 		URL cernmodReadingUrl = new URL("http://192.168.0.105:8080/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
+//		URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
+//		URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
 		cernModulatorLocalControl.setupDeviceLists(cernmodSettingUrl, cernmodReadingUrl);
 		cernModulatorLocalControl.setStatus("Waiting for client to accept...");
 		ServerSocket serverSocket = new ServerSocket(portNumber, 20, addr);
@@ -93,7 +98,8 @@ public class CernModulatorLocalControl extends SimpleMqttSubscriber
 		cernModulatorLocalControl.setStatus("...Client accepted");
 		cernModulatorLocalControl.setStatus("Awaiting command...");
 		cernModulatorLocalControl.setClientSocket(clientSocket);
-		cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", 0);
+		boolean cleanSession = true;
+		cernModulatorLocalControl.subscribe("its", "cernmodulator/toModulator/#", 0, cleanSession);
 		
         serverSocket.close();
 	}

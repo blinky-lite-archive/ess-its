@@ -60,16 +60,18 @@ public class CernModulatorRemoteControl extends SimpleMqttSubscriber
 		
 		cernModulatorRemoteControl.setStatus("Before set cathode voltage at " + cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").getValue());
 
-		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").setValue("51.0");
+		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").setValue("41.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps current").setValue("30.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("hvps power").setValue("140.0");
 		cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("send mon values").setValue("1");
 		
-		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/put/set", cernModulatorRemoteControl.getCernModulatorSettingList().getByteArray(), 0);
-		cernModulatorRemoteControl.subscribe("its", "cernmodulator/fromModulator/#", 0);
+		boolean retained = false;
+		boolean cleanSession = true;
+		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/put/set", cernModulatorRemoteControl.getCernModulatorSettingList().getByteArray(), 0, retained);
+		cernModulatorRemoteControl.subscribe("its", "cernmodulator/fromModulator/#", 0, cleanSession);
 		cernModulatorRemoteControl.setDisconnectLatch(1);;
 		String noMessage = " ";
-		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0);
+		cernModulatorRemoteControl.publishMessage("its", "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0, retained);
 		cernModulatorRemoteControl.waitforDisconnectLatch(0);
 		cernModulatorRemoteControl.setStatus("After set cathode voltage at " + cernModulatorRemoteControl.getCernModulatorSettingList().getDevice("cathode voltage").getValue());
 		

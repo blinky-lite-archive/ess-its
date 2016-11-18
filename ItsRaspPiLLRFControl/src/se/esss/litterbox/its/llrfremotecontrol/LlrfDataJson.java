@@ -6,14 +6,15 @@ import org.json.simple.parser.JSONParser;
 public class LlrfDataJson 
 {
 	private double rfFreq = 352.21;
-	private double rfPowLvl = -50;
+	private double rfPowLvl = -10;
 	private boolean rfPowOn  = false;
-	private double rfPulseWidth = 0.01;
+	private double rfPulseWidth = 1.0;
 	private boolean rfPulseOn  = false;
 	private double modRiseTime = 0.6;
-	private double modRepRate = 0.1;
+	private double modRepRate = 1;
 	private boolean modPulseOn  = false;
-	private double rfPowRead  = -70.0;
+	private double rfPowRead1  = -70.0;
+	private double rfPowRead2  = -70.0;
 	
 	public double getRfFreq() {return rfFreq;}
 	public double getRfPowLvl() {return rfPowLvl;}
@@ -23,7 +24,8 @@ public class LlrfDataJson
 	public double getModRiseTime() {return modRiseTime;}
 	public double getModRepRate() {return modRepRate;}
 	public boolean isModPulseOn() {return modPulseOn;}
-	public double getRfPowRead() {return rfPowRead;}
+	public double getRfPowRead1() {return rfPowRead1;}
+	public double getRfPowRead2() {return rfPowRead2;}
 	
 	public void setRfFreq(double rfFreq) {this.rfFreq = rfFreq;}
 	public void setRfPowLvl(double rfPowLvl) {this.rfPowLvl = rfPowLvl;}
@@ -33,7 +35,8 @@ public class LlrfDataJson
 	public void setModRiseTime(double modRiseTime) {this.modRiseTime = modRiseTime;}
 	public void setModRepRate(double modRepRate) {this.modRepRate = modRepRate;}
 	public void setModPulseOn(boolean modPulseOn) {this.modPulseOn = modPulseOn;}
-	public void setRfPowRead(double rfPowRead) {this.rfPowRead = rfPowRead;}
+	public void setRfPowRead1(double rfPowRead1) {this.rfPowRead1 = rfPowRead1;}
+	public void setRfPowRead2(double rfPowRead2) {this.rfPowRead2 = rfPowRead2;}
 
 	public LlrfDataJson()
 	{
@@ -54,7 +57,8 @@ public class LlrfDataJson
 		setModRiseTime((Double) jsonData.get("modRiseTime")) ;
 		setModRepRate((Double) jsonData.get("modRepRate")) ;
 		setModPulseOn((Boolean) jsonData.get("modPulseOn")) ;
-		setRfPowRead((Double) jsonData.get("rfPowRead")) ;
+		setRfPowRead1((Double) jsonData.get("rfPowRead1")) ;
+		setRfPowRead2((Double) jsonData.get("rfPowRead2")) ;
 	}
 	@SuppressWarnings("unchecked")
 	public String writeJsonString()
@@ -68,7 +72,8 @@ public class LlrfDataJson
 		setupData.put("modRiseTime", new Double(getModRiseTime())); 
 		setupData.put("modRepRate", new Double(getModRepRate())); 
 		setupData.put("modPulseOn", new Boolean(isModPulseOn())); 
-		setupData.put("rfPowRead", new Double(getRfPowRead())); 
+		setupData.put("rfPowRead1", new Double(getRfPowRead1())); 
+		setupData.put("rfPowRead2", new Double(getRfPowRead2())); 
 		return setupData.toJSONString();
 	}
 }
