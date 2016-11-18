@@ -19,7 +19,7 @@ public class GetModulatorProtocolslAsyncCallback implements AsyncCallback<String
 		modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Failure: Getting Protocol file");
 		modulatorSetupVerticalPanel.getStatusTextArea().addStatus(caught.getMessage());
 		modulatorSetupVerticalPanel.setSuccessfulSetup(false); 
-		modulatorSetupVerticalPanel.setSuperCreated(true);
+		modulatorSetupVerticalPanel.setPanelCreated(true);
 	}
 
 	@Override
@@ -31,7 +31,8 @@ public class GetModulatorProtocolslAsyncCallback implements AsyncCallback<String
 			modulatorSetupVerticalPanel.setSettingDeviceList(new IceCubeDeviceList(result[0]));
 			modulatorSetupVerticalPanel.setReadingDeviceList(new IceCubeDeviceList(result[1]));
 			modulatorSetupVerticalPanel.setSuccessfulSetup(true);
-			modulatorSetupVerticalPanel.setSuperCreated(true);
+			modulatorSetupVerticalPanel.setPanelCreated(true);
+			if (modulatorSetupVerticalPanel.isCreatingPanel()) modulatorSetupVerticalPanel.setCreatingPanel(false);
 			modulatorSetupVerticalPanel.getSettingsReadingsHorizontalPanel().add(modulatorSetupVerticalPanel.settingsCaptionPanel());
 			modulatorSetupVerticalPanel.setupReadingsDisplayPanels();
 			modulatorSetupVerticalPanel.getModulatorState();

@@ -20,10 +20,6 @@ public class LlrfButtonClickHandler  implements ClickHandler
 	public void onClick(ClickEvent event) 
 	{
 		
-		if (buttonText.equals("Refresh"))
-		{
-			lLrfSetupVerticalPanel.putSettings(false);
-		}
 		if (buttonText.equals("Set"))
 		{
 			lLrfSetupVerticalPanel.putSettings(false);

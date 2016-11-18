@@ -14,6 +14,7 @@ public class GetModulatorStateAsyncCallback implements AsyncCallback<byte[][]>
 	@Override
 	public void onFailure(Throwable caught) 
 	{
+		modulatorSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
 		modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Failure: Getting last known modulator state");
 		modulatorSetupVerticalPanel.getStatusTextArea().addStatus(caught.getMessage());
 		modulatorSetupVerticalPanel.setGettingModulatorState(false);
@@ -23,12 +24,13 @@ public class GetModulatorStateAsyncCallback implements AsyncCallback<byte[][]>
 	{
 		try 
 		{
+			modulatorSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
+			modulatorSetupVerticalPanel.setGettingModulatorState(false);
 			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Success: Getting last known modulator state");
 			modulatorSetupVerticalPanel.getSettingDeviceList().putByteArray(result[0]);
 			modulatorSetupVerticalPanel.updateSettingsDisplayFromDevices();
 			modulatorSetupVerticalPanel.getReadingDeviceList().putByteArray(result[1]);
 			modulatorSetupVerticalPanel.updateReadingsDisplayFromDevices();
-			modulatorSetupVerticalPanel.setGettingModulatorState(false);
 		} catch (Exception e) 
 		{
 			modulatorSetupVerticalPanel.getStatusTextArea().addStatus(e.getMessage());

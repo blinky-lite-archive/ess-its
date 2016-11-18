@@ -62,18 +62,20 @@ public class GwtMqttSubscriber extends SimpleMqttSubscriber
 		String clientID = "cernModulatorWebApp";
 		int subscribeWaitTimeSecs = 10;
 		
+		boolean cleanSession = true;
+		boolean retained = false;
 		GwtMqttSubscriber gwtMqttSubscriber = new GwtMqttSubscriber(clientID, brokerUrl, brokerKey, brokerSecret);
 		gwtMqttSubscriber.setupDeviceLists(new URL(settingsListProtocolUrlString), new URL(readingsListProtocolUrlString));
-		gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0);
+		gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0, cleanSession);
 		String noMessage = " ";
 		gwtMqttSubscriber.setDisconnectLatch(1);
-		gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0);
+		gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0, retained);
 		gwtMqttSubscriber.waitforDisconnectLatch(subscribeWaitTimeSecs);
 		byte[][] setReadData = new byte[2][];
 		setReadData[0] = gwtMqttSubscriber.getCernModulatorSettingList().getByteArray();
-		gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0);
+		gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0, cleanSession);
 		gwtMqttSubscriber.setDisconnectLatch(1);
-		gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/read", noMessage.getBytes(), 0);
+		gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/read", noMessage.getBytes(), 0, retained);
 		gwtMqttSubscriber.waitforDisconnectLatch(subscribeWaitTimeSecs);
 		setReadData[1] = gwtMqttSubscriber.getCernModulatorReadingList().getByteArray();
 

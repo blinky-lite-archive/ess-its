@@ -12,4 +12,5 @@ public interface EntryPointAppServiceAsync
 	void putModulatorSettings(byte[] settingsByteArray, boolean debug, AsyncCallback<String> callback);
 	void getLlrfState(boolean debug, AsyncCallback<LlrfData> callback);
 	void putLlrfSettings(LlrfData llrfData, boolean initSettings, boolean debug, AsyncCallback<String> callback);
+	void checkIpAddress(boolean debug, AsyncCallback<String[]> callback);
 }

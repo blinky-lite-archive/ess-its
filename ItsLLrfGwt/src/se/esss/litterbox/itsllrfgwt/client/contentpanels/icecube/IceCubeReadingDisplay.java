@@ -14,12 +14,15 @@ public class IceCubeReadingDisplay
 	private IceCubeDevice iceCubeDevice = null;
 	private CheckBox enabledCheckBox = new CheckBox();
 	private Label readingLabel = new Label();
+	private HTMLTable.CellFormatter formatter;
+	private int displayRow;
 	
 	public IceCubeDevice getIceCubeDevice() {return iceCubeDevice;}
 	public IceCubeReadingDisplay(IceCubeDevice icecubeDevice, Grid readingGrid, int displayRow) 
 	{
 		this.iceCubeDevice  = icecubeDevice;
-		HTMLTable.CellFormatter formatter = readingGrid.getCellFormatter();
+		this.displayRow = displayRow;
+		formatter = readingGrid.getCellFormatter();
 		formatter.setHorizontalAlignment(displayRow, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		formatter.setVerticalAlignment(displayRow, 1, HasVerticalAlignment.ALIGN_MIDDLE);	
 		readingGrid.setWidget(displayRow, 0, new Label(icecubeDevice.getName()));
@@ -35,10 +38,14 @@ public class IceCubeReadingDisplay
 			if (Integer.parseInt(icecubeDevice.getValue()) == 0)
 			{
 				enabledCheckBox.setValue(false);
+				formatter.setStyleName(displayRow, 0, "readFalse");
+				formatter.setStyleName(displayRow, 2, "readFalse");
 			}
 			else
 			{
 				enabledCheckBox.setValue(true);
+				formatter.setStyleName(displayRow, 0, "readTrue");
+				formatter.setStyleName(displayRow, 2, "readTrue");
 			}
 			readingGrid.setWidget(displayRow, 1, enabledCheckBox);
 		}
@@ -55,10 +62,14 @@ public class IceCubeReadingDisplay
 			enabledCheckBox.setEnabled(false);
 			if (Integer.parseInt(iceCubeDevice.getValue()) == 0)
 			{
+				formatter.setStyleName(displayRow, 0, "readFalse");
+				formatter.setStyleName(displayRow, 2, "readFalse");
 				enabledCheckBox.setValue(false);
 			}
 			else
 			{
+				formatter.setStyleName(displayRow, 0, "readTrue");
+				formatter.setStyleName(displayRow, 2, "readTrue");
 				enabledCheckBox.setValue(true);
 			}
 		}

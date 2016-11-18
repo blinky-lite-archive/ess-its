@@ -40,19 +40,21 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 	{	
 		if (!debug)
 		{
+			boolean cleanSession = true;
+			boolean retained = false;
 			byte[][] setReadData = new byte[2][];
 			GwtMqttSubscriber gwtMqttSubscriber = new GwtMqttSubscriber(clientID, brokerUrl, brokerKey, brokerSecret);
 			gwtMqttSubscriber.setupDeviceLists(new URL(settingsListProtocolUrlString), new URL(readingsListProtocolUrlString));
-			gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0);
+			gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0, cleanSession);
 			String noMessage = " ";
 			gwtMqttSubscriber.setDisconnectLatch(1);
-			gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0);
+			gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/set", noMessage.getBytes(), 0, retained);
 			gwtMqttSubscriber.waitforDisconnectLatch(subscribeWaitTimeSecs);
 			setReadData[0] =  gwtMqttSubscriber.getCernModulatorSettingList().getByteArray();
 
-			gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0);
+			gwtMqttSubscriber.subscribe(domain, "cernmodulator/fromModulator/#", 0, cleanSession);
 			gwtMqttSubscriber.setDisconnectLatch(1);
-			gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/read", noMessage.getBytes(), 0);
+			gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/get/read", noMessage.getBytes(), 0, retained);
 			gwtMqttSubscriber.waitforDisconnectLatch(subscribeWaitTimeSecs);
 			setReadData[1] =  gwtMqttSubscriber.getCernModulatorReadingList().getByteArray();
 			return setReadData;
@@ -72,9 +74,10 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 	{	
 		if (!debug)
 		{
+			boolean retained = false;
 			GwtMqttSubscriber gwtMqttSubscriber = new GwtMqttSubscriber(clientID, brokerUrl, brokerKey, brokerSecret);
 			gwtMqttSubscriber.setupDeviceLists(new URL(settingsListProtocolUrlString), new URL(readingsListProtocolUrlString));
-			gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/put/set", settingsByteArray, 0);
+			gwtMqttSubscriber.publishMessage(domain, "cernmodulator/toModulator/put/set", settingsByteArray, 0, retained);
 			return "ok";
 		}
 		else
@@ -88,11 +91,13 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 	{
 		if (!debug)
 		{
+			boolean cleanSession = true;
+			boolean retained = false;
 			LlrfRemoteControl llrfRemoteControl = new LlrfRemoteControl(clientID, brokerUrl, brokerKey, brokerSecret);
-			llrfRemoteControl.subscribe("its", "llrf/send/status", 0);
+			llrfRemoteControl.subscribe("its", "llrf/send/status", 0, cleanSession);
 			String noMessage = "";
 			llrfRemoteControl.setDisconnectLatch(1);
-			llrfRemoteControl.publishMessage("its", "llrf/ask/status", noMessage.getBytes(), 0);
+			llrfRemoteControl.publishMessage("its", "llrf/ask/status", noMessage.getBytes(), 0, retained);
 			llrfRemoteControl.waitforDisconnectLatch(0);
 			LlrfData llrfData = new LlrfData();
 			llrfData.setRfFreq(llrfRemoteControl.getLlrfDataJson().getRfFreq());
@@ -103,7 +108,8 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 			llrfData.setModRiseTime(llrfRemoteControl.getLlrfDataJson().getModRiseTime()) ;
 			llrfData.setModRepRate(llrfRemoteControl.getLlrfDataJson().getModRepRate()) ;
 			llrfData.setModPulseOn(llrfRemoteControl.getLlrfDataJson().isModPulseOn()) ;
-			llrfData.setRfPowRead(llrfRemoteControl.getLlrfDataJson().getRfPowRead()) ;
+			llrfData.setRfPowRead1(llrfRemoteControl.getLlrfDataJson().getRfPowRead1()) ;
+			llrfData.setRfPowRead2(llrfRemoteControl.getLlrfDataJson().getRfPowRead2()) ;
 			
 			return llrfData;
 		}
@@ -119,6 +125,7 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 	{
 		if (!debug)
 		{
+			boolean retained = false;
 			LlrfRemoteControl llrfRemoteControl = new LlrfRemoteControl(clientID, brokerUrl, brokerKey, brokerSecret);
 			llrfRemoteControl.getLlrfDataJson().setRfFreq(llrfData.getRfFreq());
 			llrfRemoteControl.getLlrfDataJson().setRfPowLvl(llrfData.getRfPowLvl());
@@ -131,17 +138,40 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 			
 			if (initSettings)
 			{
-				llrfRemoteControl.publishMessage("its", "llrf/setup", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 0);
+				llrfRemoteControl.publishMessage("its", "llrf/setup", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 0, retained);
 			}
 			else
 			{
-				llrfRemoteControl.publishMessage("its", "llrf/change", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 0);
+				llrfRemoteControl.publishMessage("its", "llrf/change", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 0, retained);
 			}
 			return "ok";
 		}
 		else
 		{
-			return "ok";
+			if (initSettings)
+			{
+				Thread.sleep(5000);
+			}
+			else
+			{
+			}
+		return "ok";
 		}
+	}
+
+	@Override
+	public String[] checkIpAddress(boolean debug) throws Exception 
+	{
+		String[] okIpAddresses = {"130.235.82.5", "192.168.0.105", "127.0.0.1"};
+		String ip = getThreadLocalRequest().getRemoteAddr();
+		boolean ipOkay = false;
+		for (int ii =- 0; ii < okIpAddresses.length; ++ii)
+		{
+			if (ip.equals(okIpAddresses[ii])) ipOkay = true;
+		}
+		String[] returnData = new String[2];
+		returnData[0] = ip;
+		returnData[1] = Boolean.toString(ipOkay);
+		return returnData;
 	}
 }

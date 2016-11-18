@@ -15,6 +15,7 @@ public class GetLlrfStateAsyncCallback implements AsyncCallback<LlrfData>
 	@Override
 	public void onFailure(Throwable caught) 
 	{
+		lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
 		lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Failure: Getting last known LLRF state");
 		lLrfSetupVerticalPanel.getStatusTextArea().addStatus(caught.getMessage());
 		lLrfSetupVerticalPanel.setGettingLlrfState(false);
@@ -24,10 +25,11 @@ public class GetLlrfStateAsyncCallback implements AsyncCallback<LlrfData>
 	{
 		try 
 		{
+			lLrfSetupVerticalPanel.setGettingLlrfState(false);
 			lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Success: Getting last known LLRF state");
 			lLrfSetupVerticalPanel.setLlrfData(llrfData);
 			lLrfSetupVerticalPanel.updateSettingDisplay();
-			lLrfSetupVerticalPanel.setGettingLlrfState(false);
+			lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
 		} catch (Exception e) 
 		{
 			lLrfSetupVerticalPanel.getStatusTextArea().addStatus(e.getMessage());

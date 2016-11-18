@@ -17,6 +17,8 @@ public class IceCubeSettingDisplay
 	private TextBox settingTextBox = new TextBox();
 	
 	public IceCubeDevice getIceCubeDevice() {return iceCubeDevice;}
+	public CheckBox getEnabledCheckBox() {return enabledCheckBox;}
+	public TextBox getSettingTextBox() {return settingTextBox;}
 	
 	public IceCubeSettingDisplay(IceCubeDevice icecubeDevice, Grid settingGrid, int displayRow)
 	{

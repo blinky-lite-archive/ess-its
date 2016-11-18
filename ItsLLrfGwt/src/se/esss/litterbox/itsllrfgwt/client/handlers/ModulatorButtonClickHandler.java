@@ -19,15 +19,40 @@ public class ModulatorButtonClickHandler  implements ClickHandler
 	@Override
 	public void onClick(ClickEvent event) 
 	{
-		
-		if (buttonText.equals("Refresh"))
+		if (!modulatorSetupVerticalPanel.isSettingsPermitted())
 		{
-			modulatorSetupVerticalPanel.getModulatorState();
+			for (int ii = 0; ii < 4; ++ii)
+			{
+				modulatorSetupVerticalPanel.getModStateButton()[ii].setEnabled(false);
+			}
+			modulatorSetupVerticalPanel.getSetModulatorSettingsButton().setEnabled(false);
+			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Knock it off Inigo!");
+			return;
 		}
 		if (buttonText.equals("Set"))
 		{
-			modulatorSetupVerticalPanel.putSettings();
 		}
+		if (buttonText.equals("Reset"))
+		{
+			modulatorSetupVerticalPanel.getSettingDeviceDisplayList().get(0).getEnabledCheckBox().setValue(true);
+			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Reseting Modulator");
+		}
+		if (buttonText.equals("Off"))
+		{
+			modulatorSetupVerticalPanel.getSettingDeviceDisplayList().get(3).getSettingTextBox().setText("0");
+			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Turning Modulator Off");
+		}
+		if (buttonText.equals("StandBy"))
+		{
+			modulatorSetupVerticalPanel.getSettingDeviceDisplayList().get(3).getSettingTextBox().setText("1");
+			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Putting Modulator in Standby");
+		}
+		if (buttonText.equals("On"))
+		{
+			modulatorSetupVerticalPanel.getSettingDeviceDisplayList().get(3).getSettingTextBox().setText("3");
+			modulatorSetupVerticalPanel.getStatusTextArea().addStatus("Turning Modulator On");
+		}
+		modulatorSetupVerticalPanel.putSettings();
 		
 	}
 

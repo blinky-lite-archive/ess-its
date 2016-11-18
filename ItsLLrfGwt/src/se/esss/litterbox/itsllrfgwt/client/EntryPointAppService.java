@@ -16,5 +16,6 @@ public interface EntryPointAppService extends RemoteService
 	String putModulatorSettings(byte[] settingsByteArray, boolean debug) throws Exception; 
 	LlrfData getLlrfState(boolean debug) throws Exception;
 	String putLlrfSettings(LlrfData llrfData, boolean initSettings, boolean debug) throws Exception; 
+	String[] checkIpAddress(boolean debug) throws Exception; 
 	
 }

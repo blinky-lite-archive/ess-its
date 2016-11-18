@@ -14,14 +14,18 @@ public class PutLlrfSettingsAsyncCallback implements AsyncCallback<String>
 	@Override
 	public void onFailure(Throwable caught) 
 	{
+		lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
 		lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Failure: Changing LLRF Settings");
 		lLrfSetupVerticalPanel.getStatusTextArea().addStatus(caught.getMessage());
+		lLrfSetupVerticalPanel.setPuttingSettingsState(false);
 	}
 	@Override
 	public void onSuccess(String result) 
 	{
 		try 
 		{
+			lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
+			lLrfSetupVerticalPanel.setPuttingSettingsState(false);
 			lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Success: Changing LLRF Settings");
 			lLrfSetupVerticalPanel.getLlrfState();
 		} catch (Exception e) 
