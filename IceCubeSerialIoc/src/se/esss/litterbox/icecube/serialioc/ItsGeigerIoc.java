@@ -35,6 +35,7 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 	public static void main(String[] args) throws Exception 
 	{
 		ItsGeigerIoc ioc = new ItsGeigerIoc("its", "ItsGeiger01Ioc", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", "/dev/rfcomm1");
+		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("geiger01/set/#", "geiger01/get/cpm");
 	}
 }

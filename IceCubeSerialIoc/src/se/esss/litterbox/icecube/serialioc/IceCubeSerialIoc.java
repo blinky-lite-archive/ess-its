@@ -26,6 +26,7 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 	public void setPublishQos(int publishQos) {this.publishQos = publishQos;}
 	public void setCleanSession(boolean cleanSession) {this.cleanSession = cleanSession;}
 	public void setPublishTopic(String publishTopic) {this.publishTopic = publishTopic;}
+	public void setPeriodicPollPeriodmillis(int periodicPollPeriodmillis) {this.periodicPollPeriodmillis = periodicPollPeriodmillis;}
 
 	public IceCubeSerialIoc(String domain, String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
 	{
