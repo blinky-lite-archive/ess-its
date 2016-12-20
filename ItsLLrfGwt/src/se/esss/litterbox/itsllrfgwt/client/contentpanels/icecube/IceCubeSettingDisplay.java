@@ -15,10 +15,12 @@ public class IceCubeSettingDisplay
 	private IceCubeDevice iceCubeDevice = null;
 	private CheckBox enabledCheckBox = new CheckBox();
 	private TextBox settingTextBox = new TextBox();
+	private Label settingReadingLabel = new Label();
 	
 	public IceCubeDevice getIceCubeDevice() {return iceCubeDevice;}
 	public CheckBox getEnabledCheckBox() {return enabledCheckBox;}
 	public TextBox getSettingTextBox() {return settingTextBox;}
+	public Label getSettingReadingLabel() {return settingReadingLabel;}
 	
 	public IceCubeSettingDisplay(IceCubeDevice icecubeDevice, Grid settingGrid, int displayRow)
 	{
@@ -28,44 +30,64 @@ public class IceCubeSettingDisplay
 		formatter.setHorizontalAlignment(displayRow, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		formatter.setVerticalAlignment(displayRow, 1, HasVerticalAlignment.ALIGN_MIDDLE);	
 		settingGrid.setWidget(displayRow, 0, new Label(icecubeDevice.getName()));
-		settingGrid.setWidget(displayRow, 4, new Label(icecubeDevice.getComment()));
+		settingGrid.setWidget(displayRow, 5, new Label(icecubeDevice.getComment()));
 		if (!icecubeDevice.getType().equals("bool"))
 		{
 			settingGrid.setWidget(displayRow, 1, new Label(icecubeDevice.getMin()));
 			settingTextBox.setText(icecubeDevice.getValue());
 			settingGrid.setWidget(displayRow, 2, settingTextBox);
-			settingGrid.setWidget(displayRow, 3, new Label(icecubeDevice.getMax()));
+			settingReadingLabel.setText(icecubeDevice.getValue());
+			settingGrid.setWidget(displayRow, 3, settingReadingLabel);
+			settingGrid.setWidget(displayRow, 4, new Label(icecubeDevice.getMax()));
 		}
 		else
 		{
 			if (Integer.parseInt(icecubeDevice.getValue()) == 0)
 			{
 				enabledCheckBox.setValue(false);
+				settingReadingLabel.setText("false");
 			}
 			else
 			{
 				enabledCheckBox.setValue(true);
+				settingReadingLabel.setText("true");
 			}
 			settingGrid.setWidget(displayRow, 2, enabledCheckBox);
+			settingGrid.setWidget(displayRow, 3, settingReadingLabel);
 		}
 
 	}
-	public void updateSettingDisplayFromDevice()
+	public void updateSettingReadbackFromDevice()
 	{
 		if (!iceCubeDevice.getType().equals("bool"))
 		{
-			settingTextBox.setText(iceCubeDevice.getValue());
+//			settingTextBox.setText(iceCubeDevice.getValue());
+			settingReadingLabel.setText(iceCubeDevice.getValue());
 		}
 		else
 		{
 			if (Integer.parseInt(iceCubeDevice.getValue()) == 0)
 			{
-				enabledCheckBox.setValue(false);
+//				enabledCheckBox.setValue(false);
+				settingReadingLabel.setText("false");
 			}
 			else
 			{
-				enabledCheckBox.setValue(true);
+//				enabledCheckBox.setValue(true);
+				settingReadingLabel.setText("true");
 			}
+		}
+	}
+	public void updateSettingFromReadback()
+	{
+		if (!iceCubeDevice.getType().equals("bool"))
+		{
+			settingTextBox.setText(settingReadingLabel.getText()); 
+		}
+		else
+		{
+			if (settingReadingLabel.getText().equals("true")) enabledCheckBox.setValue(true);
+			if (settingReadingLabel.getText().equals("false")) enabledCheckBox.setValue(false);
 		}
 	}
 	public void updateDeviceFromSettingDisplay()

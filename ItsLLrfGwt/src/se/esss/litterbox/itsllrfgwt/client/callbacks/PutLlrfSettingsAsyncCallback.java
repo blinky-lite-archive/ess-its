@@ -27,7 +27,7 @@ public class PutLlrfSettingsAsyncCallback implements AsyncCallback<String>
 			lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
 			lLrfSetupVerticalPanel.setPuttingSettingsState(false);
 			lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Success: Changing LLRF Settings");
-			lLrfSetupVerticalPanel.getLlrfState();
+			lLrfSetupVerticalPanel.getLlrfState(false);
 		} catch (Exception e) 
 		{
 			lLrfSetupVerticalPanel.getStatusTextArea().addStatus(e.getMessage());

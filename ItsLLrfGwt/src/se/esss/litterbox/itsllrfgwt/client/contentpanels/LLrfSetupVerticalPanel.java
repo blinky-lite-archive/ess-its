@@ -9,6 +9,7 @@ import se.esss.litterbox.itsllrfgwt.shared.LlrfData;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -56,6 +57,15 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 	private Label rfPowerReading1 = new Label();
 	private Label rfPowerReading2 = new Label();
 
+	private Label rfFreqReadBack = new Label();
+	private Label rfPowLvlReadBack = new Label();
+	private Label rfPulseWidthReadBack = new Label();
+	private Label rfPowOnReadBack = new Label();
+	private Label rfPulseOnReadBack = new Label();
+	private Label modRiseTimeReadBack = new Label();
+	private Label modRepRateReadBack = new Label();
+	private Label modPulseOnReadBack = new Label();
+	
 	public LLrfSetupVerticalPanel(String tabTitle, GskelSetupApp setupApp, boolean settingsPermitted) 
 	{
 		super(tabTitle, tabTitle, setupApp);
@@ -64,7 +74,9 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 		superCreated = true;
 		llrfData = new LlrfData();
 		add(settingsCaptionPanel());
-		getLlrfState();
+		getLlrfState(true);
+		ReadSetttingsTimer rst = new ReadSetttingsTimer();
+		rst.scheduleRepeating(1000);
 		Window.addResizeHandler(new LlrfSetupVerticalPanelResizeHandler());
 	}
 
@@ -72,8 +84,7 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 	public void tabLayoutPanelInterfaceAction(String message) 
 	{
 		if (!superCreated) return;
-		getLlrfState();
-//		getStatusTextArea().addStatus("Tab " + this.getTabValue() + " " + message);
+		updateSettingDisplay(true);
 	}
 	@Override
 	public void optionDialogInterfaceAction(String choiceButtonText) 
@@ -81,7 +92,7 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 	}
 	public CaptionPanel settingsCaptionPanel()
 	{
-		Grid settingGrid = new Grid(11, 3);
+		Grid settingGrid = new Grid(11, 4);
 		HTMLTable.CellFormatter formatter = settingGrid.getCellFormatter();
 		formatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);	
@@ -104,47 +115,56 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 		
 		settingGrid.setWidget(0, 0, new Label("Name"));
 		settingGrid.setWidget(0, 1, new Label("Value"));
-		settingGrid.setWidget(0, 2, new Label("Unit"));
+		settingGrid.setWidget(0, 2, new Label("Readback"));
+		settingGrid.setWidget(0, 3, new Label("Unit"));
 		
 		settingGrid.setWidget(1, 0, new Label("RF Frequency"));
 		settingGrid.setWidget(1, 1, rfFreqTextBox);
-		settingGrid.setWidget(1, 2, new Label("MHz"));
+		settingGrid.setWidget(1, 2, rfFreqReadBack);
+		settingGrid.setWidget(1, 3, new Label("MHz"));
 		
 		settingGrid.setWidget(2, 0, new Label("RF Power Level"));
 		settingGrid.setWidget(2, 1, rfPowLvlTextBox);
-		settingGrid.setWidget(2, 2, new Label("dBm"));
+		settingGrid.setWidget(2, 2, rfPowLvlReadBack);
+		settingGrid.setWidget(2, 3, new Label("dBm"));
 		
 		settingGrid.setWidget(3, 0, new Label("RF Pulse Width"));
 		settingGrid.setWidget(3, 1, rfPulseWidthTextBox);
-		settingGrid.setWidget(3, 2, new Label("mSec"));
+		settingGrid.setWidget(3, 2, rfPulseWidthReadBack);
+		settingGrid.setWidget(3, 3, new Label("mSec"));
 		
 		settingGrid.setWidget(4, 0, new Label("RF Power On"));
 		settingGrid.setWidget(4, 1, rfPowOnCheckBox);
-		settingGrid.setWidget(4, 2, new Label(""));
+		settingGrid.setWidget(4, 2, rfPowOnReadBack);
+		settingGrid.setWidget(4, 3, new Label(""));
 		
 		settingGrid.setWidget(5, 0, new Label("RF Pulse On"));
 		settingGrid.setWidget(5, 1, rfPulseOnCheckBox);
-		settingGrid.setWidget(5, 2, new Label(""));
+		settingGrid.setWidget(5, 2, rfPulseOnReadBack);
+		settingGrid.setWidget(5, 3, new Label(""));
 		
 		settingGrid.setWidget(6, 0, new Label("Mod. Rise Time"));
 		settingGrid.setWidget(6, 1, modRiseTimeTextBox);
-		settingGrid.setWidget(6, 2, new Label("mSec"));
+		settingGrid.setWidget(6, 2, modRiseTimeReadBack);
+		settingGrid.setWidget(6, 3, new Label("mSec"));
 		
 		settingGrid.setWidget(7, 0, new Label("Mod Rep. Rate"));
 		settingGrid.setWidget(7, 1, modRepRateTextBox);
-		settingGrid.setWidget(7, 2, new Label("Hz"));
+		settingGrid.setWidget(7, 2, modRepRateReadBack);
+		settingGrid.setWidget(7, 3, new Label("Hz"));
 		
 		settingGrid.setWidget(8, 0, new Label("Mod Pulse On"));
 		settingGrid.setWidget(8, 1, modPulseOnCheckBox);
-		settingGrid.setWidget(8, 2, new Label(""));
+		settingGrid.setWidget(8, 2, modPulseOnReadBack);
+		settingGrid.setWidget(8, 3, new Label(""));
 		
 		settingGrid.setWidget(9, 0, new Label("RF Power Reading 1"));
 		settingGrid.setWidget(9, 1, rfPowerReading1);
-		settingGrid.setWidget(9, 2, new Label("dBm"));
+		settingGrid.setWidget(9, 3, new Label("dBm"));
 		
 		settingGrid.setWidget(10, 0, new Label("RF Power Reading 2"));
 		settingGrid.setWidget(10, 1, rfPowerReading2);
-		settingGrid.setWidget(10, 2, new Label("dBm"));
+		settingGrid.setWidget(10, 3, new Label("dBm"));
 
 		Button setLlrfSettingsButton = new Button("Set");
 		setLlrfSettingsButton.addClickHandler(new LlrfButtonClickHandler("Set", this));
@@ -177,18 +197,33 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 		return actionsSettingsCaptionPanel;
 		
 	}
-	public void updateSettingDisplay()
+	public void updateSettingDisplay(boolean alsoSettings)
 	{
-		rfFreqTextBox.setText(Double.toString(llrfData.getRfFreq()));
-		rfPowLvlTextBox.setText(Double.toString(llrfData.getRfPowLvl()));
-		rfPulseWidthTextBox.setText(Double.toString(llrfData.getRfPulseWidth()));
-		modRiseTimeTextBox.setText(Double.toString(llrfData.getModRiseTime()));
-		modRepRateTextBox.setText(Double.toString(llrfData.getModRepRate()));
+		if (alsoSettings)
+		{
+			rfFreqTextBox.setText(Double.toString(llrfData.getRfFreq()));
+			rfPowLvlTextBox.setText(Double.toString(llrfData.getRfPowLvl()));
+			rfPulseWidthTextBox.setText(Double.toString(llrfData.getRfPulseWidth()));
+			modRiseTimeTextBox.setText(Double.toString(llrfData.getModRiseTime()));
+			modRepRateTextBox.setText(Double.toString(llrfData.getModRepRate()));
+			rfPowerReading1.setText(Double.toString(llrfData.getRfPowRead1()));
+			rfPowerReading2.setText(Double.toString(llrfData.getRfPowRead2()));
+			rfPowOnCheckBox.setValue(llrfData.isRfPowOn());
+			rfPulseOnCheckBox.setValue(llrfData.isRfPulseOn());
+			modPulseOnCheckBox.setValue(llrfData.isModPulseOn());
+		}
+
+		rfFreqReadBack.setText(Double.toString(llrfData.getRfFreq()));
+		rfPowLvlReadBack.setText(Double.toString(llrfData.getRfPowLvl()));
+		rfPulseWidthReadBack.setText(Double.toString(llrfData.getRfPulseWidth()));
+		modRiseTimeReadBack.setText(Double.toString(llrfData.getModRiseTime()));
+		modRepRateReadBack.setText(Double.toString(llrfData.getModRepRate()));
 		rfPowerReading1.setText(Double.toString(llrfData.getRfPowRead1()));
 		rfPowerReading2.setText(Double.toString(llrfData.getRfPowRead2()));
-		rfPowOnCheckBox.setValue(llrfData.isRfPowOn());
-		rfPulseOnCheckBox.setValue(llrfData.isRfPulseOn());
-		modPulseOnCheckBox.setValue(llrfData.isModPulseOn());
+		rfPowOnReadBack.setText(Boolean.toString(llrfData.isRfPowOn()));
+		rfPulseOnReadBack.setText(Boolean.toString(llrfData.isRfPulseOn()));
+		modPulseOnReadBack.setText(Boolean.toString(llrfData.isModPulseOn()));
+	
 	}
 	public void getSettingsFromDisplay()
 	{
@@ -221,14 +256,14 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 		llrfData.setRfPulseOn(rfPulseOnCheckBox.getValue());
 		llrfData.setModPulseOn(modPulseOnCheckBox.getValue());
 	}
-	public void getLlrfState()
+	public void getLlrfState(boolean alsoSettingsUpdate)
 	{
 		if (gettingLlrfState) return;
 		getSetupApp().getMessageDialog().setImageUrl("images/wait.png");
-		this.getSetupApp().getMessageDialog().setMessage("Meddelande", "Vänta - Hämtar inställningar", false);
+//		this.getSetupApp().getMessageDialog().setMessage("Meddelande", "Vänta - Hämtar inställningar", false);
 		gettingLlrfState = true;
-		getStatusTextArea().addStatus("Getting last known LLRF state");
-		getEntryPointAppService().getLlrfState(getSetupApp().isDebug(), new GetLlrfStateAsyncCallback(this));
+//		getStatusTextArea().addStatus("Getting last known LLRF state");
+		getEntryPointAppService().getLlrfState(getSetupApp().isDebug(), new GetLlrfStateAsyncCallback(this, alsoSettingsUpdate));
 	}
 	public void putSettings(boolean initSettings)
 	{
@@ -240,13 +275,25 @@ public class LLrfSetupVerticalPanel extends GskelVerticalPanel
 		getStatusTextArea().addStatus("Changing LLRF settings");
 		getEntryPointAppService().putLlrfSettings(llrfData, initSettings, getSetupApp().isDebug(), new PutLlrfSettingsAsyncCallback(this));
 	}
+	public class ReadSetttingsTimer extends Timer
+	{
+
+		@Override
+		public void run() 
+		{
+			if (puttingSettingsState) return;
+			if (gettingLlrfState) return;
+			getLlrfState(false);
+		}
+		
+	}
 	public class LlrfSetupVerticalPanelResizeHandler implements ResizeHandler
 	{
 		@Override
 		public void onResize(ResizeEvent event) 
 		{
 //			getStatusTextArea().addStatus("Got a resize");
-			getLlrfState();
+			updateSettingDisplay(true);
 		}
 	}
 }

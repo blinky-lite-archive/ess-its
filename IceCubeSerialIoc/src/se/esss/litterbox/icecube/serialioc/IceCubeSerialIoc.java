@@ -14,6 +14,9 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 	private String subscribeTopic;
 	private String domain;
 	private SerialReadWrite serialReadWrite;
+	private boolean newIncomingMessage = false;
+	private String incomingMessageTopic;
+	private byte[] incomingMessage;
 
 	public int getPublishQos() {return publishQos;}
 	public int getSubscribeQos() {return subscribeQos;}
@@ -75,14 +78,9 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 		setStatus(getClientId() + "  on domain: " + domain + " recieved message on topic: " + topic);
 		if (domain.equals(this.domain)) 
 		{
-			if (runPeriodicPoll) //guard against another set coming in while program is handling set
-			{
-				runPeriodicPoll = false;
-				try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
-				handleIncomingMessage(topic, message);
-				try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
-				runPeriodicPoll = true;
-			}
+			incomingMessageTopic = topic;
+			incomingMessage = message;
+			newIncomingMessage = true;
 		}
 	}
 	@Override
@@ -90,9 +88,14 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 	{
 		while(runPeriodicPoll)
 		{
-			try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {runPeriodicPoll = false;}
+			try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
 			byte[] serialData = getSerialData();
 			try {publishMessage(domain, publishTopic, serialData, publishQos, true);} catch (Exception e) {}
+			if (newIncomingMessage)
+			{
+				handleIncomingMessage(incomingMessageTopic, incomingMessage);
+				newIncomingMessage = false;
+			}
 		}
 	}
 }

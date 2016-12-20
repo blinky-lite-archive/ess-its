@@ -13,7 +13,7 @@ import se.esss.litterbox.itsllrfgwt.client.gskel.GskelSetupApp;
  */
 public class EntryPointApp implements EntryPoint 
 {
-	static final boolean debug = false;
+	static final boolean debug = true;
 	private GskelSetupApp setupApp;
 
 	private ModulatorSetupVerticalPanel modulatorSetupVerticalPanel;
@@ -28,8 +28,8 @@ public class EntryPointApp implements EntryPoint
 	{
 		setupApp = new GskelSetupApp();
 		setupApp.setDebug(debug);
-		setupApp.setVersionDate("November 17, 2016 11:49");
-		setupApp.setVersion("v1.7");
+		setupApp.setVersionDate("November 30, 2016 11:49");
+		setupApp.setVersion("v1.8");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/essLogo.png");
 		setupApp.setLogoTitle("ITS LLRF Control");

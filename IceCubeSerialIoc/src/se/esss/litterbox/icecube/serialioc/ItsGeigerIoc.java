@@ -22,6 +22,15 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 	@Override
 	public void handleIncomingMessage(String topic, byte[] message) 
 	{
+		if (topic.equals("geiger01/set/avg"))
+		{
+			try
+			{
+				int avgSetting = Integer.parseInt(new String(message));
+				writeReadSerialData("avgSet " + Integer.toString(avgSetting), 10);
+			}
+			catch (NumberFormatException nfe) {}
+		}
 	}
 	public static void main(String[] args) throws Exception 
 	{

@@ -42,8 +42,9 @@ public class LlrfRemoteControl  extends SimpleMqttSubscriber
 		llrfRemoteControl.getLlrfDataJson().setRfPowOn(true);
 		llrfRemoteControl.getLlrfDataJson().setRfPulseOn(true);
 		llrfRemoteControl.getLlrfDataJson().setRfPulseWidth(0.3);
-		boolean retained = false;
-		llrfRemoteControl.publishMessage("its", "llrf/setup", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 0, retained);
+		llrfRemoteControl.getLlrfDataJson().setSetupState(1);
+		boolean retained = true;
+//		llrfRemoteControl.publishMessage("its", "llrf/setup", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 2, retained);
 		
 		llrfRemoteControl.getLlrfDataJson().setModPulseOn(true);
 		llrfRemoteControl.getLlrfDataJson().setModRepRate(1.0);
@@ -53,10 +54,11 @@ public class LlrfRemoteControl  extends SimpleMqttSubscriber
 		llrfRemoteControl.getLlrfDataJson().setRfPowOn(true);
 		llrfRemoteControl.getLlrfDataJson().setRfPulseOn(true);
 		llrfRemoteControl.getLlrfDataJson().setRfPulseWidth(1.0);
-//		llrfRemoteControl.publishMessage("its", "llrf/change", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 0, retained);
+		llrfRemoteControl.getLlrfDataJson().setSetupState(2);
+		llrfRemoteControl.publishMessage("its", "llrf/change", llrfRemoteControl.getLlrfDataJson().writeJsonString().getBytes(), 2, retained);
 
-		boolean cleanSession = true;
-		llrfRemoteControl.subscribe("its", "llrf/send/status", 0, cleanSession);
+		boolean cleanSession = false;
+		llrfRemoteControl.subscribe("its", "llrf/send/status", 2, cleanSession);
 		String noMessage = "";
 		llrfRemoteControl.setDisconnectLatch(1);
 		llrfRemoteControl.publishMessage("its", "llrf/ask/status", noMessage.getBytes(), 0, retained);

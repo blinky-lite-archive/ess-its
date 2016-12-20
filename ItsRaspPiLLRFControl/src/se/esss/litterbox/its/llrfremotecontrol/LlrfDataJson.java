@@ -7,14 +7,15 @@ public class LlrfDataJson
 {
 	private double rfFreq = 352.21;
 	private double rfPowLvl = -10;
-	private boolean rfPowOn  = false;
-	private double rfPulseWidth = 1.0;
-	private boolean rfPulseOn  = false;
-	private double modRiseTime = 0.6;
+	private boolean rfPowOn  = true;
+	private double rfPulseWidth = 0.3;
+	private boolean rfPulseOn  = true;
+	private double modRiseTime = 0.3;
 	private double modRepRate = 1;
-	private boolean modPulseOn  = false;
+	private boolean modPulseOn  = true;
 	private double rfPowRead1  = -70.0;
 	private double rfPowRead2  = -70.0;
+	private long setupState = -1;
 	
 	public double getRfFreq() {return rfFreq;}
 	public double getRfPowLvl() {return rfPowLvl;}
@@ -26,6 +27,7 @@ public class LlrfDataJson
 	public boolean isModPulseOn() {return modPulseOn;}
 	public double getRfPowRead1() {return rfPowRead1;}
 	public double getRfPowRead2() {return rfPowRead2;}
+	public long getSetupState() {return setupState;}
 	
 	public void setRfFreq(double rfFreq) {this.rfFreq = rfFreq;}
 	public void setRfPowLvl(double rfPowLvl) {this.rfPowLvl = rfPowLvl;}
@@ -37,6 +39,7 @@ public class LlrfDataJson
 	public void setModPulseOn(boolean modPulseOn) {this.modPulseOn = modPulseOn;}
 	public void setRfPowRead1(double rfPowRead1) {this.rfPowRead1 = rfPowRead1;}
 	public void setRfPowRead2(double rfPowRead2) {this.rfPowRead2 = rfPowRead2;}
+	public void setSetupState(long setupState) {this.setupState = setupState;}
 
 	public LlrfDataJson()
 	{
@@ -59,6 +62,7 @@ public class LlrfDataJson
 		setModPulseOn((Boolean) jsonData.get("modPulseOn")) ;
 		setRfPowRead1((Double) jsonData.get("rfPowRead1")) ;
 		setRfPowRead2((Double) jsonData.get("rfPowRead2")) ;
+		setSetupState((Long) jsonData.get("setupState")) ;
 	}
 	@SuppressWarnings("unchecked")
 	public String writeJsonString()
@@ -74,6 +78,7 @@ public class LlrfDataJson
 		setupData.put("modPulseOn", new Boolean(isModPulseOn())); 
 		setupData.put("rfPowRead1", new Double(getRfPowRead1())); 
 		setupData.put("rfPowRead2", new Double(getRfPowRead2())); 
+		setupData.put("setupState", new Long(getSetupState())); 
 		return setupData.toJSONString();
 	}
 }

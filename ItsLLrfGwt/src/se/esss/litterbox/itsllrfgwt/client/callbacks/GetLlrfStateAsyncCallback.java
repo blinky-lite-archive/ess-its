@@ -8,9 +8,11 @@ import se.esss.litterbox.itsllrfgwt.shared.LlrfData;
 public class GetLlrfStateAsyncCallback implements AsyncCallback<LlrfData>
 {
 	private LLrfSetupVerticalPanel lLrfSetupVerticalPanel = null;
-	public GetLlrfStateAsyncCallback(LLrfSetupVerticalPanel lLrfSetupVerticalPanel)
+	private boolean alsoSettingsUpdate;
+	public GetLlrfStateAsyncCallback(LLrfSetupVerticalPanel lLrfSetupVerticalPanel, boolean alsoSettingsUpdate)
 	{
 		this.lLrfSetupVerticalPanel =  lLrfSetupVerticalPanel;
+		this.alsoSettingsUpdate =  alsoSettingsUpdate;
 	}
 	@Override
 	public void onFailure(Throwable caught) 
@@ -25,11 +27,11 @@ public class GetLlrfStateAsyncCallback implements AsyncCallback<LlrfData>
 	{
 		try 
 		{
-			lLrfSetupVerticalPanel.setGettingLlrfState(false);
-			lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Success: Getting last known LLRF state");
+//			lLrfSetupVerticalPanel.getStatusTextArea().addStatus("Success: Getting last known LLRF state");
 			lLrfSetupVerticalPanel.setLlrfData(llrfData);
-			lLrfSetupVerticalPanel.updateSettingDisplay();
-			lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
+			lLrfSetupVerticalPanel.updateSettingDisplay(alsoSettingsUpdate);
+			lLrfSetupVerticalPanel.setGettingLlrfState(false);
+//			lLrfSetupVerticalPanel.getSetupApp().getMessageDialog().hide();
 		} catch (Exception e) 
 		{
 			lLrfSetupVerticalPanel.getStatusTextArea().addStatus(e.getMessage());

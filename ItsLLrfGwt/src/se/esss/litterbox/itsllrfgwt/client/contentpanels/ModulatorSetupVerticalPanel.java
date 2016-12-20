@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -84,6 +85,8 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		super(tabTitle, tabTitle, setupApp);
 		this.getGskelTabLayoutScrollPanel().setStyleName(styleName);
 		this.settingsPermitted = settingsPermitted;
+		ReadSetttingsTimer rst = new ReadSetttingsTimer();
+		rst.scheduleRepeating(1000);
 	}
 
 	@Override
@@ -95,7 +98,7 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		}
 		else
 		{
-			getModulatorState();
+			updateSettingsFromReadbacks();
 		}
 	}
 
@@ -124,10 +127,10 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		if (gettingModulatorState) return;
 		if(successfulSetup)
 		{
-			getSetupApp().getMessageDialog().setImageUrl("images/wait.png");
-			this.getSetupApp().getMessageDialog().setMessage("Meddelande", "Vänta - Hämtar inställningar", false);
+//			getSetupApp().getMessageDialog().setImageUrl("images/wait.png");
+//			this.getSetupApp().getMessageDialog().setMessage("Meddelande", "Vänta - Hämtar inställningar", false);
 			gettingModulatorState = true;
-			getStatusTextArea().addStatus("Getting last known modulator state");
+//			getStatusTextArea().addStatus("Getting last known modulator state");
 			getEntryPointAppService().getModulatorState(getSetupApp().isDebug(), new GetModulatorStateAsyncCallback(this));
 
 		}
@@ -147,12 +150,13 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 	}
 	public CaptionPanel settingsCaptionPanel()
 	{
-		Grid settingGrid = new Grid(settingDeviceList.numDevices() + 1, 5);
+		Grid settingGrid = new Grid(settingDeviceList.numDevices() + 1, 6);
 		settingGrid.setWidget(0, 0, new Label("Name"));
 		settingGrid.setWidget(0, 1, new Label("Min"));
 		settingGrid.setWidget(0, 2, new Label("Value"));
-		settingGrid.setWidget(0, 3, new Label("Max"));
-		settingGrid.setWidget(0, 4, new Label("Comment"));
+		settingGrid.setWidget(0, 3, new Label("Readback"));
+		settingGrid.setWidget(0, 4, new Label("Max"));
+		settingGrid.setWidget(0, 5, new Label("Comment"));
 		for (int ii = 0; ii < settingDeviceList.numDevices(); ++ ii) 
 		{
 			try {settingDeviceDisplayList.add(new IceCubeSettingDisplay(settingDeviceList.getDevice(ii), settingGrid, ii + 1));} 
@@ -282,17 +286,22 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		modulatorStateGrid.setWidth("100%");
 		return modulatorStateCaptionPanel;
 	}
-	public void updateSettingsDisplayFromDevices()
+	public void updateSettingReadbacksFromDevices()
 	{
-//		getStatusTextArea().addStatus("Updating Settings Display From Devices");
 		for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) 
 		{
-			settingDeviceDisplayList.get(ii).updateSettingDisplayFromDevice();
+			settingDeviceDisplayList.get(ii).updateSettingReadbackFromDevice();
+		}
+	}
+	public void updateSettingsFromReadbacks()
+	{
+		for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) 
+		{
+			settingDeviceDisplayList.get(ii).updateSettingFromReadback();
 		}
 	}
 	public void updateReadingsDisplayFromDevices()
 	{
-//		getStatusTextArea().addStatus("Updating Readings Display From Devices");
 		for (int ii = 0; ii < iceCubeReadingDisplayListCaptionPanelList.size(); ++ii) 
 		{
 			iceCubeReadingDisplayListCaptionPanelList.get(ii).updateReadingsDisplayFromDevices();
@@ -303,8 +312,17 @@ public class ModulatorSetupVerticalPanel extends GskelVerticalPanel
 		@Override
 		public void onResize(ResizeEvent event) 
 		{
-//			getStatusTextArea().addStatus("Got a resize");
+			updateSettingsFromReadbacks();
+		}
+	}
+	public class ReadSetttingsTimer extends Timer
+	{
+		@Override
+		public void run() 
+		{
+			if (puttingSettingsState) return;
 			getModulatorState();
 		}
+		
 	}
 }
