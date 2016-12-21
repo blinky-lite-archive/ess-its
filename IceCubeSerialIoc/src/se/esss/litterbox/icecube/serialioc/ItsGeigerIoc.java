@@ -1,5 +1,9 @@
 package se.esss.litterbox.icecube.serialioc;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public class ItsGeigerIoc extends IceCubeSerialIoc
 {
 	public ItsGeigerIoc(String domain, String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
@@ -9,15 +13,11 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 	@Override
 	public byte[] getSerialData() 
 	{
-		String readData = writeReadSerialData("cpmGet", 10);
-		int ispot = readData.indexOf("cpmGet");
-		String data = "0";
-		if (ispot >= 0)
-		{
-			data = readData.substring(6, readData.length());
-			data = data.trim();
-		}
-		return data.getBytes();
+		JSONObject outputData = new JSONObject();
+		String command = "cpmGet";
+		readResponseStringFromSerial(command, 10, outputData);
+
+		return outputData.toJSONString().getBytes();
 	}
 	@Override
 	public void handleIncomingMessage(String topic, byte[] message) 
@@ -26,10 +26,12 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 		{
 			try
 			{
-				int avgSetting = Integer.parseInt(new String(message));
-				writeReadSerialData("avgSet " + Integer.toString(avgSetting), 10);
+				JSONParser parser = new JSONParser();		
+				JSONObject jsonData = (JSONObject) parser.parse(new String(message));
+				String avgSet = (String) jsonData.get("avgSet");
+				writeReadSerialData("avgSet " + avgSet, 10);
 			}
-			catch (NumberFormatException nfe) {}
+			catch (ParseException nfe) {}
 		}
 	}
 	public static void main(String[] args) throws Exception 

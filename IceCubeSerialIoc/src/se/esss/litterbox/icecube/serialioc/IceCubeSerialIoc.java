@@ -1,5 +1,7 @@
 package se.esss.litterbox.icecube.serialioc;
 
+import org.json.simple.JSONObject;
+
 import se.esss.litterbox.serialreadwrite.SerialReadWrite;
 import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
 
@@ -59,6 +61,20 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 	}
 	public abstract byte[] getSerialData();
 	public abstract void handleIncomingMessage(String topic, byte[] message);
+	@SuppressWarnings("unchecked")
+	public void readResponseStringFromSerial(String command, int timeOutSec, JSONObject outputData)
+	{
+		String readData = writeReadSerialData(command, 10);
+		int ispot = readData.indexOf(command);
+		String data = "0";
+		if (ispot >= 0)
+		{
+			data = readData.substring(command.length(), readData.length());
+			data = data.trim();
+		}
+		outputData.put(command, data);
+		return;
+	}
 	@Override
 	public void connectionLost(Throwable arg0) 
 	{
