@@ -3,9 +3,9 @@ package se.esss.litterbox.icecube.serialioc;
 import org.json.simple.JSONObject;
 
 import se.esss.litterbox.serialreadwrite.SerialReadWrite;
-import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
+import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
 
-public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements Runnable
+public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runnable
 {
 	private int subscribeQos = 0;
 	private int publishQos = 0;
@@ -13,7 +13,6 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 	private boolean runPeriodicPoll = false;
 	private int periodicPollPeriodmillis = 1000;
 	private String publishTopic;
-	private String subscribeTopic;
 	private String domain;
 	private SerialReadWrite serialReadWrite;
 	private boolean newIncomingMessage = false;
@@ -32,15 +31,15 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 
 	public IceCubeSerialIoc(String domain, String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
 	{
-		super(clientIdBase, brokerUrl, brokerKey, brokerSecret);
+		super(clientIdBase, brokerUrl, brokerKey, brokerSecret, false);
+		cleanSession = false;
 		this.domain = domain;
 		serialReadWrite = new SerialReadWrite(serialPortName);
 	}
 	public void startIoc(String subscribeTopic, String publishTopic) throws Exception
 	{
 		this.setPublishTopic(publishTopic);
-		this.subscribeTopic = subscribeTopic;
-    	subscribe(domain, subscribeTopic, getSubscribeQos(), cleanSession);
+    	subscribe(domain, subscribeTopic, getSubscribeQos());
 		setStatus("Ready for messages");
 		new Thread(this).start();
 		runPeriodicPoll = true;
@@ -84,8 +83,7 @@ public abstract class IceCubeSerialIoc extends SimpleMqttSubscriber implements R
 			{
 				Thread.sleep(5000);
 				setStatus("Lost connection. Trying to reconnect." );
-				boolean cleanSession = false;
-				subscribe(domain, subscribeTopic, subscribeQos, cleanSession);
+				reconnect();
 			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
 		}
 	}

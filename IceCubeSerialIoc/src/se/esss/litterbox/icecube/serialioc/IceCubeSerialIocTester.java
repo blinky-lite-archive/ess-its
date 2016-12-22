@@ -2,13 +2,14 @@ package se.esss.litterbox.icecube.serialioc;
 
 import org.json.simple.JSONObject;
 
-import se.esss.litterbox.simplemqttclient.SimpleMqttSubscriber;
+import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
 
-public class IceCubeSerialIocTester  extends SimpleMqttSubscriber
+
+public class IceCubeSerialIocTester  extends SimpleMqttClient
 {
-	public IceCubeSerialIocTester(String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret) 
+	public IceCubeSerialIocTester(String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret) throws Exception 
 	{
-		super(clientIdBase, brokerUrl, brokerKey, brokerSecret);
+		super(clientIdBase, brokerUrl, brokerKey, brokerSecret, false);
 	}
 	@Override
 	public void connectionLost(Throwable arg0) {}
