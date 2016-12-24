@@ -1,0 +1,33 @@
+/** Add css rules here for your application. */
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+.titleLabel {
+  display: block;
+	color: #0095CD;
+	font-size: 1.5em;
+	font-weight: bold;
+	text-align: center;
+}
+.ItsEnvStatusPanel {
+	color: #FFFFFF;
+	font-size: 1.5em;
+	font-weight: bold;
+	background-color: #0095CD;
+}
+.readTrue {
+	color: #FF0000;
+	background-color: #0095CD;
+}
+.readFalse {
+	color: #00FF00;
+	background-color: #0095CD;
+}
+.readings {
+	color: #00FF00;
+	background-color: #0095CD;
+}
