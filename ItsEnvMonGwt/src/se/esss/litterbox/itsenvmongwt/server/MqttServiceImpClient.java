@@ -12,12 +12,6 @@ public class MqttServiceImpClient extends SimpleMqttClient
 		super(clientIdBase, brokerUrl, brokerKey, brokerSecret, cleanSession);
 		this.mqttServiceImpl = mqttServiceImpl;
 	}
-	@Override
-	public void connectionLost(Throwable arg0) 
-	{
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void newMessage(String domain, String topic, byte[] message) 
