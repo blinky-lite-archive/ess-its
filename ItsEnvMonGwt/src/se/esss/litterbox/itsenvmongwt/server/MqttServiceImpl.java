@@ -56,7 +56,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	@SuppressWarnings("rawtypes")
 	@Override
-	public String[][] nameValuePairArray(boolean debug, String[][] debugResponse) throws Exception 
+	public String[][] getNameValuePairArray(boolean debug, String[][] debugResponse) throws Exception 
 	{
 		JSONParser parser = new JSONParser();		
 		JSONObject jsonData;
@@ -80,5 +80,16 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 			}
 		}
 		return data;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public String[] setNameValuePairArray(String[] nameValuePairArray, boolean debug, String[] debugResponse) throws Exception
+	{
+		JSONObject outputData = new JSONObject();
+		outputData.put(nameValuePairArray[1], nameValuePairArray[2]);
+// QOS of 1 will not work on super dev mode because it will try to write to server
+		mqttClient.publishMessage("its", nameValuePairArray[0], outputData.toJSONString().getBytes(), 0, false);
+		return nameValuePairArray;
+
 	}
 }

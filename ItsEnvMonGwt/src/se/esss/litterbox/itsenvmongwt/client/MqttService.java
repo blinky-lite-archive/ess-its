@@ -9,6 +9,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("mqtt")
 public interface MqttService  extends RemoteService
 {
-	String[][] nameValuePairArray(boolean debug, String[][] debugResponse) throws Exception;
-
+	String[][] getNameValuePairArray(boolean debug, String[][] debugResponse) throws Exception;
+	String[] setNameValuePairArray(String[] nameValuePairArray, boolean debug, String[] debugResponse) throws Exception;
 }

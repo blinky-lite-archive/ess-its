@@ -8,7 +8,7 @@ import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.gauge.Gauge;
 import com.googlecode.gwt.charts.client.gauge.GaugeOptions;
 
-public class ItsEnvMonGauge extends HorizontalPanel
+public class GaugePlotPanel extends HorizontalPanel
 {
 	private Gauge gauge;
 	private String title = "setting";
@@ -21,13 +21,17 @@ public class ItsEnvMonGauge extends HorizontalPanel
 	private double yellowValueMin = 40;
 	private double redValueMax = 100;
 	private double redValueMin = 80;
-	DataTable dataTable;
-	GaugeOptions options;
-	ChartLoader chartLoader;
-	GaugeRunnable gaugeRunnable;
+	private DataTable dataTable;
+	private GaugeOptions options;
+	private ChartLoader chartLoader;
+	private GaugeRunnable gaugeRunnable;
+	private boolean loaded = false;
 	
-	public ItsEnvMonGauge()
+	public boolean isLoaded() {return loaded;}
+	
+	public GaugePlotPanel()
 	{
+		loaded = false;
 	}
 	public void setTitle(String title) {this.title = title;}
 	public void setValue(double value) {this.value = value;}
@@ -54,6 +58,7 @@ public class ItsEnvMonGauge extends HorizontalPanel
 
 	public void initialize() 
 	{
+		loaded = false;
 		chartLoader = new ChartLoader(ChartPackage.GAUGE);
 		gaugeRunnable = new GaugeRunnable(this);
 		chartLoader.loadApi(gaugeRunnable);
@@ -77,8 +82,6 @@ public class ItsEnvMonGauge extends HorizontalPanel
 		options.setYellowTo(yellowValueMax);
 		options.setRedFrom(redValueMin);
 		options.setRedTo(redValueMax);
-
-	
 	}
 	public void draw() 
 	{
@@ -88,18 +91,19 @@ public class ItsEnvMonGauge extends HorizontalPanel
 	}
 	private static class GaugeRunnable implements Runnable
 	{
-		ItsEnvMonGauge itsEnvMonGauge;
-		private GaugeRunnable(ItsEnvMonGauge itsEnvMonGauge)
+		GaugePlotPanel gaugePlotPanel;
+		private GaugeRunnable(GaugePlotPanel gaugePlotPanel)
 		{
-			this.itsEnvMonGauge = itsEnvMonGauge;
+			this.gaugePlotPanel = gaugePlotPanel;
 		}
 		@Override
 		public void run() 
 		{
-			itsEnvMonGauge.gauge = new Gauge();
-			itsEnvMonGauge.add(itsEnvMonGauge.gauge);
-			itsEnvMonGauge.setup();
-			itsEnvMonGauge.draw();
+			gaugePlotPanel.gauge = new Gauge();
+			gaugePlotPanel.add(gaugePlotPanel.gauge);
+			gaugePlotPanel.setup();
+			gaugePlotPanel.draw();
+			gaugePlotPanel.loaded = true;
 		}
 		
 	}

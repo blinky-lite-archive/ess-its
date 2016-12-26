@@ -4,7 +4,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 
 import se.esss.litterbox.itsenvmongwt.client.callbacks.CheckIpAddresslAsyncCallback;
-import se.esss.litterbox.itsenvmongwt.client.contentpanels.ItsEnvStatusPanel;
+import se.esss.litterbox.itsenvmongwt.client.contentpanels.StatusPanel;
 import se.esss.litterbox.itsenvmongwt.client.gskel.GskelSetupApp;
 
 public class EntryPointApp implements EntryPoint 
@@ -19,7 +19,7 @@ public class EntryPointApp implements EntryPoint
 	{
 		setupApp = new GskelSetupApp();
 		setupApp.setDebug(false);
-		setupApp.setVersionDate("December 24, 2016 09:36");
+		setupApp.setVersionDate("December 26, 2016 06:55");
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
@@ -35,6 +35,6 @@ public class EntryPointApp implements EntryPoint
 	}
 	public void initializeTabs(boolean settingsPermitted)
 	{
-		new ItsEnvStatusPanel("Monitor", setupApp, mqttService);
+		new StatusPanel("Monitor", setupApp, mqttService, settingsPermitted);
 	}
 }

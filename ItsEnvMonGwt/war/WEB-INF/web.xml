@@ -14,8 +14,7 @@
     <servlet-name>mqttServlet</servlet-name>
     <servlet-class>se.esss.litterbox.itsenvmongwt.server.MqttServiceImpl</servlet-class>
   <!--     <load-on-startup /> -->
-    <load-on-startup /> 
-  </servlet>
+   </servlet>
   
   <servlet-mapping>
     <servlet-name>entrypointappServlet</servlet-name>

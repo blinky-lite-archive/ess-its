@@ -4,5 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface MqttServiceAsync 
 {
-	void nameValuePairArray(boolean debug, String[][] debugResponse, AsyncCallback<String[][]> callback);
+	void getNameValuePairArray(boolean debug, String[][] debugResponse, AsyncCallback<String[][]> callback);
+	void setNameValuePairArray(String[] nameValuePairArray, boolean debug, String[] debugResponse, AsyncCallback<String[]> callback);
 }
