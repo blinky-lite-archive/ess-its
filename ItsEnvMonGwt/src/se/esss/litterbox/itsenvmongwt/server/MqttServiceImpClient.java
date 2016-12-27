@@ -14,9 +14,9 @@ public class MqttServiceImpClient extends SimpleMqttClient
 	}
 
 	@Override
-	public void newMessage(String domain, String topic, byte[] message) 
+	public void newMessage(String topic, byte[] message) 
 	{
-		mqttServiceImpl.setMessage(domain, topic, message);
+		mqttServiceImpl.setMessage(topic, message);
 	}
 
 }

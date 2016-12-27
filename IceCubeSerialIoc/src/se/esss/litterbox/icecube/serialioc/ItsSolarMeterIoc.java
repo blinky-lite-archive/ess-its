@@ -6,9 +6,9 @@ import org.json.simple.parser.ParseException;
 
 public class ItsSolarMeterIoc extends IceCubeSerialIoc
 {
-	public ItsSolarMeterIoc(String domain, String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public ItsSolarMeterIoc(String domain, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
 	{
-		super(domain, clientIdBase, brokerUrl, brokerKey, brokerSecret, serialPortName);
+		super(domain, brokerUrl, brokerKey, brokerSecret, serialPortName);
 	}
 	@Override
 	public byte[] getSerialData() 
@@ -28,7 +28,7 @@ public class ItsSolarMeterIoc extends IceCubeSerialIoc
 	@Override
 	public void handleIncomingMessage(String topic, byte[] message) 
 	{
-		if (topic.equals("solarMeter01/set/avgPeriod"))
+		if (topic.indexOf("/set/avgPeriod") >= 0)
 		{
 			try
 			{
@@ -39,7 +39,7 @@ public class ItsSolarMeterIoc extends IceCubeSerialIoc
 			}
 			catch (ParseException nfe) {}
 		}
-		if (topic.equals("solarMeter01/set/samplePeriod"))
+		if (topic.indexOf("/set/samplePeriod") >= 0)
 		{
 			try
 			{
@@ -53,8 +53,8 @@ public class ItsSolarMeterIoc extends IceCubeSerialIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("its", "ItsSolarMeter01Ioc", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", "/dev/rfcomm3");
+		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", "/dev/rfcomm3");
 		ioc.setPeriodicPollPeriodmillis(2000);
-		ioc.startIoc("solarMeter01/set/#", "solarMeter01/get/cond");
+		ioc.startIoc("itsSolarMeter01/set/#", "itsSolarMeter01/get/cond");
 	}
 }

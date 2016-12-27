@@ -14,7 +14,7 @@ public class IceCubeSerialIocTester  extends SimpleMqttClient
 	@Override
 	public void connectionLost(Throwable arg0) {}
 	@Override
-	public void newMessage(String arg0, String arg1, byte[] arg2) {}
+	public void newMessage(String arg1, byte[] arg2) {}
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
@@ -24,7 +24,7 @@ public class IceCubeSerialIocTester  extends SimpleMqttClient
 		JSONObject outputData = new JSONObject();
 		outputData.put("samplePeriodSet", data);
 
-		ioCtester.publishMessage("its", "solarMeter01/set/samplePeriod", outputData.toJSONString().getBytes(), 0, retained);
+		ioCtester.publishMessage("solarMeter01/set/samplePeriod", outputData.toJSONString().getBytes(), 0, retained);
 
 	}
 

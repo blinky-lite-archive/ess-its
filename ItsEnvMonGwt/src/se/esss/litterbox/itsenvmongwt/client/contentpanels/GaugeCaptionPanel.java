@@ -64,7 +64,7 @@ public class GaugeCaptionPanel extends CaptionPanel
 		add(gaugeHorizontalPanel);
 		
 		LoadPlotTimer lpt = new LoadPlotTimer(this);
-		lpt.scheduleRepeating(20);
+		lpt.scheduleRepeating(500);
 	}
 	public void updateReadings(String[][] readingfromServer)
 	{

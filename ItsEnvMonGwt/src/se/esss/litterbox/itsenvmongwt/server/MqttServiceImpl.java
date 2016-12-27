@@ -14,7 +14,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 {
 	MqttServiceImpClient mqttClient;
 	byte[] solarMessage = "NotStarted".getBytes();
-	String[] topics = {"geiger01/get/cpm", "dht1101/get/cond", "solarMeter01/get/cond" };
+	String[] topics = {"itsGeiger01/get/cpm", "itsDht1101/get/cond", "itsSolarMeter01/get/cond" };
 	byte[][] messages;
 	String domain = "its";
 	public void init()
@@ -28,7 +28,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
-				mqttClient.subscribe(domain, topics[ii], subscribeQos);
+				mqttClient.subscribe(topics[ii], subscribeQos);
 			}
 		} catch (Exception e) 
 		{
@@ -40,18 +40,15 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		try {mqttClient.unsubscribeAll();} catch (Exception e) {mqttClient = null;}
 		try {mqttClient.disconnect();} catch (Exception e) {mqttClient = null;}
 	}
-	public void setMessage(String domain, String topic, byte[] message)
+	public void setMessage(String topic, byte[] message)
 	{
-		if (domain.equals(this.domain))
+		int itopic = -1;
+		for (int ii = 0; ii < topics.length; ++ii) 
+			if (topic.equals(topics[ii])) itopic = ii;
+		if (itopic >= 0)
 		{
-			int itopic = -1;
-			for (int ii = 0; ii < topics.length; ++ii) 
-				if (topic.equals(topics[ii])) itopic = ii;
-			if (itopic >= 0)
-			{
-				messages[itopic] = new byte[message.length];
-				for (int ii = 0; ii < message.length; ++ii) messages[itopic][ii] = message[ii];
-			}
+			messages[itopic] = new byte[message.length];
+			for (int ii = 0; ii < message.length; ++ii) messages[itopic][ii] = message[ii];
 		}
 	}
 	@SuppressWarnings("rawtypes")
@@ -88,7 +85,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		JSONObject outputData = new JSONObject();
 		outputData.put(nameValuePairArray[1], nameValuePairArray[2]);
 // QOS of 1 will not work on super dev mode because it will try to write to server
-		mqttClient.publishMessage("its", nameValuePairArray[0], outputData.toJSONString().getBytes(), 0, false);
+		mqttClient.publishMessage(nameValuePairArray[0], outputData.toJSONString().getBytes(), 0, false);
 		return nameValuePairArray;
 
 	}

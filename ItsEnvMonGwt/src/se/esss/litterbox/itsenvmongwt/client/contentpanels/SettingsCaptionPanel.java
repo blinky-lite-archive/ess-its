@@ -78,7 +78,7 @@ public class SettingsCaptionPanel extends CaptionPanel
 				{
 					int cpmAvg = Integer.parseInt(settingsCaptionPanel.cpmAvgSetTextBox.getText());
 					String[] topicValue = new String[3];
-					topicValue[0] = "geiger01/set/avg";
+					topicValue[0] = "itsGeiger01/set/avg";
 					topicValue[1] = "avgSet";
 					topicValue[2] = Integer.toString(cpmAvg);
 					String[] debugResponse = topicValue;

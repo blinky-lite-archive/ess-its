@@ -23,7 +23,7 @@ public class TimePlotCaptionPanel extends CaptionPanel
 		String[] timePlotLegend = {"cpm", "tempDht11", "humidDht11", "temp", "photoAvg .1", "photo .1"};
 		timeLinePlot = new TimeLinePlotPanel(numPts, 6, "Time Plot", "Time (sec)", "Value", timePlotLegend, plotWidth, plotHeight);
 		LoadPlotTimer lpt = new LoadPlotTimer(this);
-		lpt.scheduleRepeating(20);
+		lpt.scheduleRepeating(500);
 	}
 	public void updateReadings(String[][] readingfromServer)
 	{

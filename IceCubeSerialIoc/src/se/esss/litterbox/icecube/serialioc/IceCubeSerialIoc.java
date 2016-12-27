@@ -13,7 +13,6 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 	private boolean runPeriodicPoll = false;
 	private int periodicPollPeriodmillis = 1000;
 	private String publishTopic;
-	private String domain;
 	private SerialReadWrite serialReadWrite;
 	private boolean newIncomingMessage = false;
 	private String incomingMessageTopic;
@@ -29,17 +28,16 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 	public void setPublishTopic(String publishTopic) {this.publishTopic = publishTopic;}
 	public void setPeriodicPollPeriodmillis(int periodicPollPeriodmillis) {this.periodicPollPeriodmillis = periodicPollPeriodmillis;}
 
-	public IceCubeSerialIoc(String domain, String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public IceCubeSerialIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
 	{
-		super(clientIdBase, brokerUrl, brokerKey, brokerSecret, false);
+		super(clientId, brokerUrl, brokerKey, brokerSecret, false);
 		cleanSession = false;
-		this.domain = domain;
 		serialReadWrite = new SerialReadWrite(serialPortName);
 	}
 	public void startIoc(String subscribeTopic, String publishTopic) throws Exception
 	{
 		this.setPublishTopic(publishTopic);
-    	subscribe(domain, subscribeTopic, getSubscribeQos());
+    	subscribe(subscribeTopic, getSubscribeQos());
 		setStatus("Ready for messages");
 		new Thread(this).start();
 		runPeriodicPoll = true;
@@ -88,15 +86,12 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 		}
 	}
 	@Override
-	public void newMessage(String domain, String topic, byte[] message) 
+	public void newMessage(String topic, byte[] message) 
 	{
-		setStatus(getClientId() + "  on domain: " + domain + " recieved message on topic: " + topic);
-		if (domain.equals(this.domain)) 
-		{
-			incomingMessageTopic = topic;
-			incomingMessage = message;
-			newIncomingMessage = true;
-		}
+		setStatus(getClientId() + " recieved message on topic: " + topic);
+		incomingMessageTopic = topic;
+		incomingMessage = message;
+		newIncomingMessage = true;
 	}
 	@Override
 	public void run() 
@@ -105,7 +100,7 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 		{
 			try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
 			byte[] serialData = getSerialData();
-			try {publishMessage(domain, publishTopic, serialData, publishQos, true);} catch (Exception e) {}
+			try {publishMessage(publishTopic, serialData, publishQos, true);} catch (Exception e) {}
 			if (newIncomingMessage)
 			{
 				handleIncomingMessage(incomingMessageTopic, incomingMessage);

@@ -4,9 +4,9 @@ import org.json.simple.JSONObject;
 
 public class ItsDht11Ioc extends IceCubeSerialIoc
 {
-	public ItsDht11Ioc(String domain, String clientIdBase, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public ItsDht11Ioc(String domain, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
 	{
-		super(domain, clientIdBase, brokerUrl, brokerKey, brokerSecret, serialPortName);
+		super(domain, brokerUrl, brokerKey, brokerSecret, serialPortName);
 	}
 	@Override
 	public byte[] getSerialData() 
@@ -26,8 +26,8 @@ public class ItsDht11Ioc extends IceCubeSerialIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsDht11Ioc ioc = new ItsDht11Ioc("its", "ItsDht1101Ioc", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", "/dev/rfcomm2");
+		ItsDht11Ioc ioc = new ItsDht11Ioc("itsDht1101Ioc", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", "/dev/rfcomm2");
 		ioc.setPeriodicPollPeriodmillis(2000);
-		ioc.startIoc("dht1101/set/#", "dht1101/get/cond");
+		ioc.startIoc("itsDht1101/set/#", "itsDht1101/get/cond");
 	}
 }
