@@ -100,7 +100,8 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 		{
 			try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
 			byte[] serialData = getSerialData();
-			try {publishMessage(publishTopic, serialData, publishQos, true);} catch (Exception e) {}
+			if (serialData != null)
+				try {publishMessage(publishTopic, serialData, publishQos, true);} catch (Exception e) {}
 			if (newIncomingMessage)
 			{
 				handleIncomingMessage(incomingMessageTopic, incomingMessage);

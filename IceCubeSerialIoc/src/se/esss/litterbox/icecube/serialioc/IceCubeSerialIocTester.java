@@ -22,15 +22,20 @@ public class IceCubeSerialIocTester  extends SimpleMqttClient
 	public static void main(String[] args) throws Exception 
 	{
 		IceCubeSerialIocTester ioCtester = new IceCubeSerialIocTester("ItsIocTester", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5");
+
 		boolean retained = true;
-		String data = "2 1 10000 20000";
+		String data = "2 2 10000 20000";
 		JSONObject outputData = new JSONObject();
 		outputData.put("channelSet", data);
 
 		ioCtester.publishMessage("itsClkRecvr01/set/channel", outputData.toJSONString().getBytes(), 0, retained);
-//		ioCtester.subscribe("itsClkRecvr01/set/channel", 0);
-//		ioCtester.subscribe("itsClkRecvr01/get/signal", 0);
 
+		retained = true;
+		data = "1 2";
+		outputData = new JSONObject();
+		outputData.put("timelineSet", data);
+
+		ioCtester.publishMessage("itsClkTrans01/set/timeline", outputData.toJSONString().getBytes(), 0, retained);
 	}
 
 }

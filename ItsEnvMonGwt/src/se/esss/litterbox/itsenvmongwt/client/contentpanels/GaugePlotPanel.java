@@ -103,8 +103,8 @@ public class GaugePlotPanel extends HorizontalPanel
 			gaugePlotPanel.add(gaugePlotPanel.gauge);
 			gaugePlotPanel.setup();
 			gaugePlotPanel.draw();
-			gaugePlotPanel.setWidth("130px");
-			gaugePlotPanel.setHeight("130px");
+			gaugePlotPanel.setWidth("135px");
+			gaugePlotPanel.setHeight("135px");
 			gaugePlotPanel.loaded = true;
 		}
 		
