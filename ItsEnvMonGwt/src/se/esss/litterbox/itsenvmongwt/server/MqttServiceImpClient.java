@@ -1,6 +1,6 @@
 package se.esss.litterbox.itsenvmongwt.server;
 
-import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
+import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
 public class MqttServiceImpClient extends SimpleMqttClient
 {
