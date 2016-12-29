@@ -1,10 +1,11 @@
-package se.esss.litterbox.icecube.serialioc;
+package se.esss.litterbox.icecube.usbtmcioc;
 
 import org.json.simple.JSONObject;
 
+import se.esss.litterbox.icecube.serialioc.SerialReadWrite;
 import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
-public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runnable
+public abstract class IceCubeUsbtmcIoc extends SimpleMqttClient implements Runnable
 {
 	private int subscribeQos = 0;
 	private int publishQos = 0;
@@ -27,7 +28,7 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 	public void setPublishTopic(String publishTopic) {this.publishTopic = publishTopic;}
 	public void setPeriodicPollPeriodmillis(int periodicPollPeriodmillis) {this.periodicPollPeriodmillis = periodicPollPeriodmillis;}
 
-	public IceCubeSerialIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public IceCubeUsbtmcIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
 	{
 		super(clientId, brokerUrl, brokerKey, brokerSecret, false);
 		cleanSession = false;

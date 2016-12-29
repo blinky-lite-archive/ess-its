@@ -1,4 +1,4 @@
-package se.esss.litterbox.icecube.serialioc;
+package se.esss.litterbox.icecube.ioc;
 
 public class ItsEnvIoc 
 {

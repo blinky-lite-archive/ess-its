@@ -2,7 +2,7 @@ package se.esss.litterbox.icecube.serialioc;
 
 import org.json.simple.JSONObject;
 
-import se.esss.litterbox.simplemqttclient.SimpleMqttClient;
+import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
 
 public class IceCubeSerialIocTester  extends SimpleMqttClient

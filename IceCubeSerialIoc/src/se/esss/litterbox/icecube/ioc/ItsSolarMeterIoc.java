@@ -1,8 +1,10 @@
-package se.esss.litterbox.icecube.serialioc;
+package se.esss.litterbox.icecube.ioc;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import se.esss.litterbox.icecube.serialioc.IceCubeSerialIoc;
 
 public class ItsSolarMeterIoc extends IceCubeSerialIoc
 {
