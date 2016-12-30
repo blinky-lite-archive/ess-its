@@ -58,7 +58,10 @@ public class ItsClkTransmitterIoc extends IceCubeSerialIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsClkTransmitterIoc ioc = new ItsClkTransmitterIoc("itsClkTrans01Ioc", "tcp://broker.shiftr.io:1883", "c8ac7600", "1e45295ac35335a5", "/dev/ttyACM0");
+		String userName = args[0];
+		String password = args[1];
+		String broker = "tcp://broker.shiftr.io:1883";
+		ItsClkTransmitterIoc ioc = new ItsClkTransmitterIoc("itsClkTrans01Ioc", broker, userName, password, "/dev/ttyACM0");
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsClkTrans01/set/#", "itsClkTrans01/get/");
 	}

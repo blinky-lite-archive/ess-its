@@ -42,7 +42,10 @@ public class GetMessageTest  extends SimpleMqttClient
 */	}
 	public static void main(String[] args) throws Exception  
 	{
-		GetMessageTest getMessageTest = new GetMessageTest("dmcginnis427", "tcp://broker.shiftr.io:1883", "06005fd6", "2c8c91273f654381", false);
+		String userName = args[0];
+		String password = args[1];
+		String broker = "tcp://broker.shiftr.io:1883";
+		GetMessageTest getMessageTest = new GetMessageTest("dmcginnis427", broker, userName, password, false);
 //		getMessageTest.setDisconnectLatch(1);
 		getMessageTest.subscribe("test/things1", 0);
 		getMessageTest.subscribe("test/things2", 0);

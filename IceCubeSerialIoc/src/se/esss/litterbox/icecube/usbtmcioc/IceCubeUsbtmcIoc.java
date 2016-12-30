@@ -2,7 +2,6 @@ package se.esss.litterbox.icecube.usbtmcioc;
 
 import org.json.simple.JSONObject;
 
-import se.esss.litterbox.icecube.serialioc.SerialReadWrite;
 import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
 public abstract class IceCubeUsbtmcIoc extends SimpleMqttClient implements Runnable
@@ -13,7 +12,7 @@ public abstract class IceCubeUsbtmcIoc extends SimpleMqttClient implements Runna
 	private boolean runPeriodicPoll = false;
 	private int periodicPollPeriodmillis = 1000;
 	private String publishTopic;
-	private SerialReadWrite serialReadWrite;
+	private UsbtmcDevice usbtmcDevice;
 	private boolean newIncomingMessage = false;
 	private String incomingMessageTopic;
 	private byte[] incomingMessage;
@@ -28,11 +27,11 @@ public abstract class IceCubeUsbtmcIoc extends SimpleMqttClient implements Runna
 	public void setPublishTopic(String publishTopic) {this.publishTopic = publishTopic;}
 	public void setPeriodicPollPeriodmillis(int periodicPollPeriodmillis) {this.periodicPollPeriodmillis = periodicPollPeriodmillis;}
 
-	public IceCubeUsbtmcIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public IceCubeUsbtmcIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String devNickName, int vendorId, int productId) throws Exception 
 	{
 		super(clientId, brokerUrl, brokerKey, brokerSecret, false);
 		cleanSession = false;
-		serialReadWrite = new SerialReadWrite(serialPortName);
+		usbtmcDevice = new UsbtmcDevice(devNickName, vendorId, productId);
 	}
 	public void startIoc(String subscribeTopic, String publishTopic) throws Exception
 	{
@@ -42,35 +41,35 @@ public abstract class IceCubeUsbtmcIoc extends SimpleMqttClient implements Runna
 		new Thread(this).start();
 		runPeriodicPoll = true;
 	}
-	public String writeReadSerialData(String command, int timeoutsecs)
+	public  void writeUsbtmcData(String command) 
 	{
-		String data = "";
 		try 
 		{
-			data =  serialReadWrite.writeReadStringData(command, timeoutsecs);
-			setStatus("Recieved from Serialport: " + data);
+			usbtmcDevice.write(command);
+			setStatus("Wrote: " + command + " to " + usbtmcDevice.devNickName);
 		} catch (Exception e) 
 		{
 //			e.printStackTrace();
-			setStatus("Unable to read serial port.");
+			setStatus("Error writing: " + command + " to "+ usbtmcDevice.devNickName + ": " + e.getMessage());
 		}
-		return data;
 	}
-	public abstract byte[] getSerialData();
+	public abstract byte[] getUsbtmcData();
 	public abstract void handleIncomingMessage(String topic, byte[] message);
 	@SuppressWarnings("unchecked")
-	public void readResponseStringFromSerial(String command, int timeOutSec, JSONObject outputData)
+	public void readResponseStringFromUsbtmc(String command, String commandJsonKey, JSONObject outputData)
 	{
-		String readData = writeReadSerialData(command, 10);
-		int ispot = readData.indexOf(command);
-		String data = "0";
-		if (ispot >= 0)
+		try 
 		{
-			data = readData.substring(command.length(), readData.length());
-			data = data.trim();
+			String readData = usbtmcDevice.read(command)[0];
+			outputData.put(commandJsonKey, readData);
+			setStatus("Wrote: " + command + " to " + usbtmcDevice.devNickName);
+			setStatus("Recieved: " + readData);
+			return;
+		} catch (Exception e) 
+		{
+//			e.printStackTrace();
+			setStatus("Error writing/reading: " + command + " to "+ usbtmcDevice.devNickName + ": " + e.getMessage());
 		}
-		outputData.put(command, data);
-		return;
 	}
 	@Override
 	public void connectionLost(Throwable arg0) 
@@ -99,9 +98,9 @@ public abstract class IceCubeUsbtmcIoc extends SimpleMqttClient implements Runna
 		while(runPeriodicPoll)
 		{
 			try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
-			byte[] serialData = getSerialData();
-			if (serialData != null)
-				try {publishMessage(publishTopic, serialData, publishQos, true);} catch (Exception e) {}
+			byte[] usbtmcData = getUsbtmcData();
+			if (usbtmcData != null)
+				try {publishMessage(publishTopic, usbtmcData, publishQos, true);} catch (Exception e) {}
 			if (newIncomingMessage)
 			{
 				handleIncomingMessage(incomingMessageTopic, incomingMessage);

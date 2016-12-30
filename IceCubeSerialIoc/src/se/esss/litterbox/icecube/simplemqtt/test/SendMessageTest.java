@@ -16,7 +16,10 @@ public class SendMessageTest extends SimpleMqttClient
 	}
 	public static void main(String[] args) throws Exception  
 	{
-		SendMessageTest sendMessageTest = new SendMessageTest("dmcginnis427", "tcp://broker.shiftr.io:1883", "06005fd6", "2c8c91273f654381", true);
+		String userName = args[0];
+		String password = args[1];
+		String broker = "tcp://broker.shiftr.io:1883";
+		SendMessageTest sendMessageTest = new SendMessageTest("dmcginnis427", broker, userName, password, true);
 //		String[] message = {"Hej 8", "unsubscribe","publish", "disconnect"};
 //		sendMessageTest.publishMessage("test", "things", message[3].getBytes(), 0, true);
 		sendMessageTest.publishMessage("test/things1", "hi1".getBytes(), 0, true);
