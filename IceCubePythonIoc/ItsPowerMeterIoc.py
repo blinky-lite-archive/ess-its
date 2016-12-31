@@ -5,7 +5,7 @@ import sys
 import usbtmc
 
 #should be unique for each Ioc
-clientId = "itsPythonTestIoc"
+clientId = "itsPowerMeter01Ioc"
 subscribeTopic = "itsPowerMeter01/set/#"
 publishtopic = "itsPowerMeter01/get"
 periodicPollPeriodSecs = 1
@@ -34,7 +34,7 @@ def getDataFromDevice():
     power2 = usbInst.ask(usbCommand)
     print "Received " + power2 + " from device"
     data = {"power1": power1, "power2": power2}
-    return json.dumps(data);
+    return json.dumps(data)
 def handleIncomingMessage(topic, message):
     # handle messages from broker
     if "/set/init" in topic:

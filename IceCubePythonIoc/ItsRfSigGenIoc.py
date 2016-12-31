@@ -2,12 +2,38 @@ import paho.mqtt.client as mqtt
 import time
 import json
 import sys
+import usbtmc
 
 #should be unique for each Ioc
-clientId = "itsPythonTestIoc"
-subscribeTopic = "itsPythonTest/set/#"
-publishtopic = "itsPythonTest/get"
+clientId = "itsRfSigGen01Ioc"
+subscribeTopic = "itsRfSigGen01/set/#"
+publishtopic = "itsRfSigGen01/get"
 periodicPollPeriodSecs = 1
+
+# Power meter initialization
+usbInst =  usbtmc.Instrument(2733, 72)
+usbCommand = "*RST"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+time.sleep(2)
+usbCommand = "FREQ 352.21MHZ"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+usbCommand = "POW -30"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+usbCommand = "OUTP OFF"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+usbCommand = "PULM:SOUR EXT"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+usbCommand = "SOUR:PULM:TRIG:EXT:IMP G10K"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+usbCommand = "PULM:STAT ON"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
 
 # usually leave this alone
 subscribeQos = 0
@@ -18,13 +44,20 @@ brokertimeout = 60
 
 def getDataFromDevice():
 # code here to be executed in periodic poll and set to local device
-    data = {"key1": time.strftime("%H:%M:%S"), "key2": "Hej"}
-    return json.dumps(data)
+    return ""
 def handleIncomingMessage(topic, message):
 # handle messages from broker
     if "/set/rf" in topic:
         data = json.loads(str(message))
-        print "rf power level = " + data['rfPowLvl']
+        usbCommand = "OUTP " + data['rfPowOn']
+        print "Sending " + usbCommand + " to device"
+        usbInst.write(usbCommand)
+        usbCommand = "FREQ " + data['rfFreq'] + "MHZ"
+        print "Sending " + usbCommand + " to device"
+        usbInst.write(usbCommand)
+        usbCommand = "POW " + data['rfPowLvl']
+        print "Sending " + usbCommand + " to device"
+        usbInst.write(usbCommand)
     return
 
 userName = sys.argv[1]
