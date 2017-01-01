@@ -2,7 +2,7 @@
 /gwt-unitCache
 /war/WEB-INF/deploy
 /war/WEB-INF/classes
-/war/itsenvmongwt
+/war/envmongwt
 /war/WEB-INF/lib/appengine*.jar
 /war/WEB-INF/lib/datanucleus*.jar
 /war/WEB-INF/lib/geronimo*.jar
