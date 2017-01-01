@@ -1,4 +1,4 @@
-package se.esss.litterbox.icecube.serialioc.impl;
+package se.esss.litterbox.its.ioc;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
