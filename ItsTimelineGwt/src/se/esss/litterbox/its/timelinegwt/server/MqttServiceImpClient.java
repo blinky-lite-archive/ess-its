@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.envmongwt.server;
+package se.esss.litterbox.its.timelinegwt.server;
 
 import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 

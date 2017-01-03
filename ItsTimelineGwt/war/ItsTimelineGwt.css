@@ -8,8 +8,26 @@ h1 {
 }
 .titleLabel {
   display: block;
-	color: #0e25fa;
+	color: #0095CD;
 	font-size: 1.5em;
 	font-weight: bold;
 	text-align: center;
+}
+.ItsTimelinePanel {
+	color: #FFFFFF;
+	font-size: 1.5em;
+	font-weight: bold;
+	background-color: #0095CD;
+}
+.readTrue {
+	color: #FF0000;
+	background-color: #0095CD;
+}
+.readFalse {
+	color: #00FF00;
+	background-color: #0095CD;
+}
+.readings {
+	color: #00FF00;
+	background-color: #0095CD;
 }

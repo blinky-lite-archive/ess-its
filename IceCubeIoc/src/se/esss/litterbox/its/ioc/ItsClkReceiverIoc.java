@@ -9,9 +9,9 @@ import se.esss.litterbox.icecube.serialioc.IceCubeSerialIoc;
 public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 {
 
-	public ItsClkReceiverIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public ItsClkReceiverIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
 	{
-		super(clientId, brokerUrl, brokerKey, brokerSecret, serialPortName);
+		super(clientId, mqttBrokerInfoFilePath, serialPortName);
 		// TODO Auto-generated constructor stub
 	}
 	@Override
@@ -54,10 +54,7 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		String userName = args[0];
-		String password = args[1];
-		String broker = "tcp://broker.shiftr.io:1883";
-		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc("itsClkRecvr01Ioc", broker, userName, password, "/dev/ttyACM0");
+		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc("itsClkRecvr01Ioc", "itsmqttbroker.dat", "/dev/ttyACM0");
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsClkRecvr01/set/#", "itsClkRecvr01/get/signal");
 	}

@@ -9,12 +9,19 @@
   <servlet>
     <servlet-name>entrypointappServlet</servlet-name>
     <servlet-class>se.esss.litterbox.its.timelinegwt.server.EntryPointAppServiceImpl</servlet-class>
-  <!--     <load-on-startup /> -->
-  </servlet>
+   </servlet>
+   <servlet>
+    <servlet-name>mqttServlet</servlet-name>
+    <servlet-class>se.esss.litterbox.its.timelinegwt.server.MqttServiceImpl</servlet-class>
+   </servlet>
   
   <servlet-mapping>
     <servlet-name>entrypointappServlet</servlet-name>
     <url-pattern>/timelinegwt/entrypointapp</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>mqttServlet</servlet-name>
+    <url-pattern>/timelinegwt/mqtt</url-pattern>
   </servlet-mapping>
 
   <filter>

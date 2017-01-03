@@ -1,5 +1,9 @@
 package se.esss.litterbox.icecube.simplemqtt;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +18,8 @@ import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public abstract class SimpleMqttClient implements MqttCallback
 {
@@ -52,6 +58,22 @@ public abstract class SimpleMqttClient implements MqttCallback
 		this.brokerUrl = brokerUrl;
 		this.brokerKey = brokerKey;
 		this.brokerSecret = brokerSecret;
+		this.clientId = clientId; 
+		this.cleanSession = cleanSession;
+		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();
+		connect();
+	}
+	public SimpleMqttClient(String clientId, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception
+	{
+	    InputStream fis = new FileInputStream(mqttBrokerInfoFilePath);
+	    InputStreamReader isr = new InputStreamReader(fis);
+	    BufferedReader br = new BufferedReader(isr);
+	    String line = br.readLine();
+	    br.close();
+	    JSONObject mqttdata = (JSONObject) new JSONParser().parse(line);
+		this.brokerUrl = (String) mqttdata.get("broker") + ":" + (String) mqttdata.get("brokerport");;
+		this.brokerKey = (String) mqttdata.get("key");
+		this.brokerSecret = (String) mqttdata.get("secret");
 		this.clientId = clientId; 
 		this.cleanSession = cleanSession;
 		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();

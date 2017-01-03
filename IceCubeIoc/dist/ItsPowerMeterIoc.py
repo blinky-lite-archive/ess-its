@@ -16,6 +16,12 @@ usbCommand = "SYST:PRES"
 print "Sending " + usbCommand + " to device"
 usbInst.write(usbCommand)
 time.sleep(2)
+usbCommand = "*RCL 1"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
+usbCommand = "INIT:ALL:CONT ON"
+print "Sending " + usbCommand + " to device"
+usbInst.write(usbCommand)
 
 # usually leave this alone
 subscribeQos = 0
@@ -26,9 +32,16 @@ brokertimeout = 60
 
 def getDataFromDevice():
     # code here to be executed in periodic poll and set to local device
+    usbCommand = "SENS1:AVER:RES"
+    print "Sending " + usbCommand + " to device"
+    usbInst.write(usbCommand)
     usbCommand = "FETC1?"
     print "Sending " + usbCommand + " to device"
     power1 = usbInst.ask(usbCommand)
+    print "Received " + power1 + " from device"
+    usbCommand = "SENS2:AVER:RES"
+    print "Sending " + usbCommand + " to device"
+    usbInst.write(usbCommand)
     usbCommand = "FETC2?"
     print "Sending " + usbCommand + " to device"
     power2 = usbInst.ask(usbCommand)
@@ -37,32 +50,7 @@ def getDataFromDevice():
     return json.dumps(data)
 def handleIncomingMessage(topic, message):
     # handle messages from broker
-    if "/set/init" in topic:
-        data = json.loads(str(message))
-        usbCommand = "SENS1:FREQ " + data['rfFreq'] + " MHZ"
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS1:CORR:DCYC " + data['dutyCycle']
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS1:CORR:DCYC:STAT ON"
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS1:POW:AVG:APER " + data['modPeriod']
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS2:FREQ " + data['rfFreq'] + " MHZ"
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS2:CORR:DCYC " + data['dutyCycle']
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS2:CORR:DCYC:STAT ON"
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "SENS2:POW:AVG:APER " + data['modPeriod']
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
+#    if "/set/init" in topic:
     return
 
 userName = sys.argv[1]

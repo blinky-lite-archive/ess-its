@@ -27,9 +27,9 @@ public abstract class IceCubeSerialIoc extends SimpleMqttClient implements Runna
 	public void setPublishTopic(String publishTopic) {this.publishTopic = publishTopic;}
 	public void setPeriodicPollPeriodmillis(int periodicPollPeriodmillis) {this.periodicPollPeriodmillis = periodicPollPeriodmillis;}
 
-	public IceCubeSerialIoc(String clientId, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public IceCubeSerialIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
 	{
-		super(clientId, brokerUrl, brokerKey, brokerSecret, false);
+		super(clientId, mqttBrokerInfoFilePath, false);
 		cleanSession = false;
 		serialReadWrite = new SerialReadWrite(serialPortName);
 	}

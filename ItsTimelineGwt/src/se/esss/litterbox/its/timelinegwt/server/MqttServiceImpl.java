@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.envmongwt.server;
+package se.esss.litterbox.its.timelinegwt.server;
 
 import java.io.File;
 import java.util.Iterator;
@@ -8,16 +8,14 @@ import org.json.simple.parser.JSONParser;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import se.esss.litterbox.its.envmongwt.client.MqttService;
+import se.esss.litterbox.its.timelinegwt.client.MqttService;
 
 @SuppressWarnings("serial")
 public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 {
 	MqttServiceImpClient mqttClient;
-	byte[] solarMessage = "NotStarted".getBytes();
-	String[] topics = {"itsGeiger01/get/cpm", "itsDht1101/get/cond", "itsSolarMeter01/get/cond" };
+	String[] topics = {"itsClkTrans01/set/timeline"};
 	byte[][] messages;
-	String domain = "its";
 	public void init()
 	{
 		boolean cleanSession = false;
@@ -25,7 +23,8 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-			mqttClient = new MqttServiceImpClient(this, "ItsEnvMonGwt", getMqttDataPath(), cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsTimelineGwt", getMqttDataPath(), cleanSession);
+//			mqttClient = new MqttServiceImpClient(this, "ItsTimelineGwt", "tcp://broker.shiftr.io:1883", "xx", "xxx", cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
@@ -94,7 +93,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		JSONObject outputData = new JSONObject();
 		outputData.put(nameValuePairArray[1], nameValuePairArray[2]);
 // QOS of 1 will not work on super dev mode because it will try to write to server
-		mqttClient.publishMessage(nameValuePairArray[0], outputData.toJSONString().getBytes(), 0, false);
+		mqttClient.publishMessage(nameValuePairArray[0], outputData.toJSONString().getBytes(), 0, true);
 		return nameValuePairArray;
 
 	}

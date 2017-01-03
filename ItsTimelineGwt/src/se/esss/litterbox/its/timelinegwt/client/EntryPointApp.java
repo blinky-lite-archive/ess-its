@@ -1,24 +1,24 @@
 package se.esss.litterbox.its.timelinegwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 
 import se.esss.litterbox.its.timelinegwt.client.callbacks.CheckIpAddresslAsyncCallback;
-import se.esss.litterbox.its.timelinegwt.client.contentpanels.TestVerticalPanel;
+import se.esss.litterbox.its.timelinegwt.client.contentpanels.TimelinePanel;
 import se.esss.litterbox.its.timelinegwt.client.gskel.GskelSetupApp;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class EntryPointApp implements EntryPoint 
 {
 	private GskelSetupApp setupApp;
 	public GskelSetupApp getSetupApp() {return setupApp;}
 
+	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
+	public MqttServiceAsync getMqttService() {return mqttService;}
 	public void onModuleLoad() 
 	{
 		setupApp = new GskelSetupApp();
 		setupApp.setDebug(false);
-		setupApp.setVersionDate("July 19, 2016 14:33");
+		setupApp.setVersionDate("January 1, 2017 11:02");
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
@@ -29,7 +29,6 @@ public class EntryPointApp implements EntryPoint
 	}
 	public void initializeTabs(boolean settingsPermitted)
 	{
-		new TestVerticalPanel("tab 1", setupApp, settingsPermitted);
-		new TestVerticalPanel("tab 2", setupApp, settingsPermitted);
+		new TimelinePanel("Timeline", setupApp, mqttService, settingsPermitted);
 	}
 }

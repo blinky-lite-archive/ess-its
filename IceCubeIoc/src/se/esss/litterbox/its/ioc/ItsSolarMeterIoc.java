@@ -8,9 +8,9 @@ import se.esss.litterbox.icecube.serialioc.IceCubeSerialIoc;
 
 public class ItsSolarMeterIoc extends IceCubeSerialIoc
 {
-	public ItsSolarMeterIoc(String domain, String brokerUrl, String brokerKey, String brokerSecret, String serialPortName) throws Exception 
+	public ItsSolarMeterIoc(String domain, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
 	{
-		super(domain, brokerUrl, brokerKey, brokerSecret, serialPortName);
+		super(domain, mqttBrokerInfoFilePath, serialPortName);
 	}
 	@Override
 	public byte[] getSerialData() 
@@ -55,10 +55,7 @@ public class ItsSolarMeterIoc extends IceCubeSerialIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		String userName = args[0];
-		String password = args[1];
-		String broker = "tcp://broker.shiftr.io:1883";
-		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", broker, userName, password, "/dev/rfcomm3");
+		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "itsmqttbroker.dat", "/dev/rfcomm3");
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsSolarMeter01/set/#", "itsSolarMeter01/get/cond");
 	}
