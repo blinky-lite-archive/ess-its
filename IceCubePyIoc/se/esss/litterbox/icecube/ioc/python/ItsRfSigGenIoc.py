@@ -1,4 +1,4 @@
-from IceCubePyClassIoc import GenericIOC
+from se.esss.litterbox.icecube.ioc.python.IceCubePyClassIoc import GenericIOC
 import usbtmc
 import json
 import time

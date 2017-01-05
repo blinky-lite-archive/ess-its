@@ -1,4 +1,4 @@
-package se.esss.litterbox.icecube.serialioc;
+package se.esss.litterbox.icecube.ioc.serial;
 
 import org.json.simple.JSONObject;
 

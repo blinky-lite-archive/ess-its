@@ -2,7 +2,7 @@ package se.esss.litterbox.its.ioc;
 
 import org.json.simple.JSONObject;
 
-import se.esss.litterbox.icecube.serialioc.IceCubeSerialIoc;
+import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 
 public class ItsDht11Ioc extends IceCubeSerialIoc
 {

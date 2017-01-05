@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import se.esss.litterbox.icecube.serialioc.IceCubeSerialIoc;
+import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 
 public class ItsGeigerIoc extends IceCubeSerialIoc
 {
