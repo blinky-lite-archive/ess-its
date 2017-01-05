@@ -40,9 +40,9 @@ public class IceCubeIocTester  extends SimpleMqttClient
 		JSONObject outputData = new JSONObject();
 
 //		outputData.put("timelineSet", "1 0 0 0 0 0 0");
-//		outputData.put("channelSet", "3 1 2200 2300");
+//		outputData.put("channelSet", "2 1 1000 2000");
 //		ioCtester.publishMessage("itsClkTrans01/set/timeline", outputData.toJSONString().getBytes(), 0, retained);
-//		ioCtester.publishMessage("itsClkRecvr01/set/channel", outputData.toJSONString().getBytes(), 0, retained);
+//		ioCtester.publishMessage("itsClkRecvr02/set/channel", outputData.toJSONString().getBytes(), 0, retained);
 	
 //		ioCtester.subscribe("itsClkTrans01/set/timeline", 0);
 		
@@ -50,7 +50,7 @@ public class IceCubeIocTester  extends SimpleMqttClient
 		outputData.put("rfFreq", "351.0");
 		outputData.put("rfPowLvl", "-2");
 		ioCtester.publishMessage("itsRfSigGen01/set/rf", outputData.toJSONString().getBytes(), 0, retained);
-//		
+		
 	}
 
 }

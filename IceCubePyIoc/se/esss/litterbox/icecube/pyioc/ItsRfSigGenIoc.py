@@ -1,5 +1,4 @@
 from IceCubePyClassIoc import GenericIOC
-import GenericIOC
 import usbtmc
 import json
 import time

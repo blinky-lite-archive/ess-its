@@ -54,9 +54,15 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc("itsClkRecvr01Ioc", "itsmqttbroker.dat", "/dev/ttyACM0");
+		if (args.length != 1)
+		{
+			System.out.println("Usage java -jar ItsClkRecvr.jar mainTopic");
+			System.exit(1);
+		}
+		String mainTopic = args[0];
+		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc(mainTopic + "Ioc", "itsmqttbroker.dat", "/dev/ttyACM0");
 		ioc.setPeriodicPollPeriodmillis(2000);
-		ioc.startIoc("itsClkRecvr01/set/#", "itsClkRecvr01/get/signal");
+		ioc.startIoc(mainTopic + "/set/#", mainTopic + "/get/signal");
 	}
 
 }
