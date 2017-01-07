@@ -16,13 +16,13 @@ if __name__ == "__main__":
         if "/set/lamp" in msg.topic:
             data = json.loads(str(msg.payload))
 
-            serialCommand = "P" + data['period'] + "\n"
+            serialCommand = "P" + str(data['period']) + "\n"
             print "Sending " + serialCommand + " to device"
             serialCon.write(serialCommand)
 
             time.sleep(0.1)
 
-            serialCommand = "T " + data['onTime'] + "\n"
+            serialCommand = "T " + str(data['onTime']) + "\n"
             print "Sending " + serialCommand + " to device"
             serialCon.write(serialCommand)
 
