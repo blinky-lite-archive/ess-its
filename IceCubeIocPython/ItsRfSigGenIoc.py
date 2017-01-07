@@ -1,4 +1,4 @@
-from se.esss.litterbox.icecube.ioc.python.IceCubePyClassIoc import GenericIOC
+from IceCubePyClassIoc import GenericIOC
 import usbtmc
 import json
 import time
@@ -16,7 +16,7 @@ class RfSigGenIOC(GenericIOC):
         usbCommand = "FREQ 352.21MHZ"
         print "Sending " + usbCommand + " to device"
         usbInst.write(usbCommand)
-        
+
         usbCommand = "POW -50"
         print "Sending " + usbCommand + " to device"
         usbInst.write(usbCommand)
@@ -28,7 +28,7 @@ class RfSigGenIOC(GenericIOC):
         usbCommand = "PULM:SOUR EXT"
         print "Sending " + usbCommand + " to device"
         usbInst.write(usbCommand)
-        
+
         usbCommand = "SOUR:PULM:TRIG:EXT:IMP G10K"
         print "Sending " + usbCommand + " to device"
         usbInst.write(usbCommand)
@@ -68,4 +68,3 @@ if __name__ == "__main__":
     itsRfSigGenIOC.client.user_data_set(itsRfSigGenIOC.usbInst)
 
     itsRfSigGenIOC.run()
-
