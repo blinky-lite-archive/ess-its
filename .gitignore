@@ -1,2 +1,8 @@
 
 IceCubeIocPython/itsmqttbroker.dat
+
+IceCubeIocPython/test.py
+
+*.pyc
+
+*.swp
