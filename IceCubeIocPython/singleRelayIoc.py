@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
             time.sleep(0.1)
 
-            serialCommand = "T " + str(data['onTime']) + "\n"
+            serialCommand = "T" + str(data['onTime']) + "\n"
             print "Sending " + serialCommand + " to device"
             serialCon.write(serialCommand)
 
