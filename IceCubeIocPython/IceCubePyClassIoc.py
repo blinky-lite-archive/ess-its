@@ -41,8 +41,8 @@ class GenericIOC(object):
 
         client.username_pw_set(self.userName, self.userKey)
         client.connect(
-                self.brokerAddress, 
-                self.brokerPort, 
+                self.brokerAddress,
+                self.brokerPort,
                 self.brokertimeout)
 
         client.subscribe(subscribeTopic)
@@ -60,4 +60,3 @@ class GenericIOC(object):
                     dataFromDevice,
                     self.publishQos,
                     True)
-
