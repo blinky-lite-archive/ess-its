@@ -10,7 +10,14 @@ class SingleRelayIOC(GenericIOC):
             timeout = 5.0)
 
     def getDataFromDevice(self):
-        return None
+        reqCommand = "?\n"
+        self.serialCon.write(reqCommand)
+
+        dataDump = self.serialCon.readline()
+        data = str.split(dataDump, " ")
+        jsonData = {'onTime': data[0][1:], 'period': data[1][1:-1]}
+
+        return json.dumps(jsonData)
 
 if __name__ == "__main__":
     def handleIncomingMessage(client, serialCon, msg):
