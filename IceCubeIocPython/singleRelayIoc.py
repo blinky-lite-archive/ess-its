@@ -5,7 +5,9 @@ import time
 
 class SingleRelayIOC(GenericIOC):
     def initialiseDevice(self):
-        self.serialCon = serial.Serial('/dev/cu.usbmodem1421', 9600)
+        self.serialCon = serial.Serial('/dev/cu.usbmodem1421',
+            baudrate = 9600,
+            timeout = 5.0)
 
     def getDataFromDevice(self):
         return None
