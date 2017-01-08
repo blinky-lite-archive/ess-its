@@ -19,12 +19,14 @@ if __name__ == "__main__":
             serialCommand = "P" + str(data['period']) + "\n"
             print "Sending " + serialCommand + " to device"
             serialCon.write(serialCommand)
+            serialCon.readline()
 
             time.sleep(0.1)
 
             serialCommand = "T" + str(data['onTime']) + "\n"
             print "Sending " + serialCommand + " to device"
             serialCon.write(serialCommand)
+            serialCon.readline()
 
     homeSingleRelayIOC = SingleRelayIOC(brokerFile = 'itsmqttbroker.dat')
 
