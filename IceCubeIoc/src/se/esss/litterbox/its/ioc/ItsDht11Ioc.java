@@ -11,7 +11,7 @@ public class ItsDht11Ioc extends IceCubeSerialIoc
 		super(clientId, mqttBrokerInfoFilePath, serialPortName);
 	}
 	@Override
-	public byte[] getSerialData() 
+	public byte[] getDataFromGizmo() 
 	{
 		JSONObject outputData = new JSONObject();
 		String command = "tempDht11Get";
@@ -23,7 +23,7 @@ public class ItsDht11Ioc extends IceCubeSerialIoc
 		return outputData.toJSONString().getBytes();
 	}
 	@Override
-	public void handleIncomingMessage(String topic, byte[] message) 
+	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
 	}
 	public static void main(String[] args) throws Exception 

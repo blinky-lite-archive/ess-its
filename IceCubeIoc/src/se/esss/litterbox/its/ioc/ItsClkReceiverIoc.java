@@ -12,10 +12,9 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 	public ItsClkReceiverIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath, serialPortName);
-		// TODO Auto-generated constructor stub
 	}
 	@Override
-	public byte[] getSerialData() 
+	public byte[] getDataFromGizmo() 
 	{
 /*		JSONObject outputData = new JSONObject();
 		String command = "signalGet";
@@ -27,7 +26,7 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 	}
 
 	@Override
-	public void handleIncomingMessage(String topic, byte[] message) 
+	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
 		if (topic.indexOf("/set/address") >= 0)
 		{

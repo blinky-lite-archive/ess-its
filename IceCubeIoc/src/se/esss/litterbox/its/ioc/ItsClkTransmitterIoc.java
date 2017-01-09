@@ -15,12 +15,12 @@ public class ItsClkTransmitterIoc extends IceCubeSerialIoc
 		// TODO Auto-generated constructor stub
 	}
 	@Override
-	public byte[] getSerialData() 
+	public byte[] getDataFromGizmo() 
 	{
 		return null;
 	}
 	@Override
-	public void handleIncomingMessage(String topic, byte[] message) 
+	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
 		if (topic.indexOf("/set/address") >= 0)
 		{

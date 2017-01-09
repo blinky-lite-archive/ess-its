@@ -13,7 +13,7 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 		super(domain, mqttBrokerInfoFilePath, serialPortName);
 	}
 	@Override
-	public byte[] getSerialData() 
+	public byte[] getDataFromGizmo() 
 	{
 		JSONObject outputData = new JSONObject();
 		String command = "cpmGet";
@@ -22,7 +22,7 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 		return outputData.toJSONString().getBytes();
 	}
 	@Override
-	public void handleIncomingMessage(String topic, byte[] message) 
+	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
 		if (topic.indexOf("/set/avg") >= 0)
 		{
