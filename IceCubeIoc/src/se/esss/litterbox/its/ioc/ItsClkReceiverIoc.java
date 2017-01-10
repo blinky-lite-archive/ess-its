@@ -45,8 +45,13 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			{
 				JSONParser parser = new JSONParser();		
 				JSONObject jsonData = (JSONObject) parser.parse(new String(message));
-				String channelSet = (String) jsonData.get("channelSet");
-				writeReadSerialData("channelSet " + channelSet, 10);
+				for (int ii  = 0; ii < 4; ++ii)
+				{
+					String chan = Integer.toString(ii + 1);
+					String channelData = (String) jsonData.get("channel" + chan);
+					writeReadSerialData("channelSet " + chan + " " + channelData, 10);
+					try {Thread.sleep(500);} catch (InterruptedException e) {}
+				}
 			}
 			catch (ParseException nfe) {}
 		}

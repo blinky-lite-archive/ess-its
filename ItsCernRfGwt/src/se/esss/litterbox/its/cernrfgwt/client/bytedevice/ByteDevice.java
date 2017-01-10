@@ -1,4 +1,4 @@
-package se.esss.litterbox.icecube.bytedevice;
+package se.esss.litterbox.its.cernrfgwt.client.bytedevice;
 
 import java.io.Serializable;
 

@@ -1,15 +1,9 @@
-package se.esss.litterbox.icecube.bytedevice;
+package se.esss.litterbox.its.cernrfgwt.client.bytedevice;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 
-public class ByteDeviceList implements Serializable
+public class ByteDeviceList 
 {
-	private static final long serialVersionUID = 1L;
 	private ArrayList<ByteDevice> deviceList;
 	
 	public ByteDeviceList() throws Exception
@@ -20,48 +14,6 @@ public class ByteDeviceList implements Serializable
 	{
 		deviceList = new ArrayList<ByteDevice>();		
 		for (int ii = 0; ii < csvLineArray.length; ++ii) deviceList.add(new ByteDevice(csvLineArray[ii]));
-	}
-	public ByteDeviceList(URL filePathUrl) throws Exception
-	{
-		deviceList = new ArrayList<ByteDevice>();	
-		String[] csvLineArray = fileToStringArray(filePathUrl);
-		for (int ii = 0; ii < csvLineArray.length; ++ii) deviceList.add(new ByteDevice(csvLineArray[ii]));
-	}
-	public ByteDeviceList(String filePath) throws Exception
-	{
-		deviceList = new ArrayList<ByteDevice>();	
-		String[] csvLineArray = fileToStringArray(filePath);
-		for (int ii = 0; ii < csvLineArray.length; ++ii) deviceList.add(new ByteDevice(csvLineArray[ii]));
-	}
-	private String[] fileToStringArray(URL filePathUrl) throws Exception
-	{
-		ArrayList<String> deviceList = new ArrayList<String>();
-		BufferedReader br = new BufferedReader( new InputStreamReader(filePathUrl.openStream()));
-		br.readLine(); // read header
-		String line;
-		while ((line = br.readLine()) != null) 
-		{
-			deviceList.add(line);
-		}
-		br.close();
-		String[] csvLineArray = new  String[deviceList.size()];
-		for (int ii = 0; ii < deviceList.size(); ++ii) csvLineArray[ii] = deviceList.get(ii);
-		return csvLineArray;
-	}
-	private String[] fileToStringArray(String filePath) throws Exception
-	{
-		ArrayList<String> deviceList = new ArrayList<String>();
-		BufferedReader br = new BufferedReader(new FileReader(filePath));
-		br.readLine(); // read header
-		String line;
-		while ((line = br.readLine()) != null) 
-		{
-			deviceList.add(line);
-		}
-		br.close();
-		String[] csvLineArray = new  String[deviceList.size()];
-		for (int ii = 0; ii < deviceList.size(); ++ii) csvLineArray[ii] = deviceList.get(ii);
-		return csvLineArray;
 	}
 	public byte[] getByteArray()
 	{
@@ -97,7 +49,6 @@ public class ByteDeviceList implements Serializable
 				byteArray[iceCubeDevice.getByteStart()] = twoBytes[1];
 			}
 		}
-				
 		return byteArray;
 	}
 	public static byte[] intToByte(int itarget)

@@ -19,6 +19,12 @@ h1 {
 	font-weight: bold;
 	background-color: #0095CD;
 }
+.ItsModSettingsPanel {
+	color: #FFFFFF;
+	font-size: 1.5em;
+	font-weight: bold;
+	background-color: #0095CD;
+}
 .readTrue {
 	color: #FF0000;
 	background-color: #0095CD;
@@ -29,5 +35,9 @@ h1 {
 }
 .readings {
 	color: #00FF00;
+	background-color: #0095CD;
+}
+.readingMismatch {
+	color: #ff00d6;
 	background-color: #0095CD;
 }
