@@ -30,9 +30,12 @@ class GenericIOC(object):
         self.subscribeTopic = subscribeTopic
         self.publishTopic = publishTopic
         def on_connect(client, userdata, flags, rc):
-            client.subscribe(subscribeTopic)
-            print("Subscribing to: " + subscribeTopic)
-            print("Connected with result code " + str(rc))
+            if rc == 0:
+                print "Connected!"
+                client.subscribe(subscribeTopic)
+                print("Subscribed to: " + subscribeTopic)
+            else:
+                print "Connection failed"
 
         client = mqtt.Client(
             client_id = clientId,
