@@ -30,6 +30,8 @@ class GenericIOC(object):
         self.subscribeTopic = subscribeTopic
         self.publishTopic = publishTopic
         def on_connect(client, userdata, flags, rc):
+            client.subscribe(subscribeTopic)
+            print("Subscribing to: " + subscribeTopic)
             print("Connected with result code " + str(rc))
 
         client = mqtt.Client(
@@ -45,8 +47,6 @@ class GenericIOC(object):
                 self.brokerPort,
                 self.brokertimeout)
 
-        client.subscribe(subscribeTopic)
-        print("Subscribing to: " + subscribeTopic)
         self.client = client
         self.client.loop_start()
 
