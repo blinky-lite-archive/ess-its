@@ -2,20 +2,25 @@ from IceCubePyClassIoc import GenericIOC
 import serial
 import json
 import time
+import threading
+
+class LockableSerial(serial.Serial):
+    lock = threading.Lock()
 
 class NWaterSystemIOC(GenericIOC):
     def initialiseDevice(self):
-        self.serialCon = serial.Serial('/dev/cu.usbmodem1421',
+        self.serialCon = LockableSerial('/dev/cu.usbmodem1421',
             baudrate = 9600,
             timeout = 5.0)
 
     def getDataFromDevice(self):
         reqCommand = "?\n"
-        self.serialCon.write(reqCommand)
+        with self.serialCon.lock:
+            self.serialCon.write(reqCommand)
+            dataDump = self.serialCon.readline()
 
-        dataDump = self.serialCon.readline()
         data = str.split(dataDump, " ")
-        jsonData = {'power': data[0][1:]}
+        jsonData = {'power': data[0][1:].rstrip()}
 
         return json.dumps(jsonData)
 
@@ -27,8 +32,9 @@ if __name__ == "__main__":
 
             serialCommand = "P" + str(data['power']) + "\n"
             print "Sending " + serialCommand + " to device"
-            serialCon.write(serialCommand)
-            serialCon.readline()
+            with serialCon.lock:
+                serialCon.write(serialCommand)
+                serialCon.readline()
 
     homeSingleRelayIOC = NWaterSystemIOC(brokerFile = 'itsmqttbroker.dat')
 
