@@ -18,9 +18,9 @@ class NWaterSystemIOC(GenericIOC):
         with self.serialCon.lock:
             self.serialCon.write(reqCommand)
             dataDump = self.serialCon.readline()
-            
+
         data = str.split(dataDump, " ")
-        jsonData = {'power': data[0][1:]}
+        jsonData = {'power': data[0][1:].rstrip()}
 
         return json.dumps(jsonData)
 
