@@ -1,9 +1,10 @@
-package se.esss.litterbox.its.cernrfgwt.client.mqttdata;
+package se.esss.litterbox.its.timelinegwt.client.mqttdata;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import se.esss.litterbox.its.cernrfgwt.client.EntryPointApp;
+import se.esss.litterbox.its.timelinegwt.client.EntryPointApp;
+
 
 public abstract class MqttData 
 {

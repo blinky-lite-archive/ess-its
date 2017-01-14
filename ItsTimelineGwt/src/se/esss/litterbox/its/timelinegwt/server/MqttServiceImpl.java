@@ -5,10 +5,13 @@ import java.util.Iterator;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import se.esss.litterbox.its.timelinegwt.client.MqttService;
+import se.esss.litterbox.its.timelinegwt.client.mqttdata.MqttService;
+
+
 
 @SuppressWarnings("serial")
 public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
@@ -23,8 +26,8 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-			mqttClient = new MqttServiceImpClient(this, "ItsTimelineGwt", getMqttDataPath(), cleanSession);
-//			mqttClient = new MqttServiceImpClient(this, "ItsTimelineGwt", "tcp://broker.shiftr.io:1883", "xx", "xxx", cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", getMqttDataPath(), cleanSession);
+//			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", "tcp://broker.shiftr.io:1883", "xxx", "xxx", cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
@@ -50,51 +53,70 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	public void setMessage(String topic, byte[] message)
 	{
-		int itopic = -1;
-		for (int ii = 0; ii < topics.length; ++ii) 
-			if (topic.equals(topics[ii])) itopic = ii;
+		int itopic = getTopicIndex(topic);
 		if (itopic >= 0)
 		{
 			messages[itopic] = new byte[message.length];
 			for (int ii = 0; ii < message.length; ++ii) messages[itopic][ii] = message[ii];
 		}
 	}
+	private int getTopicIndex(String topic)
+	{
+		int itopic = -1;
+		for (int ii = 0; ii < topics.length; ++ii) 
+			if (topic.equals(topics[ii])) itopic = ii;
+		return itopic;
+		
+	}
 	@SuppressWarnings("rawtypes")
 	@Override
-	public String[][] getNameValuePairArray(boolean debug, String[][] debugResponse) throws Exception 
+	public String[][] getJsonArray(String topic, boolean debug, String[][] debugResponse) throws Exception  
 	{
+		int itopic = getTopicIndex(topic);
+		if (itopic < 0) throw new Exception(topic + " not found");
 		JSONParser parser = new JSONParser();		
 		JSONObject jsonData;
-		int numKeys = 0;
-		for (int ii = 0; ii < topics.length; ++ii)
-		{
-			jsonData = (JSONObject) parser.parse(new String(messages[ii]));
-			numKeys = numKeys + jsonData.keySet().size();
-		}
+		try {jsonData = (JSONObject) parser.parse(new String(messages[itopic]));} 
+		catch (ParseException e) {throw new Exception("Cannot JSON parse the data on " + topic);}
+		int numKeys = jsonData.keySet().size();
 		String[][] data = new String[numKeys][2];
 		int ikey = 0;
-		for (int ii = 0; ii < topics.length; ++ii)
+		try {jsonData = (JSONObject) parser.parse(new String(messages[itopic]));} 
+		catch (ParseException e) {throw new Exception("Cannot JSON parse the data on " + topic);}
+		Iterator iterJsonData = jsonData.keySet().iterator();
+		while (iterJsonData.hasNext())
 		{
-			jsonData = (JSONObject) parser.parse(new String(messages[ii]));
-			Iterator iterJsonData = jsonData.keySet().iterator();
-			while (iterJsonData.hasNext())
-			{
-				data[ikey][0] = (String) iterJsonData.next();
-				data[ikey][1] = (String) jsonData.get(data[ikey][0]);
-				++ikey;
-			}
+			data[ikey][0] = (String) iterJsonData.next();
+			data[ikey][1] = (String) jsonData.get(data[ikey][0]);
+			++ikey;
 		}
 		return data;
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public String[] setNameValuePairArray(String[] nameValuePairArray, boolean debug, String[] debugResponse) throws Exception
+	public String publishJsonArray(String topic, String[][] jsonArray,  boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
 	{
+		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");
 		JSONObject outputData = new JSONObject();
-		outputData.put(nameValuePairArray[1], nameValuePairArray[2]);
-// QOS of 1 will not work on super dev mode because it will try to write to server
-		mqttClient.publishMessage(nameValuePairArray[0], outputData.toJSONString().getBytes(), 0, true);
-		return nameValuePairArray;
+		for (int ii = 0; ii < jsonArray.length; ++ii)
+			outputData.put(jsonArray[ii][0], jsonArray[ii][1]);
+		mqttClient.publishMessage(topic, outputData.toJSONString().getBytes(), 0, true);
+		return "ok";
 
+	}
+	@Override
+	public byte[] getMessage(String topic, boolean debug, byte[] debugResponse) throws Exception
+	{
+		int itopic = getTopicIndex(topic);
+		if (itopic < 0) throw new Exception(topic + " not found");
+		if (messages[itopic].length < 1) throw new Exception("Zero length byte array on " + topic);
+		return messages[itopic];
+	}
+	@Override
+	public String publishMessage(String topic, byte[] message, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
+	{
+		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");
+		mqttClient.publishMessage(topic, message, 0, true);
+		return "ok";
 	}
 }

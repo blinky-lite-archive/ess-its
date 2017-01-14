@@ -12,9 +12,9 @@ import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
-import se.esss.litterbox.its.timelinegwt.client.MqttServiceAsync;
-import se.esss.litterbox.its.timelinegwt.client.gskel.GskelSetupApp;
+import se.esss.litterbox.its.timelinegwt.client.EntryPointApp;
 import se.esss.litterbox.its.timelinegwt.client.gskel.GskelVerticalPanel;
+import se.esss.litterbox.its.timelinegwt.client.mqttdata.MqttData;
 
 
 public class TimelinePanel extends GskelVerticalPanel
@@ -22,42 +22,41 @@ public class TimelinePanel extends GskelVerticalPanel
 	boolean superCreated = false;
 	private boolean settingsPermitted = false;
 	private String styleName = "ItsTimelinePanel";
-	private MqttServiceAsync mqttService;
 	private ArrayList<TimeLineEventPanel> eventList = null;
 	private HorizontalPanel timeLineHorizontalPanel = new HorizontalPanel();
+	private EntryPointApp entryPointApp;
+	String mqtttopic;
+	TimelineMqttData timelineMqttData;
+	String oldTimelineString = "";
+	Button middleButton = new Button("Change");
+	Button addButton = new Button("Add");
+	Button setButton = new Button("Set");
 
-	public boolean isSettingsPermitted() {return settingsPermitted;}
-	public void setSettingsPermitted(boolean settingsPermitted) {this.settingsPermitted = settingsPermitted;}
-	public MqttServiceAsync getMqttService() {return mqttService;}
-
-	public TimelinePanel(String tabTitle, GskelSetupApp setupApp, MqttServiceAsync mqttService, boolean settingsPermitted) 
+	public TimelinePanel(String tabTitle, String mqtttopic, EntryPointApp entryPointApp, boolean settingsPermitted) 
 	{
-		super(tabTitle, tabTitle, setupApp);
+		super(tabTitle, tabTitle, entryPointApp.setupApp);
 		this.settingsPermitted = settingsPermitted;
-		this.mqttService = mqttService;
+		this.entryPointApp = entryPointApp;
+		this.mqtttopic = mqtttopic;
 		superCreated = true;
 		this.getGskelTabLayoutScrollPanel().setStyleName(styleName);
 		eventList = new ArrayList<TimeLineEventPanel>();
 		eventList.add(new TimeLineEventPanel(1,255));
+
 		timeLineHorizontalPanel.add(eventList.get(0));
-		String[][] debugResponse = {{"key1", "val1"}, {"key2", "val2"}};
-		mqttService.getNameValuePairArray(isDebug(), debugResponse, new GetNameValuePairArrayAsyncCallback(this));
-		Button addButton = new Button("Add");
-		Button removeButton = new Button("Remove");
-		Button setButton = new Button("Set");
 		addButton.setWidth("6.0em");
-		addButton.setEnabled(settingsPermitted);
-		addButton.addClickHandler(new ActionButtonClickHandler(this, addButton));
-		removeButton.setWidth("6.0em");
-		removeButton.setEnabled(settingsPermitted);
-		removeButton.addClickHandler(new ActionButtonClickHandler(this, removeButton));
+		addButton.addClickHandler(new ActionButtonClickHandler(addButton));
+		addButton.setVisible(false);
+		middleButton.setWidth("6.0em");
+		middleButton.setEnabled(settingsPermitted);
+		middleButton.addClickHandler(new ActionButtonClickHandler(middleButton));
 		setButton.setWidth("6.0em");
-		setButton.setEnabled(settingsPermitted);
-		setButton.addClickHandler(new ActionButtonClickHandler(this, setButton));
+		setButton.addClickHandler(new ActionButtonClickHandler(setButton));
+		setButton.setVisible(false);
 		Grid buttonGrid = new Grid(1, 3);
 		buttonGrid.setWidth("100%");
 		buttonGrid.setWidget(0, 0, addButton);
-		buttonGrid.setWidget(0, 1, removeButton);
+		buttonGrid.setWidget(0, 1, middleButton);
 		buttonGrid.setWidget(0, 2, setButton);
 		HTMLTable.CellFormatter buttonGridFormatter = buttonGrid.getCellFormatter();
 		buttonGridFormatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
@@ -72,19 +71,39 @@ public class TimelinePanel extends GskelVerticalPanel
 		eventCaptionPanel.setWidth("10.0em");
 		eventCaptionPanel.add(timeLineHorizontalPanel);
 		add(eventCaptionPanel);
+		timelineMqttData = new TimelineMqttData();
 	}
-	private void createTimeLine(String timelineString)
+	private void setEnabled(boolean enabled)
 	{
+		addButton.setVisible(enabled);
+		setButton.setVisible(enabled);
+		middleButton.setText("Change");
+		if (enabled) middleButton.setText("Remove");
 		for (int ii = 0; ii < eventList.size(); ++ii)
-			timeLineHorizontalPanel.remove(eventList.get(ii));
-		String splitter = timelineString.trim();
-		String[] splits = splitter.split(" ");
-		eventList = new ArrayList<TimeLineEventPanel>();
-		for (int ii = 0; ii < splits.length; ++ii)
 		{
-			eventList.add(new TimeLineEventPanel(ii + 1, Integer.parseInt(splits[ii])));
-			timeLineHorizontalPanel.add(eventList.get(ii));
+			eventList.get(ii).setEnabled(enabled);
 		}
+	}
+	private void createTimeLine()
+	{
+		if (middleButton.getText().equals("Remove")) return;
+		try 
+		{
+			String timelineString = timelineMqttData.getJsonValue("timelineSet");
+			timelineString = timelineString.trim();
+			if (oldTimelineString.equals(timelineString)) return;
+			oldTimelineString = timelineString;
+			for (int ii = 0; ii < eventList.size(); ++ii)
+				timeLineHorizontalPanel.remove(eventList.get(ii));
+			String[] splits = timelineString.split(" ");
+			eventList = new ArrayList<TimeLineEventPanel>();
+			for (int ii = 0; ii < splits.length; ++ii)
+			{
+				eventList.add(new TimeLineEventPanel(ii + 1, Integer.parseInt(splits[ii])));
+				timeLineHorizontalPanel.add(eventList.get(ii));
+			}
+			setEnabled(false);
+		} catch (Exception e) {entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());}
 	}
 	private void addEvent()
 	{
@@ -111,20 +130,16 @@ public class TimelinePanel extends GskelVerticalPanel
 				}
 			}
 			getStatusTextArea().addStatus("Sending Timeline " + eventListString);
-			String[] sendData = new String[3];
-			sendData[0] = "itsClkTrans01/set/timeline";
-			sendData[1] = "timelineSet";
-			sendData[2] = eventListString;
-			String[] debugResponse = {"key 1", "key 2", "key3"};
-			mqttService.setNameValuePairArray(sendData, isDebug(), debugResponse, new SetNameValuePairArrayAsyncCallback(this));
+			String[][] jsonArray = new String[1][2];
+			jsonArray[0][0] = "timelineSet";
+			jsonArray[0][1] = eventListString;
+			entryPointApp.mqttService.publishJsonArray(mqtttopic, jsonArray, settingsPermitted, entryPointApp.setupApp.isDebug(), "ok", new TimelinePublishSettingsCallback());
 		} catch (Exception e) 
 		{
 			getMessageDialog().setImageUrl("images/warning.jpg");
 			getMessageDialog().setMessage("Warning", "Improper event in time line", true);
 		}
-		
 	}
-
 	@Override
 	public void tabLayoutPanelInterfaceAction(String message) 
 	{
@@ -136,65 +151,57 @@ public class TimelinePanel extends GskelVerticalPanel
 	}
 	private class ActionButtonClickHandler implements ClickHandler
 	{
-		private TimelinePanel timelinePanel;
 		Button button;
-		ActionButtonClickHandler(TimelinePanel timelinePanel, Button button)
+		ActionButtonClickHandler(Button button)
 		{
-			this.timelinePanel = timelinePanel;
 			this.button = button;
 		}
 		@Override
 		public void onClick(ClickEvent event) 
 		{
-			if (!timelinePanel.isSettingsPermitted())
-			{
-				button.setEnabled(false);
-				timelinePanel.getStatusTextArea().addStatus("Knock it off Inigo!");
-				return;
-			}
-			if (button.getText().equals("Add")) timelinePanel.addEvent();
-			if (button.getText().equals("Remove")) timelinePanel.removeEvent();
-			if (button.getText().equals("Set")) timelinePanel.setTimeLine();
+			if (button.getText().equals("Add")) addEvent();
+			if (button.getText().equals("Remove")) removeEvent();
+			if (button.getText().equals("Set")) setTimeLine();
+			if (button.getText().equals("Change"))setEnabled(true);
 		}
 
 	}
-	private static class GetNameValuePairArrayAsyncCallback implements AsyncCallback<String[][]>
+	class TimelineMqttData extends MqttData
 	{
-		TimelinePanel timelinePanel;
-		GetNameValuePairArrayAsyncCallback(TimelinePanel timelinePanel)
+		public TimelineMqttData() 
 		{
-			this.timelinePanel = timelinePanel;
+			super(mqtttopic, MqttData.JSONDATA, 1000, entryPointApp);
 		}
+
 		@Override
-		public void onFailure(Throwable caught) 
+		public void doSomethingWithData() 
 		{
-			timelinePanel.getStatusTextArea().addStatus("Error on GetNameValuePairArrayAsyncCallback: " +  caught.getMessage());
+			try 
+			{
+				createTimeLine();
+			} catch (Exception e) 
+			{
+				entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());
+			}
 			
-		}
-		@Override
-		public void onSuccess(String[][] result) 
-		{
-			timelinePanel.getStatusTextArea().addStatus(result[0][0] + " " + result[0][1]);
-			timelinePanel.createTimeLine(result[0][1]);
 		}
 	}
-	private static class SetNameValuePairArrayAsyncCallback implements AsyncCallback<String[]>
+	class TimelinePublishSettingsCallback implements AsyncCallback<String>
 	{
-		TimelinePanel timelinePanel;
-		SetNameValuePairArrayAsyncCallback(TimelinePanel timelinePanel)
-		{
-			this.timelinePanel = timelinePanel;
-		}
 		@Override
 		public void onFailure(Throwable caught) 
 		{
-			timelinePanel.getStatusTextArea().addStatus("Error on SetNameValuePairArrayAsyncCallback: " +  caught.getMessage());
-			
+			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: Setting new Timeline");
+			entryPointApp.setupApp.getStatusTextArea().addStatus(caught.getMessage());
+			setEnabled(false);
 		}
+
 		@Override
-		public void onSuccess(String[] result) 
+		public void onSuccess(String result) 
 		{
-			timelinePanel.getStatusTextArea().addStatus("Success in sending: " + result[0] + " " + result[0] + " " + result[0]);
+			entryPointApp.setupApp.getStatusTextArea().addStatus("Success: Setting new Timeline");
+			setEnabled(false);
 		}
+		
 	}
 }

@@ -6,29 +6,29 @@ import com.google.gwt.core.client.GWT;
 import se.esss.litterbox.its.timelinegwt.client.callbacks.CheckIpAddresslAsyncCallback;
 import se.esss.litterbox.its.timelinegwt.client.contentpanels.TimelinePanel;
 import se.esss.litterbox.its.timelinegwt.client.gskel.GskelSetupApp;
+import se.esss.litterbox.its.timelinegwt.client.mqttdata.MqttService;
+import se.esss.litterbox.its.timelinegwt.client.mqttdata.MqttServiceAsync;
 
 public class EntryPointApp implements EntryPoint 
 {
-	private GskelSetupApp setupApp;
-	public GskelSetupApp getSetupApp() {return setupApp;}
+	public GskelSetupApp setupApp;
+	public final MqttServiceAsync mqttService = GWT.create(MqttService.class);
 
-	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
-	public MqttServiceAsync getMqttService() {return mqttService;}
 	public void onModuleLoad() 
 	{
 		setupApp = new GskelSetupApp();
 		setupApp.setDebug(false);
-		setupApp.setVersionDate("January 1, 2017 11:02");
+		setupApp.setVersionDate("January 12, 2017 15:45");
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
-		setupApp.setLogoTitle("ITS Timeline");
+		setupApp.setLogoTitle("ITS Time!");
 		setupApp.echoVersionInfo();
 		setupApp.getEntryPointAppService().checkIpAddress(setupApp.isDebug(), new CheckIpAddresslAsyncCallback(this));		
 		
 	}
 	public void initializeTabs(boolean settingsPermitted)
 	{
-		new TimelinePanel("Timeline", setupApp, mqttService, settingsPermitted);
+		new TimelinePanel("Timeline", "itsClkTrans01/set/timeline",this, settingsPermitted);
 	}
 }

@@ -25,8 +25,8 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-//			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", getMqttDataPath(), cleanSession);
-			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", "tcp://broker.shiftr.io:1883", "xx", "xx", cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", getMqttDataPath(), cleanSession);
+//			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", "tcp://broker.shiftr.io:1883", "xxx", "xxx", cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
@@ -69,7 +69,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	@SuppressWarnings("rawtypes")
 	@Override
-	public String[][] getJsonData(String topic, boolean debug, String[][] debugResponse) throws Exception  
+	public String[][] getJsonArray(String topic, boolean debug, String[][] debugResponse) throws Exception  
 	{
 		int itopic = getTopicIndex(topic);
 		if (itopic < 0) throw new Exception(topic + " not found");
@@ -93,10 +93,12 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public String publishJsonData(String topic, String key, String data, boolean debug, String debugResponse) throws Exception
+	public String publishJsonArray(String topic, String[][] jsonArray,  boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
 	{
+		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");
 		JSONObject outputData = new JSONObject();
-		outputData.put(key, data);
+		for (int ii = 0; ii < jsonArray.length; ++ii)
+			outputData.put(jsonArray[ii][0], jsonArray[ii][1]);
 		mqttClient.publishMessage(topic, outputData.toJSONString().getBytes(), 0, true);
 		return "ok";
 
@@ -110,8 +112,9 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		return messages[itopic];
 	}
 	@Override
-	public String publishMessage(String topic, byte[] message, boolean debug, String debugResponse) throws Exception
+	public String publishMessage(String topic, byte[] message, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
 	{
+		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");
 		mqttClient.publishMessage(topic, message, 0, true);
 		return "ok";
 	}

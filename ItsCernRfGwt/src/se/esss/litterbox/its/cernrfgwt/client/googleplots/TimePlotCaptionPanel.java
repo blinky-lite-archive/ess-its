@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.envmongwt.client.contentpanels;
+package se.esss.litterbox.its.cernrfgwt.client.googleplots;
 
 import java.util.Date;
 
@@ -10,29 +10,28 @@ public class TimePlotCaptionPanel extends CaptionPanel
 	TimeLinePlotPanel timeLinePlot;
 	int ipt = 0;
 	int numPts = 300;
+	int numTraces = -1;
 	long startDataDate;
 	private boolean loaded = false;
 	
 	public boolean isLoaded() {return loaded;}
 	
-	public TimePlotCaptionPanel(int numPts, String plotWidth, String plotHeight)
+	public TimePlotCaptionPanel(int numPts, String title, String yaxisLabel, String[] timePlotLegend, String plotWidth, String plotHeight)
 	{
 		super("TimePlot");
 		this.numPts = numPts;
 		loaded = false;
-		String[] timePlotLegend = {"cpm",  "temp", "photoAvg .1", "photo .1"};
-		timeLinePlot = new TimeLinePlotPanel(numPts, 4, "Time Plot", "Time (sec)", "Value", timePlotLegend, plotWidth, plotHeight);
+		numTraces = timePlotLegend.length;
+		timeLinePlot = new TimeLinePlotPanel(numPts, numTraces, title, "Time (sec)", yaxisLabel, timePlotLegend, plotWidth, plotHeight);
 		LoadPlotTimer lpt = new LoadPlotTimer(this);
 		lpt.scheduleRepeating(50);
 	}
-	public void updateReadings(String[][] readingfromServer)
+	public void updateReadings(double[] timeSlicedata)
 	{
 		if (!loaded) return;
 		timeLinePlot.getXaxis()[ipt] = (double) (new Date().getTime() - startDataDate);
-		timeLinePlot.getTraces()[0][ipt] = Double.parseDouble(readingfromServer[0][1]);
-		timeLinePlot.getTraces()[1][ipt] = Double.parseDouble(readingfromServer[1][1]);
-		timeLinePlot.getTraces()[2][ipt] = Double.parseDouble(readingfromServer[2][1]) * 0.1;
-		timeLinePlot.getTraces()[3][ipt] = Double.parseDouble(readingfromServer[3][1]) * 0.1;
+		for (int ii = 0; ii < numTraces; ++ii)
+			timeLinePlot.getTraces()[ii][ipt] = timeSlicedata[ii];
 		timeLinePlot.draw();
 		++ipt;
 		if (ipt >= numPts) ipt = 0;

@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.cernrfgwt.client.mqttdata;
+package se.esss.litterbox.its.timelinegwt.client.mqttdata;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

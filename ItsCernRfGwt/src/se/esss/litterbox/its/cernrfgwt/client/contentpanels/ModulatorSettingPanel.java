@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -22,7 +19,9 @@ import se.esss.litterbox.its.cernrfgwt.client.EntryPointApp;
 import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDeviceList;
 import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDeviceReadingDisplayListCaptionPanel;
 import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDeviceSettingDisplay;
+import se.esss.litterbox.its.cernrfgwt.client.gskel.GskelSettingButtonGrid;
 import se.esss.litterbox.its.cernrfgwt.client.gskel.GskelVerticalPanel;
+import se.esss.litterbox.its.cernrfgwt.client.mqttdata.MqttData;
 
 public class ModulatorSettingPanel extends GskelVerticalPanel
 {
@@ -34,22 +33,29 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 	public ByteDeviceList readingDeviceList = null;
 	public ArrayList<ByteDeviceSettingDisplay>  settingDeviceDisplayList = new ArrayList<ByteDeviceSettingDisplay>();
 	public ArrayList<ByteDeviceReadingDisplayListCaptionPanel>  byteDeviceReadingDisplayListCaptionPanelList = new ArrayList<ByteDeviceReadingDisplayListCaptionPanel>();
-	public Button setModulatorSettingsButton;
 	public Button[] modStateButton = new Button[4];
-	public boolean resetSettings = true;
 	public boolean readyForData = false;
 	private HorizontalPanel settingsReadingsHorizontalPanel;
 	public ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel1;
 	public ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel2;
 	public ModulatorDisplayVerticalPanel modulatorHVPSVerticalPanel;
 	public ModulatorDisplayVerticalPanel modulatorReadbacksVerticalPanel;
+	public String modSettingTopic;
+	public String modReadingTopic;
+	String modIceCubetimerMqttTopic;
+	ModulatorReadingsMqttData modulatorReadingsMqttData;
+	ModulatorSettingsMqttData modulatorSettingsMqttData;
+	SettingButtonGrid settingButtonGrid;
 	
-	public ModulatorSettingPanel(String tabTitle, EntryPointApp entryPointApp, boolean settingsPermitted) 
+	public ModulatorSettingPanel(String tabTitle, String modSettingTopic, String modReadingTopic, String modIceCubetimerMqttTopic, EntryPointApp entryPointApp, boolean settingsPermitted) 
 	{
 		super(tabTitle, "modTabStyle", entryPointApp.setupApp);
 		this.settingsPermitted = settingsPermitted;
 		this.getGskelTabLayoutScrollPanel().setStyleName("ItsModSettingsPanel");
 		this.entryPointApp = entryPointApp;
+		this.modSettingTopic = modSettingTopic;
+		this.modReadingTopic = modReadingTopic;
+		this.modIceCubetimerMqttTopic = modIceCubetimerMqttTopic;
 		getEntryPointAppService().getModulatorProtocols(getSetupApp().isDebug(), new GetModulatorProtocolslAsyncCallback());
 		modulatorReadbacksVerticalPanel = new ModulatorDisplayVerticalPanel("Modulator Readbacks", getSetupApp());
 		modulatorHVPSVerticalPanel = new ModulatorDisplayVerticalPanel("Modulator HVPS", getSetupApp());
@@ -63,7 +69,10 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		settingsReadingsHorizontalPanel.add(settingsCaptionPanel());
 		readyForData = true;
 		setupReadingsDisplayPanels();
-		Window.addResizeHandler(new ModulatorSetupVerticalPanelResizeHandler());
+		String[] timingChannelName = {"ModTrg", "CH2", "CH3", "CH4"};
+		settingsReadingsHorizontalPanel.add(new IceCubeTimerPanel("MOD Timer", modIceCubetimerMqttTopic, timingChannelName, settingsPermitted, entryPointApp));
+		modulatorReadingsMqttData = new ModulatorReadingsMqttData();
+		modulatorSettingsMqttData = new ModulatorSettingsMqttData();
 	}
 	@Override
 	public void tabLayoutPanelInterfaceAction(String message) {}
@@ -71,13 +80,12 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 	public void optionDialogInterfaceAction(String choiceButtonText) {}
 	public CaptionPanel settingsCaptionPanel()
 	{
-		Grid settingGrid = new Grid(settingDeviceList.numDevices() + 1, 6);
+		Grid settingGrid = new Grid(settingDeviceList.numDevices() + 1, 5);
 		settingGrid.setWidget(0, 0, new Label("Name"));
 		settingGrid.setWidget(0, 1, new Label("Min"));
 		settingGrid.setWidget(0, 2, new Label("Value"));
-		settingGrid.setWidget(0, 3, new Label("Readback"));
-		settingGrid.setWidget(0, 4, new Label("Max"));
-		settingGrid.setWidget(0, 5, new Label("Comment"));
+		settingGrid.setWidget(0, 3, new Label("Max"));
+		settingGrid.setWidget(0, 4, new Label("Comment"));
 		for (int ii = 0; ii < settingDeviceList.numDevices(); ++ ii) 
 		{
 			try {settingDeviceDisplayList.add(new ByteDeviceSettingDisplay(settingDeviceList.getDevice(ii), settingGrid, ii + 1));} 
@@ -88,23 +96,13 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		formatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);	
 
-		setModulatorSettingsButton = new Button("Set");
-		setModulatorSettingsButton.addClickHandler(new ModulatorButtonClickHandler("Set"));
-		setModulatorSettingsButton.setEnabled(settingsPermitted);
+		settingButtonGrid = new SettingButtonGrid(settingsPermitted);
 
-		setModulatorSettingsButton.setWidth("10.0em");
-		HorizontalPanel buttonPanel = new HorizontalPanel();
-
-		buttonPanel.setWidth("100%");
-		buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		buttonPanel.add(setModulatorSettingsButton);
 		
-		CaptionPanel actionsCaptionPanel = new CaptionPanel("Actions");
-		actionsCaptionPanel.add(buttonPanel);
 		CaptionPanel settingsCaptionPanel = new CaptionPanel("Settings");
 		settingsCaptionPanel.add(settingGrid);
 		VerticalPanel vp1 = new VerticalPanel();
-		vp1.add(actionsCaptionPanel);
+		vp1.add(settingButtonGrid);
 		vp1.add(settingsCaptionPanel);
 		CaptionPanel actionsSettingsCaptionPanel = new CaptionPanel("Modulator Settings");
 		actionsSettingsCaptionPanel.add(vp1);
@@ -217,7 +215,14 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 			puttingSettingsState = true;
 			getStatusTextArea().addStatus("Putting Settings to modulator");
 			for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) settingDeviceDisplayList.get(ii).updateDeviceFromSettingDisplay();
-			entryPointApp.mqttService.publishMessage("itsCernMod/set/mod", settingDeviceList.getByteArray(), getSetupApp().isDebug(), "ok", new PutModulatorSettingsAsyncCallback());
+			entryPointApp.mqttService.publishMessage("itsCernMod/set/mod", settingDeviceList.getByteArray(), settingsPermitted, getSetupApp().isDebug(), "ok", new PutModulatorSettingsAsyncCallback());
+		}
+	}
+	private void enableInput(boolean enabled)
+	{
+		for (int ii = 0; ii < settingDeviceList.numDevices(); ++ ii) 
+		{
+			settingDeviceDisplayList.get(ii).getSettingTextBox().setEnabled(enabled);
 		}
 	}
 	private class ModulatorButtonClickHandler  implements ClickHandler
@@ -232,19 +237,6 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		@Override
 		public void onClick(ClickEvent event) 
 		{
-			if (!settingsPermitted)
-			{
-				for (int ii = 0; ii < 4; ++ii)
-				{
-					modStateButton[ii].setEnabled(false);
-				}
-				setModulatorSettingsButton.setEnabled(false);
-				getStatusTextArea().addStatus("Knock it off Inigo!");
-				return;
-			}
-			if (buttonText.equals("Set"))
-			{
-			}
 			if (buttonText.equals("Reset"))
 			{
 				settingDeviceDisplayList.get(0).getEnabledCheckBox().setValue(true);
@@ -319,13 +311,86 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		}
 
 	}
-	public class ModulatorSetupVerticalPanelResizeHandler implements ResizeHandler
+	class ModulatorReadingsMqttData extends MqttData
 	{
-		@Override
-		public void onResize(ResizeEvent event) 
+
+		public ModulatorReadingsMqttData() 
 		{
-			resetSettings = true;
+			super(modReadingTopic, MqttData.BYTEDATA, 1000, entryPointApp);
 		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			if (!readyForData) return;
+			try 
+			{
+				readingDeviceList.putByteArray(this.getMessage());
+				for (int ii = 0; ii < byteDeviceReadingDisplayListCaptionPanelList.size(); ++ii) 
+				{
+					byteDeviceReadingDisplayListCaptionPanelList.get(ii).updateReadingsDisplayFromDevices();
+				}
+				
+			} catch (Exception e) 
+			{
+				getStatusTextArea().addStatus(e.getMessage());
+			}
+		}
+
+	}
+	class ModulatorSettingsMqttData extends MqttData
+	{
+		public ModulatorSettingsMqttData() 
+		{
+			super(modSettingTopic, MqttData.BYTEDATA, 1000, entryPointApp);
+		}
+		@Override
+		public void doSomethingWithData() 
+		{
+			if (!readyForData) return;
+			if (settingButtonGrid.isSettingsEnabled()) return;
+			try 
+			{
+				settingDeviceList.putByteArray(this.getMessage());
+				for (int ii = 0; ii < settingDeviceList.numDevices(); ++ ii) 
+				{
+//					modulatorSettingPanel.getStatusTextArea().addStatus(modulatorSettingPanel.settingDeviceList.getDevice(ii).getValue());
+					settingDeviceDisplayList.get(ii).updateSettingFromDevice();
+					
+				}
+			} catch (Exception e) 
+			{
+				getStatusTextArea().addStatus(e.getMessage());
+			}
+		}
+
+	}
+	class SettingButtonGrid extends GskelSettingButtonGrid
+	{
+
+		public SettingButtonGrid(boolean settingsPermitted) 
+		{
+			super(settingsPermitted);
+		}
+
+		@Override
+		public void enableSettingsInput(boolean enabled) 
+		{
+			enableInput(enabled);
+		}
+
+		@Override
+		public void doSettings() 
+		{
+			try 
+			{
+				putSettings();
+			} catch (Exception e) 
+			{
+				entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());
+			}
+		}
+		
 	}
 
 }

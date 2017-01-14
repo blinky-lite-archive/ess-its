@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.Label;
 
 public class ReadingsCaptionPanel extends CaptionPanel
 {
-	private Label[][] readings = new Label[6][2];
+	private Label[][] readings = new Label[4][2];
 	public ReadingsCaptionPanel()
 	{
 		super("Readings");
@@ -18,7 +18,7 @@ public class ReadingsCaptionPanel extends CaptionPanel
 			readings[ii][0] = new Label("Name ");
 			readings[ii][1] = new Label("Value");
 		}
-		Grid readGrid = new Grid(7, 2);
+		Grid readGrid = new Grid(5, 2);
 		HTMLTable.CellFormatter formatter = readGrid.getCellFormatter();
 		formatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		formatter.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);	

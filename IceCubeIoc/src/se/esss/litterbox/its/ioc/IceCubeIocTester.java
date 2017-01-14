@@ -1,4 +1,4 @@
-package se.esss.litterbox.icecube.ioc;
+package se.esss.litterbox.its.ioc;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -39,21 +39,31 @@ public class IceCubeIocTester  extends SimpleMqttClient
 		boolean retained = true;
 		JSONObject outputData = new JSONObject();
 
-//		outputData.put("timelineSet", "1 0 0 0 0 0 0");
-//		ioCtester.publishMessage("itsClkTrans01/set/timeline", outputData.toJSONString().getBytes(), 0, retained);
-		outputData.put("channel1", "1 1000 2000");
-		outputData.put("channel2", "1 2000 3000");
-		outputData.put("channel3", "1 2200 2300");
+		outputData.put("timelineSet", "1 0 0 0 0 0 0 0 0 0 0 0 0 0");
+		ioCtester.publishMessage("itsClkTrans01/set/timeline", outputData.toJSONString().getBytes(), 0, retained);
+
+		outputData.put("power", "1");
+//		ioCtester.publishMessage("homeSingleRelayIOC/set/power", outputData.toJSONString().getBytes(), 0, retained);
+	
+		outputData.put("channel1", "1 1000 1010");
+		outputData.put("channel2", "1 1300 1600");
+		outputData.put("channel3", "1 1350 1360");
 		outputData.put("channel4", "0 1000 2000");
 		ioCtester.publishMessage("itsClkRecvr01/set/channel", outputData.toJSONString().getBytes(), 0, retained);
-	
+
+		outputData.put("channel1", "1 990 1000");
+		outputData.put("channel2", "0 1000 2000");
+		outputData.put("channel3", "0 1000 2000");
+		outputData.put("channel4", "0 1000 2000");
+		ioCtester.publishMessage("itsClkRecvr02/set/channel", outputData.toJSONString().getBytes(), 0, retained);
+
 //		ioCtester.subscribe("itsRfSigGen01/set/rf", 0);
 		
-/*		outputData.put("rfPowOn", "ON");
-		outputData.put("rfFreq", "351.0");
-		outputData.put("rfPowLvl", "-2");
+		outputData.put("rfPowOn", "OFF");
+		outputData.put("rfFreq", "352.21");
+		outputData.put("rfPowLvl", "-20");
 		ioCtester.publishMessage("itsRfSigGen01/set/rf", outputData.toJSONString().getBytes(), 0, retained);
-*/		
+		
 	}
 
 }

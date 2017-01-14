@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.eclipse.paho.client.mqttv3-1.1.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/se.esss.litterbox.icecube.simplemqtt.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-charts-0.9.10.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

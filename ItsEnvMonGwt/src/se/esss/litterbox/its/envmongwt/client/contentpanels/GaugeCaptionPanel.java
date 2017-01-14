@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class GaugeCaptionPanel extends CaptionPanel
 {
-	private GaugePlotPanel[] gaugePlotPanel = new GaugePlotPanel[6];
+	private GaugePlotPanel[] gaugePlotPanel = new GaugePlotPanel[4];
 	private HorizontalPanel gaugeHorizontalPanel;
 	private boolean loaded = false;
 	
@@ -25,42 +25,28 @@ public class GaugeCaptionPanel extends CaptionPanel
 		gaugePlotPanel[0].setRedMinMax(25,30);
 		
 		gaugePlotPanel[1] = new GaugePlotPanel();
-		gaugePlotPanel[1].setTitle("tempDht11");
+		gaugePlotPanel[1].setTitle("temp");
 		gaugePlotPanel[1].setMinMax(5, 30);
 		gaugePlotPanel[1].setYellowMinMax(5,14);
 		gaugePlotPanel[1].setGreenMinMax(14,23);
 		gaugePlotPanel[1].setRedMinMax(23,30);
 		
 		gaugePlotPanel[2] = new GaugePlotPanel();
-		gaugePlotPanel[2].setTitle("humidDh11");
-		gaugePlotPanel[2].setMinMax(10, 90);
-		gaugePlotPanel[2].setYellowMinMax(10,20);
-		gaugePlotPanel[2].setGreenMinMax(20,50);
-		gaugePlotPanel[2].setRedMinMax(50,100);
-		
+		gaugePlotPanel[2].setTitle("photo avg");
+		gaugePlotPanel[2].setMinMax(0, 1000);
+		gaugePlotPanel[2].setYellowMinMax(0,300);
+		gaugePlotPanel[2].setGreenMinMax(300,650);
+		gaugePlotPanel[2].setRedMinMax(650,1000);
+
 		gaugePlotPanel[3] = new GaugePlotPanel();
-		gaugePlotPanel[3].setTitle("temp");
-		gaugePlotPanel[3].setMinMax(5, 30);
-		gaugePlotPanel[3].setYellowMinMax(5,14);
-		gaugePlotPanel[3].setGreenMinMax(14,23);
-		gaugePlotPanel[3].setRedMinMax(23,30);
-		
-		gaugePlotPanel[4] = new GaugePlotPanel();
-		gaugePlotPanel[4].setTitle("photoAvg");
-		gaugePlotPanel[4].setMinMax(0, 1000);
-		gaugePlotPanel[4].setYellowMinMax(0,300);
-		gaugePlotPanel[4].setGreenMinMax(300,650);
-		gaugePlotPanel[4].setRedMinMax(650,1000);
-		
-		gaugePlotPanel[5] = new GaugePlotPanel();
-		gaugePlotPanel[5].setTitle("photo");
-		gaugePlotPanel[5].setMinMax(0, 1000);
-		gaugePlotPanel[5].setYellowMinMax(0,300);
-		gaugePlotPanel[5].setGreenMinMax(300,650);
-		gaugePlotPanel[5].setRedMinMax(650,1000);
+		gaugePlotPanel[3].setTitle("photo");
+		gaugePlotPanel[3].setMinMax(0, 1000);
+		gaugePlotPanel[3].setYellowMinMax(0,300);
+		gaugePlotPanel[3].setGreenMinMax(300,650);
+		gaugePlotPanel[3].setRedMinMax(650,1000);
 		
 		gaugeHorizontalPanel = new HorizontalPanel();
-		setWidth("50.0em");
+		setWidth("40.0em");
 		add(gaugeHorizontalPanel);
 		
 		LoadPlotTimer lpt = new LoadPlotTimer(this);

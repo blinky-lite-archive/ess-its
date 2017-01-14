@@ -15,7 +15,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 {
 	MqttServiceImpClient mqttClient;
 	byte[] solarMessage = "NotStarted".getBytes();
-	String[] topics = {"itsGeiger01/get/cpm", "itsDht1101/get/cond", "itsSolarMeter01/get/cond" };
+	String[] topics = {"itsGeiger01/get/cpm", "itsSolarMeter01/get/cond" };
 	byte[][] messages;
 	String domain = "its";
 	public void init()

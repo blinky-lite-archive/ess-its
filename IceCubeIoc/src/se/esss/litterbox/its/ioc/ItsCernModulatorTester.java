@@ -38,9 +38,9 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 	{
 		ItsCernModulatorTester bigBlue = new ItsCernModulatorTester("ItsCernModTester", "itsmqttbroker.dat");
 		
-		bigBlue.setByteDevice.getDevice("cathode voltage").setValue("42.0");
-		bigBlue.setByteDevice.getDevice("hvps current").setValue("31.0");
-		bigBlue.setByteDevice.getDevice("hvps power").setValue("141.0");
+		bigBlue.setByteDevice.getDevice("cathode voltage").setValue("40.0");
+		bigBlue.setByteDevice.getDevice("hvps current").setValue("30.0");
+		bigBlue.setByteDevice.getDevice("hvps power").setValue("140.0");
 		bigBlue.setByteDevice.getDevice("send mon values").setValue("1");
 		
 		boolean retained = true;
