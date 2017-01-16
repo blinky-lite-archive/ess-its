@@ -39,6 +39,8 @@ def getDataFromDevice():
     print "Sending " + usbCommand + " to device"
     power1 = usbInst.ask(usbCommand)
     print "Received " + power1 + " from device"
+    power1f = float(power1) + 43.9
+    power1 = str(power1f)
     usbCommand = "SENS2:AVER:RES"
     print "Sending " + usbCommand + " to device"
     usbInst.write(usbCommand)
@@ -46,6 +48,8 @@ def getDataFromDevice():
     print "Sending " + usbCommand + " to device"
     power2 = usbInst.ask(usbCommand)
     print "Received " + power2 + " from device"
+    power2f = float(power2) + 59.5 + 7.2
+    power2 = str(power2f)
     data = {"power1": power1, "power2": power2}
     return json.dumps(data)
 def handleIncomingMessage(topic, message):
