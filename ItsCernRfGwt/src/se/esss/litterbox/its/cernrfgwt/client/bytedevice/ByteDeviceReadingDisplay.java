@@ -33,19 +33,7 @@ public class ByteDeviceReadingDisplay
 		}
 		else
 		{
-			enabledCheckBox.setEnabled(false);
-			if (Integer.parseInt(byteDevice.getValue()) == 0)
-			{
-				enabledCheckBox.setValue(false);
-				formatter.setStyleName(displayRow, 0, "readFalse");
-				formatter.setStyleName(displayRow, 2, "readFalse");
-			}
-			else
-			{
-				enabledCheckBox.setValue(true);
-				formatter.setStyleName(displayRow, 0, "readTrue");
-				formatter.setStyleName(displayRow, 2, "readTrue");
-			}
+			setCheckBox();
 			readingGrid.setWidget(displayRow, 1, enabledCheckBox);
 		}
 
@@ -58,20 +46,22 @@ public class ByteDeviceReadingDisplay
 		}
 		else
 		{
-			enabledCheckBox.setEnabled(false);
-			if (Integer.parseInt(byteDevice.getValue()) == 0)
-			{
-				formatter.setStyleName(displayRow, 0, "readFalse");
-				formatter.setStyleName(displayRow, 2, "readFalse");
-				enabledCheckBox.setValue(false);
-			}
-			else
-			{
-				formatter.setStyleName(displayRow, 0, "readTrue");
-				formatter.setStyleName(displayRow, 2, "readTrue");
-				enabledCheckBox.setValue(true);
-			}
+			setCheckBox();
 		}
+	}
+	private void setCheckBox()
+	{
+		enabledCheckBox.setEnabled(false);
+		int val = Integer.parseInt(byteDevice.getValue());
+		int min = Integer.parseInt(byteDevice.getMin());
+		int max = Integer.parseInt(byteDevice.getMax());
+		String formatStyle = "readGreen";
+		if (val == 0) enabledCheckBox.setValue(false);
+		if (val == 1) enabledCheckBox.setValue(true);
+		if (val < min) formatStyle = "readRed";
+		if (val > max) formatStyle = "readRed";
+		formatter.setStyleName(displayRow, 0, formatStyle);
+		formatter.setStyleName(displayRow, 2, formatStyle);
 	}
 
 }

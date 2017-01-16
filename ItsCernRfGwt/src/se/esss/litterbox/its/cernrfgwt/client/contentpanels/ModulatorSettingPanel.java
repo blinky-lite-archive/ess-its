@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -16,6 +17,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.cernrfgwt.client.EntryPointApp;
+import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDevice;
 import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDeviceList;
 import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDeviceReadingDisplayListCaptionPanel;
 import se.esss.litterbox.its.cernrfgwt.client.bytedevice.ByteDeviceSettingDisplay;
@@ -46,6 +48,7 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 	ModulatorReadingsMqttData modulatorReadingsMqttData;
 	ModulatorSettingsMqttData modulatorSettingsMqttData;
 	SettingButtonGrid settingButtonGrid;
+	Label badInterlockLabel = new Label("Interlocks Clear");
 	
 	public ModulatorSettingPanel(String tabTitle, String modSettingTopic, String modReadingTopic, String modIceCubetimerMqttTopic, EntryPointApp entryPointApp, boolean settingsPermitted) 
 	{
@@ -69,8 +72,17 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		settingsReadingsHorizontalPanel.add(settingsCaptionPanel());
 		readyForData = true;
 		setupReadingsDisplayPanels();
+		badInterlockLabel.setWidth("100%");
+//		badInterlockLabel.setHeight("3.0em");
+		badInterlockLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		badInterlockLabel.setStyleName("modInterlockLabelGood");
+		CaptionPanel interlockCaptionPanel = new CaptionPanel("Interlock Status");
+		interlockCaptionPanel.add(badInterlockLabel);
 		String[] timingChannelName = {"ModTrg", "CH2", "CH3", "CH4"};
-		settingsReadingsHorizontalPanel.add(new IceCubeTimerPanel("MOD Timer", modIceCubetimerMqttTopic, timingChannelName, settingsPermitted, entryPointApp));
+		VerticalPanel vp1 = new VerticalPanel();
+		vp1.add(interlockCaptionPanel);
+		vp1.add(new IceCubeTimerPanel("MOD Timer", modIceCubetimerMqttTopic, timingChannelName, settingsPermitted, entryPointApp));
+		settingsReadingsHorizontalPanel.add(vp1);
 		modulatorReadingsMqttData = new ModulatorReadingsMqttData();
 		modulatorSettingsMqttData = new ModulatorSettingsMqttData();
 	}
@@ -205,6 +217,22 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		modulatorStateGrid.setWidth("100%");
 		return modulatorStateCaptionPanel;
 	}
+	private void setModStateButtonsStatus()
+	{
+		if(!readyForData) return;
+		try
+		{
+			for (int ib = 0; ib < 3; ++ib)
+			{
+				int state = Integer.parseInt(readingDeviceList.getDevice(184 + ib).getValue());
+				modStateButton[ib + 1].setStyleName("modStateButton" + Integer.toString(state));
+				modStateButton[ib + 1].setHeight("2.0em");
+				boolean buttonEnabled = settingsPermitted;
+				if (state == 3) buttonEnabled = false;
+				modStateButton[ib + 1].setEnabled(buttonEnabled);
+			}
+		} catch (Exception e) {getStatusTextArea().addStatus("Error: " + e.getMessage());}
+	}
 	private void putSettings()
 	{
 		if (puttingSettingsState) return;
@@ -218,12 +246,63 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 			entryPointApp.mqttService.publishMessage("itsCernMod/set/mod", settingDeviceList.getByteArray(), settingsPermitted, getSetupApp().isDebug(), "ok", new PutModulatorSettingsAsyncCallback());
 		}
 	}
+	private void changeState(boolean changeReset, int stateValue, boolean idleState) 
+	{
+		if (puttingSettingsState) return;
+		if(!readyForData) return;
+		puttingSettingsState = true;
+		try
+		{
+			if (changeReset)
+			{
+				boolean reset = false;
+				if (stateValue > 0) reset = true;
+				settingDeviceDisplayList.get(0).getEnabledCheckBox().setValue(reset);
+			}
+			else
+			{
+				settingDeviceDisplayList.get(3).getSettingTextBox().setText(Integer.toString(stateValue));
+			}
+			for (int ii = 0; ii < settingDeviceDisplayList.size(); ++ii) settingDeviceDisplayList.get(ii).updateDeviceFromSettingDisplay();
+			entryPointApp.mqttService.publishMessage("itsCernMod/set/mod", settingDeviceList.getByteArray(), settingsPermitted, getSetupApp().isDebug(), "ok", new StateChangeCallback(idleState, changeReset));
+		} catch (Exception e){getStatusTextArea().addStatus(e.getMessage());}
+	}
 	private void enableInput(boolean enabled)
 	{
 		for (int ii = 0; ii < settingDeviceList.numDevices(); ++ ii) 
 		{
 			settingDeviceDisplayList.get(ii).getSettingTextBox().setEnabled(enabled);
 		}
+	}
+	private void checkNumOfInterlockFaults() throws Exception
+	{
+		int numOfInterlockFaults = 0;
+		for (int ii = 0; ii < readingDeviceList.numDevices(); ++ii)
+		{
+			ByteDevice byteDevice = readingDeviceList.getDevice(ii);
+			if (readingDeviceList.getDevice(ii).getType().equals("bool"))
+			{
+				int val = Integer.parseInt(byteDevice.getValue());
+				int min = Integer.parseInt(byteDevice.getMin());
+				int max = Integer.parseInt(byteDevice.getMax());
+				boolean interlockOk = true;
+				if (val < min) interlockOk = false;
+				if (val > max) interlockOk = false;
+				if (!interlockOk) ++numOfInterlockFaults; 
+			}
+		}
+		if (numOfInterlockFaults == 0)
+		{
+			badInterlockLabel.setStyleName("modInterlockLabelGood");
+			badInterlockLabel.setText("Interlocks Clear");
+		}
+		else
+		{
+			badInterlockLabel.setStyleName("modInterlockLabelBad");
+			badInterlockLabel.setText(Integer.toString(numOfInterlockFaults) + " Bad Interlocks");
+		}
+
+		return;
 	}
 	private class ModulatorButtonClickHandler  implements ClickHandler
 	{
@@ -239,26 +318,25 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		{
 			if (buttonText.equals("Reset"))
 			{
-				settingDeviceDisplayList.get(0).getEnabledCheckBox().setValue(true);
-				getStatusTextArea().addStatus("Reseting Modulator");
+				getStatusTextArea().addStatus("Resetting Modulator");
+				changeState(true, 1, false);
 			}
 			if (buttonText.equals("Off"))
 			{
-				settingDeviceDisplayList.get(3).getSettingTextBox().setText("0");
 				getStatusTextArea().addStatus("Turning Modulator Off");
+				changeState(false, 0, false);
 			}
 			if (buttonText.equals("StandBy"))
 			{
-				settingDeviceDisplayList.get(3).getSettingTextBox().setText("1");
 				getStatusTextArea().addStatus("Putting Modulator in Standby");
+				changeState(false, 1, false);
 			}
 			if (buttonText.equals("On"))
 			{
 				settingDeviceDisplayList.get(3).getSettingTextBox().setText("3");
 				getStatusTextArea().addStatus("Turning Modulator On");
+				changeState(false, 3, false);
 			}
-			putSettings();
-			
 		}
 
 	}
@@ -330,6 +408,8 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 				{
 					byteDeviceReadingDisplayListCaptionPanelList.get(ii).updateReadingsDisplayFromDevices();
 				}
+				setModStateButtonsStatus();
+				checkNumOfInterlockFaults();
 				
 			} catch (Exception e) 
 			{
@@ -389,6 +469,54 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 			{
 				entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());
 			}
+		}
+		
+	}
+	class StateChangeCallback extends Timer implements AsyncCallback<String> 
+	{
+		boolean idleState;
+		boolean changeReset;
+		
+		StateChangeCallback(boolean idleState, boolean changeReset)
+		{
+			this.idleState = idleState;
+			this.changeReset = changeReset;
+		}
+
+		@Override
+		public void onFailure(Throwable caught) 
+		{
+			puttingSettingsState = false;
+			getStatusTextArea().addStatus("Failure: Putting Modulator Settings");
+			getStatusTextArea().addStatus(caught.getMessage());
+		}
+
+		@Override
+		public void onSuccess(String result) 
+		{
+			if (!idleState)
+			{
+				this.schedule(1000);
+			}
+			else
+			{
+				puttingSettingsState = false;
+			}
+		}
+		@Override
+		public void run() 
+		{
+			puttingSettingsState = false;
+			if (changeReset)
+			{
+				changeState(changeReset, 0, true);
+			}
+			else
+			{
+				changeState(changeReset, 4, true);
+			}
+			this.cancel();
+			
 		}
 		
 	}

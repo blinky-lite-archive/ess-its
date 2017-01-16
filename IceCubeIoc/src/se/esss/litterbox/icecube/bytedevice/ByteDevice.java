@@ -42,15 +42,15 @@ public class ByteDevice implements Serializable
 	public ByteDevice(String line)
 	{
 		String[] data = line.split(",");
-		setName(data[0]);
-		setByteStart(Integer.parseInt(data[1]));
-		setBitLocation(Integer.parseInt(data[2]));
-		setType(data[3]);
-		setMultiplier(Integer.parseInt(data[4]));
-		setValue(data[5]);
-		setMin(data[6]);
-		setMax(data[7]);
-		setComment(data[8]);
+		name = data[0];
+		byteStart = Integer.parseInt(data[1]);
+		bitLocation = Integer.parseInt(data[2]);
+		type = data[3];
+		multiplier = Integer.parseInt(data[4]);
+		value = data[5]; 
+		min = data[6];
+		max = data[7];
+		comment = data[8];
 //		System.out.println(csvLine());
 	}
 	public String csvLine()

@@ -26,7 +26,8 @@ public class ByteDeviceList
 			ByteDevice iceCubeDevice = deviceList.get(idev);
 			if (iceCubeDevice.getType().toLowerCase().equals("bool"))
 			{
-				byteArray[iceCubeDevice.getByteStart() - 1] = (byte) (byteArray[iceCubeDevice.getByteStart() - 1] | (Integer.parseInt(iceCubeDevice.getValue()) << iceCubeDevice.getByteStart()));
+//				byteArray[iceCubeDevice.getByteStart() - 1] = (byte) (byteArray[iceCubeDevice.getByteStart() - 1] | (Integer.parseInt(iceCubeDevice.getValue()) << iceCubeDevice.getByteStart()));
+				byteArray[iceCubeDevice.getByteStart() - 1] = (byte) (byteArray[iceCubeDevice.getByteStart() - 1] | (Integer.parseInt(iceCubeDevice.getValue()) << iceCubeDevice.getBitLocation()));
 			}
 			else if (iceCubeDevice.getType().toLowerCase().equals("byte"))
 			{
