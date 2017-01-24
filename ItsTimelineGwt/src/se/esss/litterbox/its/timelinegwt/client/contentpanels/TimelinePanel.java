@@ -10,7 +10,10 @@ import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 
 import se.esss.litterbox.its.timelinegwt.client.EntryPointApp;
 import se.esss.litterbox.its.timelinegwt.client.gskel.GskelVerticalPanel;
@@ -25,25 +28,28 @@ public class TimelinePanel extends GskelVerticalPanel
 	private ArrayList<TimeLineEventPanel> eventList = null;
 	private HorizontalPanel timeLineHorizontalPanel = new HorizontalPanel();
 	private EntryPointApp entryPointApp;
-	String mqtttopic;
+	String timelineMqtttopic;
+	String eventFreqMqtttopic;
 	TimelineMqttData timelineMqttData;
 	String oldTimelineString = "";
 	Button middleButton = new Button("Change");
 	Button addButton = new Button("Add");
 	Button setButton = new Button("Set");
+	TextBox eventFreqTextBox = new TextBox();
 
-	public TimelinePanel(String tabTitle, String mqtttopic, EntryPointApp entryPointApp, boolean settingsPermitted) 
+	public TimelinePanel(String tabTitle, String timelineMqtttopic, String eventFreqMqtttopic, EntryPointApp entryPointApp, boolean settingsPermitted) 
 	{
 		super(tabTitle, tabTitle, entryPointApp.setupApp);
 		this.settingsPermitted = settingsPermitted;
 		this.entryPointApp = entryPointApp;
-		this.mqtttopic = mqtttopic;
+		this.timelineMqtttopic = timelineMqtttopic;
+		this.eventFreqMqtttopic = eventFreqMqtttopic;
 		superCreated = true;
 		this.getGskelTabLayoutScrollPanel().setStyleName(styleName);
 		eventList = new ArrayList<TimeLineEventPanel>();
 		eventList.add(new TimeLineEventPanel(1,255));
-
 		timeLineHorizontalPanel.add(eventList.get(0));
+		
 		addButton.setWidth("6.0em");
 		addButton.addClickHandler(new ActionButtonClickHandler(addButton));
 		addButton.setVisible(false);
@@ -62,6 +68,18 @@ public class TimelinePanel extends GskelVerticalPanel
 		buttonGridFormatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
 		buttonGridFormatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		buttonGridFormatter.setHorizontalAlignment(0, 2, HasHorizontalAlignment.ALIGN_RIGHT);
+		
+		HorizontalPanel eventFreqHp = new HorizontalPanel();
+		eventFreqHp.setWidth("15.0em");
+		eventFreqHp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		eventFreqHp.add(new Label("Event Frequency "));
+		eventFreqTextBox.setWidth("3.0em");
+		eventFreqTextBox.setEnabled(false);
+		eventFreqHp.add(eventFreqTextBox);
+		eventFreqHp.add(new Label(" Hz"));
+		CaptionPanel eventFreqCp = new CaptionPanel();
+		eventFreqCp.setWidth("30.0em");
+		eventFreqCp.add(eventFreqHp);
 
 		CaptionPanel actionCaptionPanel = new CaptionPanel("Action");
 		actionCaptionPanel.setWidth("30.0em");
@@ -70,6 +88,7 @@ public class TimelinePanel extends GskelVerticalPanel
 		CaptionPanel eventCaptionPanel = new CaptionPanel("Events");
 		eventCaptionPanel.setWidth("10.0em");
 		eventCaptionPanel.add(timeLineHorizontalPanel);
+		add(eventFreqCp);
 		add(eventCaptionPanel);
 		timelineMqttData = new TimelineMqttData();
 	}
@@ -83,12 +102,15 @@ public class TimelinePanel extends GskelVerticalPanel
 		{
 			eventList.get(ii).setEnabled(enabled);
 		}
+		eventFreqTextBox.setEnabled(enabled);
 	}
 	private void createTimeLine()
 	{
 		if (middleButton.getText().equals("Remove")) return;
+		setEnabled(false);
 		try 
 		{
+			eventFreqTextBox.setText(timelineMqttData.getJsonValue("freqSet"));
 			String timelineString = timelineMqttData.getJsonValue("timelineSet");
 			timelineString = timelineString.trim();
 			if (oldTimelineString.equals(timelineString)) return;
@@ -102,7 +124,6 @@ public class TimelinePanel extends GskelVerticalPanel
 				eventList.add(new TimeLineEventPanel(ii + 1, Integer.parseInt(splits[ii])));
 				timeLineHorizontalPanel.add(eventList.get(ii));
 			}
-			setEnabled(false);
 		} catch (Exception e) {entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());}
 	}
 	private void addEvent()
@@ -130,14 +151,20 @@ public class TimelinePanel extends GskelVerticalPanel
 				}
 			}
 			getStatusTextArea().addStatus("Sending Timeline " + eventListString);
-			String[][] jsonArray = new String[1][2];
+			String[][] jsonArray = new String[2][2];
 			jsonArray[0][0] = "timelineSet";
 			jsonArray[0][1] = eventListString;
-			entryPointApp.mqttService.publishJsonArray(mqtttopic, jsonArray, settingsPermitted, entryPointApp.setupApp.isDebug(), "ok", new TimelinePublishSettingsCallback());
+			
+			double  eventFreq = Double.parseDouble(eventFreqTextBox.getText());
+			if (eventFreq < 1.0) throw new Exception("Event Frequency less than 1 Hz");
+			if (eventFreq > 20.0) throw new Exception("Event Frequency greater than 20 Hz");
+			jsonArray[1][0] = "freqSet";
+			jsonArray[1][1] = Double.toString(eventFreq);
+			
+			entryPointApp.mqttService.publishJsonArray(timelineMqtttopic, jsonArray, settingsPermitted, entryPointApp.setupApp.isDebug(), "ok", new PublishSettingsCallback("Setting new Timeline"));
 		} catch (Exception e) 
 		{
-			getMessageDialog().setImageUrl("images/warning.jpg");
-			getMessageDialog().setMessage("Warning", "Improper event in time line", true);
+			entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());
 		}
 	}
 	@Override
@@ -161,7 +188,7 @@ public class TimelinePanel extends GskelVerticalPanel
 		{
 			if (button.getText().equals("Add")) addEvent();
 			if (button.getText().equals("Remove")) removeEvent();
-			if (button.getText().equals("Set")) setTimeLine();
+			if (button.getText().equals("Set")) {setTimeLine();}
 			if (button.getText().equals("Change"))setEnabled(true);
 		}
 
@@ -170,36 +197,32 @@ public class TimelinePanel extends GskelVerticalPanel
 	{
 		public TimelineMqttData() 
 		{
-			super(mqtttopic, MqttData.JSONDATA, 1000, entryPointApp);
+			super(timelineMqtttopic, MqttData.JSONDATA, 1000, entryPointApp);
 		}
-
 		@Override
 		public void doSomethingWithData() 
 		{
-			try 
-			{
-				createTimeLine();
-			} catch (Exception e) 
-			{
-				entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());
-			}
-			
+			try {createTimeLine();} catch (Exception e) {entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());}
 		}
 	}
-	class TimelinePublishSettingsCallback implements AsyncCallback<String>
+	class PublishSettingsCallback implements AsyncCallback<String>
 	{
+		String message;
+		PublishSettingsCallback(String message)
+		{
+			this.message = message;
+		}
 		@Override
 		public void onFailure(Throwable caught) 
 		{
-			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: Setting new Timeline");
+			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: " + message);
 			entryPointApp.setupApp.getStatusTextArea().addStatus(caught.getMessage());
 			setEnabled(false);
 		}
-
 		@Override
 		public void onSuccess(String result) 
 		{
-			entryPointApp.setupApp.getStatusTextArea().addStatus("Success: Setting new Timeline");
+			entryPointApp.setupApp.getStatusTextArea().addStatus("Success: " + message);
 			setEnabled(false);
 		}
 		

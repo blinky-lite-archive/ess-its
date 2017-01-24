@@ -288,7 +288,11 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 				boolean interlockOk = true;
 				if (val < min) interlockOk = false;
 				if (val > max) interlockOk = false;
-				if (!interlockOk) ++numOfInterlockFaults; 
+				if (!interlockOk)
+				{
+					++numOfInterlockFaults; 
+//					getStatusTextArea().addStatus(byteDevice.getName() + " bad interlock " + Integer.toString(ii));
+				}
 			}
 		}
 		if (numOfInterlockFaults == 0)

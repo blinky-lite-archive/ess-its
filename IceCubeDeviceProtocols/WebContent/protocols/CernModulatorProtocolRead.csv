@@ -2,75 +2,75 @@ Name,Byte Start,bit,type,multiplier,value,min,max,Comments
 TwinSafe COM err,1,0,bool,1,0,0,0,error
 TwinSafe FB err,1,1,bool,1,0,0,0,error
 TwinSafe OUT err,1,2,bool,1,0,0,0,error
-door switch ppg 1 (rear capacitor),1,3,bool,1,0,0,0,error
-door switch ppg 2 (rear bouncer igct),1,4,bool,1,0,0,0,error
-door switch ppg 3 (front bias),1,5,bool,1,0,0,0,error
-/,1,6,bool,1,0,0,0,/
-emergency stop front,1,7,bool,1,0,0,0,inactive
-emergency stop rear,2,0,bool,1,0,0,0,inactive
-hvps pss in 1,2,1,bool,1,0,0,0,inactive
-hvps pss in 2,2,2,bool,1,0,0,0,inactive
-Grounding rod capacitor,2,3,bool,1,0,0,0,mounted
-manual main switch,2,4,bool,1,0,0,0,switch in off state
+door switch ppg 1 (rear capacitor),1,3,bool,1,0,1,1,error
+door switch ppg 2 (rear bouncer igct),1,4,bool,1,0,1,1,error
+door switch ppg 3 (front bias),1,5,bool,1,0,1,1,error
+/,1,6,bool,1,0,0,1,/
+emergency stop front,1,7,bool,1,0,1,1,inactive
+emergency stop rear,2,0,bool,1,0,1,1,inactive
+hvps pss in 1,2,1,bool,1,0,1,1,inactive
+hvps pss in 2,2,2,bool,1,0,1,1,inactive
+Grounding rod capacitor,2,3,bool,1,0,1,1,mounted
+manual main switch,2,4,bool,1,0,1,1,switch in off state
 hvps pss out,2,5,bool,1,0,0,0,inactive
-bias power on,2,6,bool,1,0,0,0,on
-dump switches,2,7,bool,1,0,0,0,not switched
-digital out: hvps pss out,3,0,bool,1,0,0,0,inactive
-digital out: ic1ab 24 V,3,1,bool,1,0,0,0,24 V active
-digital out: dump switches,3,2,bool,1,0,0,0,switches activated
-digital out: hvps main switch,3,3,bool,1,0,0,0,switch activated
-digital out: bias power on,3,4,bool,1,0,0,0,power on
-dump switch il,3,5,bool,1,0,0,0,switching operation ok
-temp oil switch,3,6,bool,1,0,0,0,temp ok
-power in il,3,7,bool,1,0,0,0,under voltage relays ok
-state 1 ready,4,0,bool,1,0,0,0,ready
-state 2 ready,4,1,bool,1,0,0,0,ready
-state 3 ready,4,2,bool,1,0,0,0,ready
-state 1 il,4,3,bool,1,0,0,0,inactive
-state 2 il,4,4,bool,1,0,0,0,inactive
-state 3 il,4,5,bool,1,0,0,0,inactive
+bias power on,2,6,bool,1,0,0,1,on
+dump switches,2,7,bool,1,0,0,1,not switched
+digital out: hvps pss out,3,0,bool,1,0,1,1,inactive
+digital out: ic1ab 24 V,3,1,bool,1,0,1,1,24 V active
+digital out: dump switches,3,2,bool,1,0,0,1,switches activated
+digital out: hvps main switch,3,3,bool,1,0,0,1,switch activated
+digital out: bias power on,3,4,bool,1,0,0,1,power on
+dump switch il,3,5,bool,1,0,1,1,switching operation ok
+temp oil switch,3,6,bool,1,0,1,1,temp ok
+power in il,3,7,bool,1,0,1,1,under voltage relays ok
+state 1 ready,4,0,bool,1,0,1,1,ready
+state 2 ready,4,1,bool,1,0,0,1,ready
+state 3 ready,4,2,bool,1,0,0,1,ready
+state 1 il,4,3,bool,1,0,1,1,inactive
+state 2 il,4,4,bool,1,0,1,1,inactive
+state 3 il,4,5,bool,1,0,1,1,inactive
 accessmode local,4,6,bool,1,0,0,0,active
-accessmode remote,4,7,bool,1,0,0,0,active
+accessmode remote,4,7,bool,1,0,1,1,active
 accessmode local-test,5,0,bool,1,0,0,0,active
-pss,5,1,bool,1,0,0,0,inactive
-high il,5,2,bool,1,0,0,0,inactive
-low il,5,3,bool,1,0,0,0,inactive
-warning,5,4,bool,1,0,0,0,inactive
-emergency stop external,5,5,bool,1,0,0,0,inactive
-/,5,6,bool,1,0,0,0,/
-/,5,7,bool,1,0,0,0,/
-module 1 selected,6,0,bool,1,0,0,0,active
-module 2 selected,6,1,bool,1,0,0,0,active
-module 3 selected,6,2,bool,1,0,0,0,active
-/,6,3,bool,1,0,0,0,/
-module 1 master,6,4,bool,1,0,0,0,active
+pss,5,1,bool,1,0,1,1,inactive
+high il,5,2,bool,1,0,1,1,inactive
+low il,5,3,bool,1,0,1,1,inactive
+warning,5,4,bool,1,0,1,1,inactive
+emergency stop external,5,5,bool,1,0,1,1,inactive
+/,5,6,bool,1,0,0,1,/
+/,5,7,bool,1,0,0,1,/
+module 1 selected,6,0,bool,1,0,1,1,active
+module 2 selected,6,1,bool,1,0,1,1,active
+module 3 selected,6,2,bool,1,0,1,1,active
+/,6,3,bool,1,0,0,1,/
+module 1 master,6,4,bool,1,0,1,1,active
 module 2 master,6,5,bool,1,0,0,0,active
 module 3 master,6,6,bool,1,0,0,0,active
-/,6,7,bool,1,0,0,0,active
-feedback ack,7,0,bool,1,0,0,0,active
-feedback hvps activation,7,1,bool,1,0,0,0,active
-hv on,7,2,bool,1,0,0,0,active
-eoc,7,3,bool,1,0,0,0,active
-current control,7,4,bool,1,0,0,0,active
+/,6,7,bool,1,0,0,1,active
+feedback ack,7,0,bool,1,0,0,1,active
+feedback hvps activation,7,1,bool,1,0,0,1,active
+hv on,7,2,bool,1,0,0,1,active
+eoc,7,3,bool,1,0,0,1,active
+current control,7,4,bool,1,0,0,1,active
 power control,7,5,bool,1,0,0,0,active
 hvps inhibit,7,6,bool,1,0,0,0,active
-error common,7,7,bool,1,0,0,0,active
-mainswitch on,8,0,bool,1,0,0,0,active
-profinet operation,8,1,bool,1,0,0,0,active
+error common,7,7,bool,1,0,0,1,active
+mainswitch on,8,0,bool,1,0,0,1,active
+profinet operation,8,1,bool,1,0,1,1,active
 local,8,2,bool,1,0,0,0,active
 feedback maintenance,8,3,bool,1,0,0,0,active
 err cat 0,8,4,bool,1,0,0,0,active
 err cat 1,8,5,bool,1,0,0,0,active
 err cat 2,8,6,bool,1,0,0,0,active
 err cat 3,8,7,bool,1,0,0,0,active
-module 1 ready,9,0,bool,1,0,0,0,active
-module 2 ready,9,1,bool,1,0,0,0,active
-module 3 ready,9,2,bool,1,0,0,0,active
+module 1 ready,9,0,bool,1,0,0,1,active
+module 2 ready,9,1,bool,1,0,0,1,active
+module 3 ready,9,2,bool,1,0,0,1,active
 emergency stop,9,3,bool,1,0,0,0,active
 emergency ext,9,4,bool,1,0,0,0,active
 door 1 open,9,5,bool,1,0,0,0,active
 door 2 open,9,6,bool,1,0,0,0,active
-mainswitch off,9,7,bool,1,0,0,0,active
+mainswitch off,9,7,bool,1,0,0,1,active
 circuit braker,10,0,bool,1,0,0,0,active
 feedback contactor,10,1,bool,1,0,0,0,active
 temp max cab,10,2,bool,1,0,0,0,active
@@ -108,81 +108,81 @@ fault temp70 module 2,14,1,bool,1,0,0,0,active
 fault temp70 module 3,14,2,bool,1,0,0,0,active
 temp max outlet,14,3,bool,1,0,0,0,active
 fault profinet,14,4,bool,1,0,0,0,active
-line voltage il,14,5,bool,1,0,0,0,active
-v set reached il,14,6,bool,1,0,0,0,active
-t over,14,7,bool,1,0,0,0,overtemperature
-v over,15,0,bool,1,0,0,0,overvoltage
-v reg,15,1,bool,1,0,0,0,v regulating; NOT i regulation
-v hihi,15,2,bool,1,0,0,0,inactive il
-v lolo,15,3,bool,1,0,0,0,inactive il
-i hihi,15,4,bool,1,0,0,0,inactive il
-i lolo,15,5,bool,1,0,0,0,inactive il
-wtr p lolo,15,6,bool,1,0,0,0,inactive il
-wtr p hihi,15,7,bool,1,0,0,0,inactive il
-igct lolo,16,0,bool,1,0,0,0,inactive il
-us lolo,16,1,bool,1,0,0,0,inactive il
-ls bouncer lolo,16,2,bool,1,0,0,0,inactive il
-tank lolo,16,3,bool,1,0,0,0,inactive il
-oil lolo,16,4,bool,1,0,0,0,inactive il
-igct hihi,16,5,bool,1,0,0,0,inactive il
-us hihi,16,6,bool,1,0,0,0,inactive il
-ls bouncer hihi,16,7,bool,1,0,0,0,inactive il
-tank hihi,17,0,bool,1,0,0,0,inactive il
-oil hihi,17,1,bool,1,0,0,0,inactive il
-bouncer induc 1,17,2,bool,1,0,0,0,inactive il
-bouncer induc 2,17,3,bool,1,0,0,0,inactive il
-bouncer induc 3,17,4,bool,1,0,0,0,inactive il
-bouncer induc 4,17,5,bool,1,0,0,0,inactive il
-bouncer cooling,17,6,bool,1,0,0,0,inactive il
-flow igct,17,7,bool,1,0,0,0,inactive il
-flow us,18,0,bool,1,0,0,0,inactive il
-flow ls bouncer,18,1,bool,1,0,0,0,inactive il
-flow tank,18,2,bool,1,0,0,0,inactive il
-cap overvolt,18,3,bool,1,0,0,0,inactive il
-igct err stop,18,4,bool,1,0,0,0,inactive il
-thy driver,18,5,bool,1,0,0,0,inactive il
-tank oil level hi,18,6,bool,1,0,0,0,inactive il
-tank oil level lo,18,7,bool,1,0,0,0,inactive il
-pls enab,19,0,bool,1,0,0,0,inhibit; NOT permit start pulse sequence
+line voltage il,14,5,bool,1,0,1,1,active
+v set reached il,14,6,bool,1,0,1,1,active
+t over,14,7,bool,1,0,1,1,overtemperature
+v over,15,0,bool,1,0,1,1,overvoltage
+v reg,15,1,bool,1,0,1,1,v regulating; NOT i regulation
+v hihi,15,2,bool,1,0,1,1,inactive il
+v lolo,15,3,bool,1,0,1,1,inactive il
+i hihi,15,4,bool,1,0,1,1,inactive il
+i lolo,15,5,bool,1,0,1,1,inactive il
+wtr p lolo,15,6,bool,1,0,1,1,inactive il
+wtr p hihi,15,7,bool,1,0,1,1,inactive il
+igct lolo,16,0,bool,1,0,1,1,inactive il
+us lolo,16,1,bool,1,0,1,1,inactive il
+ls bouncer lolo,16,2,bool,1,0,1,1,inactive il
+tank lolo,16,3,bool,1,0,1,1,inactive il
+oil lolo,16,4,bool,1,0,1,1,inactive il
+igct hihi,16,5,bool,1,0,1,1,inactive il
+us hihi,16,6,bool,1,0,1,1,inactive il
+ls bouncer hihi,16,7,bool,1,0,1,1,inactive il
+tank hihi,17,0,bool,1,0,1,1,inactive il
+oil hihi,17,1,bool,1,0,1,1,inactive il
+bouncer induc 1,17,2,bool,1,0,1,1,inactive il
+bouncer induc 2,17,3,bool,1,0,1,1,inactive il
+bouncer induc 3,17,4,bool,1,0,1,1,inactive il
+bouncer induc 4,17,5,bool,1,0,1,1,inactive il
+bouncer cooling,17,6,bool,1,0,1,1,inactive il
+flow igct,17,7,bool,1,0,1,1,inactive il
+flow us,18,0,bool,1,0,1,1,inactive il
+flow ls bouncer,18,1,bool,1,0,1,1,inactive il
+flow tank,18,2,bool,1,0,1,1,inactive il
+cap overvolt,18,3,bool,1,0,1,1,inactive il
+igct err stop,18,4,bool,1,0,1,1,inactive il
+thy driver,18,5,bool,1,0,1,1,inactive il
+tank oil level hi,18,6,bool,1,0,1,1,inactive il
+tank oil level lo,18,7,bool,1,0,1,1,inactive il
+pls enab,19,0,bool,1,0,1,1,inhibit; NOT permit start pulse sequence
 vs run not,19,1,bool,1,0,0,0,go to off; NOT go to standby
 vs rst not,19,2,bool,1,0,0,0,NOT reset inactive faults
-pc fast ab,19,3,bool,1,0,0,0,NOT switch off
-out pwr on,19,4,bool,1,0,0,0,contactor closed and V > 100V
-out vsinitok not,19,5,bool,1,0,0,0,standby or on; NOT not ready
-out vs entlink,19,6,bool,1,0,0,0,no faults; NOT fault due to external services
+pc fast ab,19,3,bool,1,0,1,1,NOT switch off
+out pwr on,19,4,bool,1,0,0,1,contactor closed and V > 100V
+out vsinitok not,19,5,bool,1,0,0,1,standby or on; NOT not ready
+out vs entlink,19,6,bool,1,0,1,1,no faults; NOT fault due to external services
 out vs fault,19,7,bool,1,0,0,0,internal fault active; NOT not internal fault active
-out pwr fail,20,0,bool,1,0,0,0,no faults; NOT sum of klystron modulator internal faults
-pi1a,20,1,bool,1,0,0,0,inactive il
-pi1b,20,2,bool,1,0,0,0,inactive il
-mo tmi1a lwl,20,3,bool,1,0,0,0,inactive il
-mo tmi1b lwl,20,4,bool,1,0,0,0,inactive il
-tmi1a,20,5,bool,1,0,0,0,inactive il
-tmi1b,20,6,bool,1,0,0,0,inactive il
-uic3ab ic1a,20,7,bool,1,0,0,0,inactive il
-uic3ab ic1b,21,0,bool,1,0,0,0,inactive il
-mo ucc12,21,1,bool,1,0,0,0,inactive il
-mo ucc34,21,2,bool,1,0,0,0,inactive il
-fd1 status,21,3,bool,1,0,0,0,inactive il
-fd2 status,21,4,bool,1,0,0,0,inactive il
-mo u ic1a,21,5,bool,1,0,0,0,inactive il
-mo u ic1b,21,6,bool,1,0,0,0,inactive il
-v kly cc1,21,7,bool,1,0,0,0,inactive il
-I kly cc3,22,0,bool,1,0,0,0,inactive il
-I prim cc2,22,1,bool,1,0,0,0,inactive il
-I prim2 cc4,22,2,bool,1,0,0,0,inactive il
-mo u igct,22,3,bool,1,0,0,0,inactive il
-mo igct status,22,4,bool,1,0,0,0,inactive il
-mo igct tr ok,22,5,bool,1,0,0,0,inactive il
-fast dump peak up il,22,6,bool,1,0,0,0,inactive il
-fast dump lock il,22,7,bool,1,0,0,0,inactive il
-/,23,0,bool,1,0,0,0,/
-/,23,1,bool,1,0,0,0,/
-trigger f ok,23,2,bool,1,0,0,0,inactive il
-trigger duty ok,23,3,bool,1,0,0,0,inactive il
-v cap short circuit il,23,4,bool,1,0,0,0,inactive il
-hvps sum fault kept,23,5,bool,1,0,0,0,inactive il
-tank p lolo,23,6,bool,1,0,0,0,inactive il
-tank p hihi,23,7,bool,1,0,0,0,inactive il
+out pwr fail,20,0,bool,1,0,1,1,no faults; NOT sum of klystron modulator internal faults
+pi1a,20,1,bool,1,0,1,1,inactive il
+pi1b,20,2,bool,1,0,1,1,inactive il
+mo tmi1a lwl,20,3,bool,1,0,1,1,inactive il
+mo tmi1b lwl,20,4,bool,1,0,1,1,inactive il
+tmi1a,20,5,bool,1,0,1,1,inactive il
+tmi1b,20,6,bool,1,0,1,1,inactive il
+uic3ab ic1a,20,7,bool,1,0,1,1,inactive il
+uic3ab ic1b,21,0,bool,1,0,1,1,inactive il
+mo ucc12,21,1,bool,1,0,1,1,inactive il
+mo ucc34,21,2,bool,1,0,1,1,inactive il
+fd1 status,21,3,bool,1,0,1,1,inactive il
+fd2 status,21,4,bool,1,0,1,1,inactive il
+mo u ic1a,21,5,bool,1,0,1,1,inactive il
+mo u ic1b,21,6,bool,1,0,1,1,inactive il
+v kly cc1,21,7,bool,1,0,1,1,inactive il
+I kly cc3,22,0,bool,1,0,1,1,inactive il
+I prim cc2,22,1,bool,1,0,1,1,inactive il
+I prim2 cc4,22,2,bool,1,0,1,1,inactive il
+mo u igct,22,3,bool,1,0,1,1,inactive il
+mo igct status,22,4,bool,1,0,1,1,inactive il
+mo igct tr ok,22,5,bool,1,0,1,1,inactive il
+fast dump peak up il,22,6,bool,1,0,1,1,inactive il
+fast dump lock il,22,7,bool,1,0,1,1,inactive il
+/,23,0,bool,1,0,0,1,/
+/,23,1,bool,1,0,0,1,/
+trigger f ok,23,2,bool,1,0,1,1,inactive il
+trigger duty ok,23,3,bool,1,0,1,1,inactive il
+v cap short circuit il,23,4,bool,1,0,1,1,inactive il
+hvps sum fault kept,23,5,bool,1,0,1,1,inactive il
+tank p lolo,23,6,bool,1,0,1,1,inactive il
+tank p hihi,23,7,bool,1,0,1,1,inactive il
 state off,24,0,byte,1,0,0,3,0=not active; 1=in transition; 2=active; 3=not accessible
 state standby,25,0,byte,1,0,0,3,0=not active; 1=in transition; 2=active; 3=not accessible
 state on,26,0,byte,1,0,0,3,0=not active; 1=in transition; 2=active; 3=not accessible

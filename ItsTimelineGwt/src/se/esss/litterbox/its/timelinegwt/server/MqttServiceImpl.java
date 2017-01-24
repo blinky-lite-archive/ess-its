@@ -26,8 +26,8 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", getMqttDataPath(), cleanSession);
-//			mqttClient = new MqttServiceImpClient(this, "ItsCernRfGwt", "tcp://broker.shiftr.io:1883", "xxx", "xxx", cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsTimelineWebApp", getMqttDataPath(), cleanSession);
+//			mqttClient = new MqttServiceImpClient(this, "ItsTimelineWebApp", "tcp://broker.shiftr.io:1883",  "xx", "xx", cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();

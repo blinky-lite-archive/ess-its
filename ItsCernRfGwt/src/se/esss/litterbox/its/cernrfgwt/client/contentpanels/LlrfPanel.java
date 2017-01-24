@@ -38,6 +38,8 @@ public class LlrfPanel extends GskelVerticalPanel
 	private CheckBox rfPowOnCheckBox = new CheckBox();
 	private Label rfPowerReading1 = new Label();
 	private Label rfPowerReading2 = new Label();
+	private Label rfWattReading1 = new Label();
+	private Label rfWattReading2 = new Label();
 	SettingButtonGrid settingButtonGrid;
 	PowerMeterMqttData powerMeterMqttData;
 	RFSigGenMqttData rFSigGenMqttData;
@@ -84,19 +86,21 @@ public class LlrfPanel extends GskelVerticalPanel
 	}
 	private CaptionPanel settingsCaptionPanel()
 	{
-		Grid settingGrid = new Grid(6, 3);
+		Grid settingGrid = new Grid(8, 3);
 		HTMLTable.CellFormatter formatter = settingGrid.getCellFormatter();
 		formatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		formatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);	
 		
-		String textBoxWidth = "3.0em";
+		String textBoxWidth = "5.0em";
 		
 		rfFreqTextBox.setSize(textBoxWidth, "1.0em");
 		rfPowLvlTextBox.setSize(textBoxWidth, "1.0em");
 		rfPowerReading1.setSize(textBoxWidth, "1.0em");
 		rfPowerReading2.setSize(textBoxWidth, "1.0em");
+		rfWattReading1.setSize(textBoxWidth, "1.0em");
+		rfWattReading2.setSize(textBoxWidth, "1.0em");
 
-		for (int irow = 0; irow < 6; ++irow)
+		for (int irow = 0; irow < 8; ++irow)
 		{
 			formatter.setHorizontalAlignment(irow, 1, HasHorizontalAlignment.ALIGN_CENTER);
 			formatter.setVerticalAlignment(irow, 1, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -118,13 +122,21 @@ public class LlrfPanel extends GskelVerticalPanel
 		settingGrid.setWidget(3, 1, rfPowOnCheckBox);
 		settingGrid.setWidget(3, 2, new Label(""));
 				
-		settingGrid.setWidget(4, 0, new Label("RF Power Reading 1"));
+		settingGrid.setWidget(4, 0, new Label("Input Power"));
 		settingGrid.setWidget(4, 1, rfPowerReading1);
 		settingGrid.setWidget(4, 2, new Label("dBm"));
+
+		settingGrid.setWidget(5, 0, new Label(" "));
+		settingGrid.setWidget(5, 1, rfWattReading1);
+		settingGrid.setWidget(5, 2, new Label("W"));
 		
-		settingGrid.setWidget(5, 0, new Label("RF Power Reading 2"));
-		settingGrid.setWidget(5, 1, rfPowerReading2);
-		settingGrid.setWidget(5, 2, new Label("dBm"));
+		settingGrid.setWidget(6, 0, new Label("Output Power"));
+		settingGrid.setWidget(6, 1, rfPowerReading2);
+		settingGrid.setWidget(6, 2, new Label("dBm"));
+
+		settingGrid.setWidget(7, 0, new Label(" "));
+		settingGrid.setWidget(7, 1, rfWattReading2);
+		settingGrid.setWidget(7, 2, new Label("kW"));
 
 		CaptionPanel settingsCaptionPanel = new CaptionPanel("Settings");
 		VerticalPanel vp1 = new VerticalPanel();
@@ -166,9 +178,14 @@ public class LlrfPanel extends GskelVerticalPanel
 			double[] powerRead = new double[2];
 			powerRead[0] = Double.parseDouble(powerMeterMqttData.getJsonValue("power1"));
 			powerRead[1] = Double.parseDouble(powerMeterMqttData.getJsonValue("power2"));
-			rfPowerReading1.setText(NumberFormat.getFormat("###.##").format(powerRead[0]));
-			rfPowerReading2.setText(NumberFormat.getFormat("###.##").format(powerRead[1]));
+			rfPowerReading1.setText(NumberFormat.getFormat("###.####").format(powerRead[0]));
+			rfPowerReading2.setText(NumberFormat.getFormat("###.####").format(powerRead[1]));
 			powerPlot.updateReadings(powerRead);
+			double[] wattRead = new double[2];
+			wattRead[0] = Math.pow(10.0, (powerRead[0] - 30.0) / 10.0);
+			wattRead[1] = Math.pow(10.0, (powerRead[1] - 60.0) / 10.0);
+			rfWattReading1.setText(NumberFormat.getFormat("###.####").format(wattRead[0]));
+			rfWattReading2.setText(NumberFormat.getFormat("###.####").format(wattRead[1]));
 			
 		}
 		catch(Exception e)

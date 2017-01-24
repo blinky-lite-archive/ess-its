@@ -52,6 +52,8 @@ public class ItsClkTransmitterIoc extends IceCubeSerialIoc
 				JSONObject jsonData = (JSONObject) parser.parse(new String(message));
 				String timelineSet = (String) jsonData.get("timelineSet");
 				writeReadSerialData("timelineSet " + timelineSet, 10);
+				String freqSet = (String) jsonData.get("freqSet");
+				writeReadSerialData("freqSet " + freqSet, 10);
 			}
 			catch (ParseException nfe) {}
 		}

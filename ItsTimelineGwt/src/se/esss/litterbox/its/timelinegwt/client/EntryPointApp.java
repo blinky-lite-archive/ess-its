@@ -18,7 +18,7 @@ public class EntryPointApp implements EntryPoint
 	{
 		setupApp = new GskelSetupApp();
 		setupApp.setDebug(false);
-		setupApp.setVersionDate("January 12, 2017 15:45");
+		setupApp.setVersionDate("January 18, 2017 10:11");
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
@@ -29,6 +29,6 @@ public class EntryPointApp implements EntryPoint
 	}
 	public void initializeTabs(boolean settingsPermitted)
 	{
-		new TimelinePanel("Timeline", "itsClkTrans01/set/timeline",this, settingsPermitted);
+		new TimelinePanel("Timeline", "itsClkTrans01/set/timeline", "itsClkTrans01/set/freq", this, settingsPermitted);
 	}
 }
