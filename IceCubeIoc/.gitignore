@@ -1,7 +1,6 @@
 /.settings/
 /bin/
-/itsmqttbroker.dat
-/ItsIocTester-tcpbrokershiftrio1883/
 /.pydevproject
-/ItsCernModTester-tcpbrokershiftrio1883/
-/itsClkTrans01Ioc-tcpbrokershiftrio1883/
+/*-tcpbrokershiftrio1883/
+/*.dat
+/*.csv

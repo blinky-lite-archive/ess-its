@@ -1,5 +1,7 @@
 package se.esss.litterbox.its.ioc;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 
 import se.esss.litterbox.icecube.bytedevice.ByteDeviceList;
@@ -29,7 +31,6 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 				System.out.println("temp tank " + readByteDevice.getDevice("temp tank").getValue());
 			} catch (Exception e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -46,10 +47,32 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 				System.out.println("reset " + setByteDevice.getDevice("reset").getValue());
 			} catch (Exception e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		if (topic.indexOf("itsCernMod/get/wave/") >= 0)
+		{
+			try
+			{
+				String waveform = topic.substring(20);
+				System.out.println("Writing " + waveform  + ".dat");
+				FileOutputStream stream = new FileOutputStream(waveform  + "_60.dat");
+				stream.write(message);
+				stream.close();
+				
+			}catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	public static void readWaveformFile(String path) throws Exception
+	{
+		FileInputStream fis = new FileInputStream(path);
+		byte[] data = new byte[3600];
+		fis.read(data);
+		fis.close();
 	}
 	public static void main(String[] args) throws Exception 
 	{
@@ -57,11 +80,12 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 		
 		bigBlue.setByteDevice.getDevice("cathode voltage").setValue("40.0");
 		bigBlue.setByteDevice.getDevice("trigger pulsewidth").setValue("2800");
-		bigBlue.setByteDevice.getDevice("hvps current").setValue("30.0");
+		bigBlue.setByteDevice.getDevice("hvps current").setValue("35.0");
 		bigBlue.setByteDevice.getDevice("hvps power").setValue("140.0");
 		bigBlue.setByteDevice.getDevice("send mon values").setValue("1");
+		bigBlue.setByteDevice.getDevice("send pulse data").setValue("0");
 		
-		bigBlue.setByteDevice.getDevice("state").setValue("0"); // 0 off; 1 standby; 3 on
+//		bigBlue.setByteDevice.getDevice("state").setValue("0"); // 0 off; 1 standby; 3 on
 //		bigBlue.setByteDevice.getDevice("reset").setValue("0"); // 0 off; 1 reset
 		boolean retained = true;
 		bigBlue.publishMessage("itsCernMod/set/mod", bigBlue.setByteDevice.getByteArray(), 0, retained);
@@ -69,6 +93,9 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 //		bigBlue.subscribe("itsCernMod/get/#", 0);
 //		bigBlue.subscribe("itsCernMod/set/#", 0);
 //	
+//		bigBlue.subscribe("itsCernMod/get/wave/#", 0);
+//		readWaveformFile("w1.dat");
+
 	}
 
 }

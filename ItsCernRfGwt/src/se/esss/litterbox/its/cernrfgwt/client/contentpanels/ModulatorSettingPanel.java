@@ -27,29 +27,30 @@ import se.esss.litterbox.its.cernrfgwt.client.mqttdata.MqttData;
 
 public class ModulatorSettingPanel extends GskelVerticalPanel
 {
-	public EntryPointApp entryPointApp;
-	public boolean settingsPermitted = false;
-	public boolean puttingSettingsState = false;
+	private EntryPointApp entryPointApp;
+	private boolean settingsPermitted = false;
+	private boolean puttingSettingsState = false;
 
-	public ByteDeviceList settingDeviceList = null;
-	public ByteDeviceList readingDeviceList = null;
-	public ArrayList<ByteDeviceSettingDisplay>  settingDeviceDisplayList = new ArrayList<ByteDeviceSettingDisplay>();
-	public ArrayList<ByteDeviceReadingDisplayListCaptionPanel>  byteDeviceReadingDisplayListCaptionPanelList = new ArrayList<ByteDeviceReadingDisplayListCaptionPanel>();
-	public Button[] modStateButton = new Button[4];
-	public boolean readyForData = false;
+	private ByteDeviceList settingDeviceList = null;
+	private ByteDeviceList readingDeviceList = null;
+	private ArrayList<ByteDeviceSettingDisplay>  settingDeviceDisplayList = new ArrayList<ByteDeviceSettingDisplay>();
+	private ArrayList<ByteDeviceReadingDisplayListCaptionPanel>  byteDeviceReadingDisplayListCaptionPanelList = new ArrayList<ByteDeviceReadingDisplayListCaptionPanel>();
+	private Button[] modStateButton = new Button[4];
+	private boolean readyForData = false;
 	private HorizontalPanel settingsReadingsHorizontalPanel;
-	public ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel1;
-	public ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel2;
-	public ModulatorDisplayVerticalPanel modulatorHVPSVerticalPanel;
-	public ModulatorDisplayVerticalPanel modulatorReadbacksVerticalPanel;
-	public String modSettingTopic;
-	public String modReadingTopic;
-	String modIceCubetimerMqttTopic;
-	ModulatorReadingsMqttData modulatorReadingsMqttData;
-	ModulatorSettingsMqttData modulatorSettingsMqttData;
-	SettingButtonGrid settingButtonGrid;
-	Label badInterlockLabel = new Label("Interlocks Clear");
+	private ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel1;
+	private ModulatorDisplayVerticalPanel modulatorInterLocksVerticalPanel2;
+	private ModulatorDisplayVerticalPanel modulatorHVPSVerticalPanel;
+	private ModulatorDisplayVerticalPanel modulatorReadbacksVerticalPanel;
+	private String modSettingTopic;
+	private String modReadingTopic;
+	private String modIceCubetimerMqttTopic;
+	private SettingButtonGrid settingButtonGrid;
+	private Label badInterlockLabel = new Label("Interlocks Clear");
+	private boolean pulseDataEnabled = false;
 	
+
+	public boolean isPulseDataEnabled() {return pulseDataEnabled;}
 	public ModulatorSettingPanel(String tabTitle, String modSettingTopic, String modReadingTopic, String modIceCubetimerMqttTopic, EntryPointApp entryPointApp, boolean settingsPermitted) 
 	{
 		super(tabTitle, "modTabStyle", entryPointApp.setupApp);
@@ -83,8 +84,8 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		vp1.add(interlockCaptionPanel);
 		vp1.add(new IceCubeTimerPanel("MOD Timer", modIceCubetimerMqttTopic, timingChannelName, settingsPermitted, entryPointApp));
 		settingsReadingsHorizontalPanel.add(vp1);
-		modulatorReadingsMqttData = new ModulatorReadingsMqttData();
-		modulatorSettingsMqttData = new ModulatorSettingsMqttData();
+		new ModulatorReadingsMqttData();
+		new ModulatorSettingsMqttData();
 	}
 	@Override
 	public void tabLayoutPanelInterfaceAction(String message) {}
@@ -120,7 +121,8 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 		actionsSettingsCaptionPanel.add(vp1);
 		settingGrid.getRowFormatter().setVisible(1, false);
 		settingGrid.getRowFormatter().setVisible(2, false);
-		settingGrid.getRowFormatter().setVisible(3, false);
+		settingGrid.getRowFormatter().setVisible(3, true);
+		settingGrid.getCellFormatter().setVisible(3, 4, false);
 		settingGrid.getRowFormatter().setVisible(4, false);
 		return actionsSettingsCaptionPanel;
 		
@@ -271,6 +273,7 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 	{
 		for (int ii = 0; ii < settingDeviceList.numDevices(); ++ ii) 
 		{
+			settingDeviceDisplayList.get(ii).getEnabledCheckBox().setEnabled(enabled);
 			settingDeviceDisplayList.get(ii).getSettingTextBox().setEnabled(enabled);
 		}
 	}
@@ -440,6 +443,8 @@ public class ModulatorSettingPanel extends GskelVerticalPanel
 				{
 //					modulatorSettingPanel.getStatusTextArea().addStatus(modulatorSettingPanel.settingDeviceList.getDevice(ii).getValue());
 					settingDeviceDisplayList.get(ii).updateSettingFromDevice();
+					pulseDataEnabled = false;
+					if (settingDeviceList.getDevice("send pulse data").getValue().equals("1")) pulseDataEnabled = true;
 					
 				}
 			} catch (Exception e) 

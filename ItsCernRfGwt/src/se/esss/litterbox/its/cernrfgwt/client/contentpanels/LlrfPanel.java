@@ -16,8 +16,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.cernrfgwt.client.EntryPointApp;
-import se.esss.litterbox.its.cernrfgwt.client.googleplots.GooglePlotLoadWaiter;
 import se.esss.litterbox.its.cernrfgwt.client.googleplots.TimePlotCaptionPanel;
+import se.esss.litterbox.its.cernrfgwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.cernrfgwt.client.gskel.GskelSettingButtonGrid;
 import se.esss.litterbox.its.cernrfgwt.client.gskel.GskelVerticalPanel;
 import se.esss.litterbox.its.cernrfgwt.client.mqttdata.MqttData;
@@ -296,9 +296,9 @@ public class LlrfPanel extends GskelVerticalPanel
 			entryPointApp.setupApp.getStatusTextArea().addStatus("Success: Putting LLRF Settings");
 		}
 	}
-	class powerPlotWaiter extends GooglePlotLoadWaiter
+	class powerPlotWaiter extends GskelLoadWaiter
 	{
-		public powerPlotWaiter(int loopTimeMillis) {super(loopTimeMillis);}
+		public powerPlotWaiter(int loopTimeMillis) {super(loopTimeMillis, 0);}
 		@Override
 		public boolean isLoaded() {return powerPlot.isLoaded();}
 		@Override

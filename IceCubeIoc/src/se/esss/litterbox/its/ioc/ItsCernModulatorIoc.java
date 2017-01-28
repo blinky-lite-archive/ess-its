@@ -1,25 +1,35 @@
 package se.esss.litterbox.its.ioc;
 
 
+import java.net.URL;
+
+import se.esss.litterbox.icecube.bytedevice.ByteDeviceList;
 import se.esss.litterbox.icecube.ioc.tcp.IceCubeTcpIoc;
 
 public class ItsCernModulatorIoc extends IceCubeTcpIoc
 {
+	URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
+	ByteDeviceList setByteDevice;
 	private byte[] settingsArray = null;
-	private int numReadBytes = 118;
+	private int numReadbackBytes = 118;
+	private int numWaveformBytes = 3600;
 
 	public ItsCernModulatorIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath, inetAddress, portNumber);
+		setByteDevice = new ByteDeviceList(cernmodSettingUrl);
 	}
 	@Override
 	public byte[] getDataFromGizmo() 
 	{
 		if (settingsArray == null) return null;
-		byte[] readingData = null;
+		byte[] readbackData = null;
+		byte[][] waveformData = new byte[5][];
 		try 
 		{
-			sendBytes(settingsArray);
+			setByteDevice.putByteArray(settingsArray);
+			setByteDevice.getDevice("send mon values").setValue("1");
+			sendBytes(setByteDevice.getByteArray());
 		} 
 		catch (Exception e) 
 		{
@@ -29,13 +39,39 @@ public class ItsCernModulatorIoc extends IceCubeTcpIoc
 		try {Thread.sleep(100);} catch (InterruptedException e) {}
 		try 
 		{
-			readingData  = receiveBytes(numReadBytes);
+			byte[] readData  = receiveBytes(20000);
+			int numReadBytes = readData.length;
+			int startByteIndex = 0;
+			System.out.println("     Number of Bytes read = " + numReadBytes);
+			if ((numReadBytes == 118) || (numReadBytes == 18118))
+			{
+				readbackData = new byte[118];
+				for (int ij = 0; ij < numReadbackBytes; ++ij) readbackData[ij] = readData[ij];
+				startByteIndex = 118;
+			}
+			else
+			{
+				readbackData = null;
+			}
+			if (numReadBytes > 118) 
+			{
+				for (int ii = 0; ii < 1; ++ii)
+				{
+					waveformData[ii] = new byte[numWaveformBytes];
+					for (int ij = 0; ij < numWaveformBytes; ++ij)
+					{
+						waveformData[ii][ij] = readData[startByteIndex + numWaveformBytes * ii + ij];
+					}
+					publishMessage("itsCernMod/get/wave/w" + Integer.toString(ii + 1), waveformData[ii], this.getPublishQos(), true);	
+				}
+			}
 		} catch (Exception e) 
 		{
 			setStatus("Error in reading data: " + e.getMessage());
 			return null;
 		}
-		return readingData;
+		
+		return readbackData;
 	}
 	@Override
 	public void handleBrokerMqttMessage(String topic, byte[] message) 

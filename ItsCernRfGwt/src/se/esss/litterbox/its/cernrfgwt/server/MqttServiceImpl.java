@@ -16,7 +16,7 @@ import se.esss.litterbox.its.cernrfgwt.client.mqttdata.MqttService;
 public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 {
 	MqttServiceImpClient mqttClient;
-	String[] topics = {"itsPowerMeter01/get", "itsCernMod/get/mod", "itsCernMod/set/mod", "itsClkRecvr01/set/channel", "itsClkRecvr02/set/channel", "itsRfSigGen01/set/rf"};
+	String[] topics = {"itsPowerMeter01/get", "itsCernMod/get/mod", "itsCernMod/set/mod", "itsCernMod/get/wave/w1", "itsClkRecvr01/set/channel", "itsClkRecvr02/set/channel", "itsRfSigGen01/set/rf"};
 	byte[][] messages;
 	public void init()
 	{
@@ -26,7 +26,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		try 
 		{
 			mqttClient = new MqttServiceImpClient(this, "ItsRfControlWebApp", getMqttDataPath(), cleanSession);
-//			mqttClient = new MqttServiceImpClient(this, "ItsRfControlWebApp", "tcp://broker.shiftr.io:1883", "xx", "xx", cleanSession);
+//			mqttClient = new MqttServiceImpClient(this, "ItsRfControlWebAppTest", "tcp://broker.shiftr.io:1883", "xx", "xxx", cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();

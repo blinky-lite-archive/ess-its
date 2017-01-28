@@ -1,11 +1,14 @@
-package se.esss.litterbox.its.cernrfgwt.client.googleplots;
+package se.esss.litterbox.its.cernrfgwt.client.gskel;
 
 import com.google.gwt.user.client.Timer;
 
-public abstract class GooglePlotLoadWaiter extends Timer
+public abstract class GskelLoadWaiter extends Timer
 {
-	public GooglePlotLoadWaiter(int loopTimeMillis)
+	private int itask = -1;
+	public int getItask() {return itask;}
+	public GskelLoadWaiter(int loopTimeMillis, int itask)
 	{
+		this.itask = itask;
 		scheduleRepeating(loopTimeMillis);
 	}
 	public abstract boolean isLoaded();

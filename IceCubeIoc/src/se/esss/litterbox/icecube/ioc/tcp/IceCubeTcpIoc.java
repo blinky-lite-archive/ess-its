@@ -30,13 +30,30 @@ public abstract class IceCubeTcpIoc extends IceCubePeriodicPollIoc
 	    DataOutputStream dos = new DataOutputStream(out);
 	    dos.write(myByteArray, 0, myByteArray.length);
 	}
+	public byte[] receiveBytesFully(int len) 
+	{
+		try
+		{
+			InputStream in = clientSocket.getInputStream();
+			DataInputStream dis = new DataInputStream(in);
+
+			byte[] data = new byte[len];
+			dis.readFully(data);
+			return data;
+		} catch (Exception e)
+		{
+			 return null;
+		}
+	}
 	public byte[] receiveBytes(int len) throws Exception
 	{
 	    InputStream in = clientSocket.getInputStream();
 	    DataInputStream dis = new DataInputStream(in);
 
 	    byte[] data = new byte[len];
-	    dis.readFully(data);
-	    return data;
+	    int numBytes = dis.read(data);
+	    byte[] readData = new byte[numBytes];
+	    for (int ii = 0; ii < numBytes; ++ii) readData[ii] = data[ii];
+	    return readData;
 	}
 }

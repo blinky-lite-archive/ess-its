@@ -10,10 +10,8 @@
 /war/WEB-INF/lib/a*.jar
 /war/WEB-INF/lib/gwt-servlet.jar
 /.settings/com.google.appengine.eclipse.core.prefs
-/ItsCernRfGwt.war
 /bin/
 /.settings/
 /.gwt/
-/ItsRfControl.war
-/war/ItsCernRfGwt-tcpbrokershiftrio1883
-/ItsRFControl.war
+/war/*-tcpbrokershiftrio1883
+/*.war
