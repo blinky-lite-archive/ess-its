@@ -5,9 +5,6 @@ import com.google.gwt.core.client.GWT;
 
 import se.esss.litterbox.its.watersystemgwt.client.callbacks.CheckIpAddresslAsyncCallback;
 import se.esss.litterbox.its.watersystemgwt.client.contentpanels.GaugeShowCasePanel;
-import se.esss.litterbox.its.watersystemgwt.client.contentpanels.LineChartShowCasePanel;
-import se.esss.litterbox.its.watersystemgwt.client.contentpanels.ScatterChartShowCasePanel;
-import se.esss.litterbox.its.watersystemgwt.client.contentpanels.TestVerticalPanel;
 import se.esss.litterbox.its.watersystemgwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.watersystemgwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.watersystemgwt.client.mqttdata.MqttService;
@@ -30,7 +27,7 @@ public class EntryPointApp implements EntryPoint
 		setupApp.setVersion("v2.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
-		setupApp.setLogoTitle("Its Alive!");
+		setupApp.setLogoTitle("Its Thirsty!");
 		setupApp.echoVersionInfo();
 		setupApp.getEntryPointAppService().checkIpAddress(setupApp.isDebug(), new CheckIpAddresslAsyncCallback(this));		
 		
@@ -42,27 +39,8 @@ public class EntryPointApp implements EntryPoint
 	}
 	private void loadTab1()
 	{
-		new TestVerticalPanel("tab 1", setupApp, settingsPermitted);
-		new TabLoadWaiter(100, 1);
-	}
-	private void loadTab2()
-	{
-		new TestVerticalPanel("tab 2", setupApp, settingsPermitted);
-		new TabLoadWaiter(100, 2);
-	}
-	private void loadTab3()
-	{
-		new GaugeShowCasePanel("Gauges", "mqttTester/get/gauges", setupApp);
-		new TabLoadWaiter(500, 3);
-	}
-	private void loadTab4()
-	{
-		new LineChartShowCasePanel("Line Chart", "mqttTester/get/line", setupApp);
-		new TabLoadWaiter(100, 4);
-	}
-	private void loadTab5()
-	{
-		new ScatterChartShowCasePanel("Scatter Plot", "mqttTester/get/scatter", setupApp);
+		new GaugeShowCasePanel("Gauges", "itsWaterSystem/get", setupApp);
+		new TabLoadWaiter(500, 1);
 	}
 	class TabLoadWaiter extends GskelLoadWaiter
 	{
@@ -75,10 +53,7 @@ public class EntryPointApp implements EntryPoint
 		@Override
 		public void taskAfterLoad() 
 		{
-			if (getItask() == 1) loadTab2();
-			if (getItask() == 2) loadTab3();
-			if (getItask() == 3) loadTab4();
-			if (getItask() == 4) loadTab5();
+			if (getItask() == 1) ;
 		}
 	}
 }

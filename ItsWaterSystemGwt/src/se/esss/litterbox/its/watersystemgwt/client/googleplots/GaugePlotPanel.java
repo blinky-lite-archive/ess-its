@@ -31,11 +31,13 @@ public class GaugePlotPanel extends HorizontalPanel
 	
 	public boolean isLoaded() {return loaded;}
 	
-	public GaugePlotPanel(String title, double greenMin, double greenMax, double yellowMin, double yellowMax, double redMin, double redMax, String plotWidth, String plotHeight)
+	public GaugePlotPanel(String title, double min, double max, double greenMin, double greenMax, double yellowMin, double yellowMax, double redMin, double redMax, String plotWidth, String plotHeight)
 	{
 		loaded = false;
 		this.plotWidth = plotWidth;
 		this.plotHeight = plotHeight;
+		this.minValue = min;
+		this.maxValue = max;
 		this.greenValueMin = greenMin;
 		this.greenValueMax = greenMax;
 		this.yellowValueMin = yellowMin;

@@ -10,11 +10,11 @@ public class GaugeCaptionPanel extends CaptionPanel
 	
 	public boolean isLoaded() {return loaded;}
 	
-	public GaugeCaptionPanel(String title, double greenMin, double greenMax, double yellowMin, double yellowMax, double redMin, double redMax, String plotWidth, String plotHeight)
+	public GaugeCaptionPanel(String title,  double min, double max, double greenMin, double greenMax, double yellowMin, double yellowMax, double redMin, double redMax, String plotWidth, String plotHeight)
 	{
 		super(title);
 		loaded = false;
-		gaugePlot = new GaugePlotPanel(title, greenMin, greenMax, yellowMin, yellowMax, redMin, redMax, plotWidth, plotHeight);
+		gaugePlot = new GaugePlotPanel(title,  min, max, greenMin, greenMax, yellowMin, yellowMax, redMin, redMax, plotWidth, plotHeight);
 		LoadPlotTimer lpt = new LoadPlotTimer(this);
 		lpt.scheduleRepeating(50);
 		

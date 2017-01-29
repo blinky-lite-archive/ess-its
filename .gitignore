@@ -6,3 +6,4 @@ IceCubeIocPython/test.py
 *.pyc
 
 *.swp
+/itsmqttbroker.dat
