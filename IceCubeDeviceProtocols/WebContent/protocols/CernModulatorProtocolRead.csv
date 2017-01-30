@@ -211,7 +211,7 @@ trigger duty,69,0,float,10,0,0,1,max = 5.6 %
 bias v,71,0,float,10,0,0,1,0.0 – 80.0 V
 bias i,73,0,float,10,0,0,1,0.0 – 40.0 A
 bias p,75,0,float,10,0,0,1,0.0 – 1000.0 W
-wtr p,77,0,float,10,0,0,1,°C
+wtr p,77,0,float,10,0,0,1,bar
 temp igct,79,0,float,1,0,0,1,°C
 temp us,81,0,float,1,0,0,1,°C
 temp ls bouncer,83,0,float,1,0,0,1,°C

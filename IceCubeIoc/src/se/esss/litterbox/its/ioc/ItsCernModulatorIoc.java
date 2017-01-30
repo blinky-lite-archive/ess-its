@@ -3,13 +3,17 @@ package se.esss.litterbox.its.ioc;
 
 import java.net.URL;
 
+import org.json.simple.JSONObject;
+
 import se.esss.litterbox.icecube.bytedevice.ByteDeviceList;
 import se.esss.litterbox.icecube.ioc.tcp.IceCubeTcpIoc;
 
 public class ItsCernModulatorIoc extends IceCubeTcpIoc
 {
 	URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
+	URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
 	ByteDeviceList setByteDevice;
+	ByteDeviceList readByteDevice;
 	private byte[] settingsArray = null;
 	private int numReadbackBytes = 118;
 	private int numWaveformBytes = 3600;
@@ -18,7 +22,9 @@ public class ItsCernModulatorIoc extends IceCubeTcpIoc
 	{
 		super(clientId, mqttBrokerInfoFilePath, inetAddress, portNumber);
 		setByteDevice = new ByteDeviceList(cernmodSettingUrl);
+		readByteDevice = new ByteDeviceList(cernmodReadingUrl);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public byte[] getDataFromGizmo() 
 	{
@@ -48,6 +54,11 @@ public class ItsCernModulatorIoc extends IceCubeTcpIoc
 				readbackData = new byte[118];
 				for (int ij = 0; ij < numReadbackBytes; ++ij) readbackData[ij] = readData[ij];
 				startByteIndex = 118;
+				
+				readByteDevice.putByteArray(readbackData);
+				JSONObject outputData = new JSONObject();
+				outputData.put("wtrp", readByteDevice.getDevice("wtr p").getValue());
+				publishMessage("itsCernMod/get/wtrp", outputData.toJSONString().getBytes(), this.getPublishQos(), true);	
 			}
 			else
 			{

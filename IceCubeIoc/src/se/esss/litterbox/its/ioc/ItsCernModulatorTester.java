@@ -80,7 +80,7 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 		
 		bigBlue.setByteDevice.getDevice("cathode voltage").setValue("40.0");
 		bigBlue.setByteDevice.getDevice("trigger pulsewidth").setValue("2800");
-		bigBlue.setByteDevice.getDevice("hvps current").setValue("35.0");
+		bigBlue.setByteDevice.getDevice("hvps current").setValue("25.0");
 		bigBlue.setByteDevice.getDevice("hvps power").setValue("140.0");
 		bigBlue.setByteDevice.getDevice("send mon values").setValue("1");
 		bigBlue.setByteDevice.getDevice("send pulse data").setValue("0");
