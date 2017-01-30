@@ -1,0 +1,17 @@
+/test-classes
+/gwt-unitCache
+/war/WEB-INF/deploy
+/war/WEB-INF/classes
+/war/llrfgwt
+/war/WEB-INF/lib/appengine*.jar
+/war/WEB-INF/lib/datanucleus*.jar
+/war/WEB-INF/lib/geronimo*.jar
+/war/WEB-INF/lib/j*.jar
+/war/WEB-INF/lib/a*.jar
+/war/WEB-INF/lib/gwt-servlet.jar
+/.settings/com.google.appengine.eclipse.core.prefs
+/bin/
+/.settings/
+/.gwt/
+/war/*-tcpbrokershiftrio1883
+/*.war
