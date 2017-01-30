@@ -52,7 +52,7 @@ public class MqttTester  extends SimpleMqttClient
 
 		
 		outputData.put("power1", "42.5");
-		outputData.put("power1", "39.6");
+		outputData.put("power2", "39.6");
 		mqttTester.publishMessage("itsPowerMeter01/get", outputData.toJSONString().getBytes(), 0, retained);
 	}
 
