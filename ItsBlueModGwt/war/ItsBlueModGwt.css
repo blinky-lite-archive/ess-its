@@ -1,0 +1,70 @@
+/** Add css rules here for your application. */
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+.titleLabel {
+  display: block;
+	color: #0095CD;
+	font-size: 1.5em;
+	font-weight: bold;
+	text-align: center;
+}
+.ItsLlrfPanel {
+	color: #FFFFFF;
+	font-size: 1.5em;
+	font-weight: bold;
+	background-color: #0095CD;
+}
+.ItsModSettingsPanel {
+	color: #FFFFFF;
+	font-size: 1.5em;
+	font-weight: bold;
+	background-color: #0095CD;
+}
+.readRed {
+	color: #FF0000;
+	background-color: #0095CD;
+}
+.readGreen {
+	color: #00FF00;
+	background-color: #0095CD;
+}
+.readings {
+	color: #00FF00;
+	background-color: #0095CD;
+}
+.modInterlockLabelGood {
+	color: #000000;
+	background-color: #00FF00;
+	font-size: 16pt;
+}
+.modInterlockLabelBad {
+	color: #f9ff00;
+	background-color: #FF0000;
+	font-size: 2.0em;
+}
+.modStateButton0{
+	color: #000000;
+	background-color: #d3d7cf;
+	font-size: 14pt;
+}
+.modStateButton1{
+	color: #000000;
+	background-color: #f9ff00;
+	font-size: 10pt;
+}
+.modStateButton2{
+	color: #000000;
+	background-color: #00ff00;
+	font-size: 10pt;
+}
+.modStateButton3{
+	color: #888a85;
+	background-color: #d3d7cf;
+	font-size: 10pt;
+}
+
