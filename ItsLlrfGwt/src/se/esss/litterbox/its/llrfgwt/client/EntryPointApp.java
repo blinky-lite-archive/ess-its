@@ -25,7 +25,7 @@ public class EntryPointApp implements EntryPoint
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
-		setupApp.setLogoTitle("ITS LLRF!");
+		setupApp.setLogoTitle("ITS So Low!");
 		setupApp.echoVersionInfo();
 
 		setupApp.getEntryPointAppService().checkIpAddress(setupApp.isDebug(), new CheckIpAddresslAsyncCallback(this));		
