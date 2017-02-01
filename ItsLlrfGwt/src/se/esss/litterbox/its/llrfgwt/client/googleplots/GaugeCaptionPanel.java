@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.watersystemgwt.client.googleplots;
+package se.esss.litterbox.its.llrfgwt.client.googleplots;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -14,7 +14,7 @@ public class GaugeCaptionPanel extends CaptionPanel
 	{
 		super(captionTitle);
 		loaded = false;
-		gaugePlot = new GaugePlotPanel(gaugeLabel,  min, max, greenMin, greenMax, yellowMin, yellowMax, redMin, redMax, plotWidth, plotHeight);
+		gaugePlot = new GaugePlotPanel(gaugeLabel, min, max, greenMin, greenMax, yellowMin, yellowMax, redMin, redMax, plotWidth, plotHeight);
 		LoadPlotTimer lpt = new LoadPlotTimer(this);
 		lpt.scheduleRepeating(50);
 		

@@ -37,42 +37,42 @@ public class GaugeShowCasePanel extends GskelVerticalPanel
 	private void addGauge1()
 	{
 		getStatusTextArea().addStatus("Adding Body Flow Gauge");
-		bodyFlowGaugeCaptionPanel = new GaugeCaptionPanel("Body Flow", 0, 30, 18.0, 30.0, 13.0, 18.0, 0.0, 13.0, "100px", "100px");
+		bodyFlowGaugeCaptionPanel = new GaugeCaptionPanel("Body Flow", "Body Flow", 0, 30, 18.0, 30.0, 13.0, 18.0, 0.0, 13.0, "100px", "100px");
 		new GaugePlotWaiter(200, 1);
 	}
 	private void addGauge2()
 	{
 		getStatusTextArea().addStatus("Adding Tank Flow Gauge");
 		gaugeGrid.setWidget(0, 0, bodyFlowGaugeCaptionPanel);
-		tankFlowgaugeCaptionPanel = new GaugeCaptionPanel("Tank Flow", 0, 15, 11.0, 15.0, 9.0, 11.0, 0.0, 9.0, "100px", "100px");
+		tankFlowgaugeCaptionPanel = new GaugeCaptionPanel("Tank Flow", "Tank Flow", 0, 15, 11.0, 15.0, 9.0, 11.0, 0.0, 9.0, "100px", "100px");
 		new GaugePlotWaiter(100, 2);
 	}
 	private void addGauge3()
 	{
 		getStatusTextArea().addStatus("Adding Collector Flow Gauge");
 		gaugeGrid.setWidget(0, 1, tankFlowgaugeCaptionPanel);
-		collectorFlowGaugeCaptionPanel = new GaugeCaptionPanel("Collector Flow", 0, 375, 300.0, 375.0, 250.0, 300.0, 0.0, 250.0, "100px", "100px");
+		collectorFlowGaugeCaptionPanel = new GaugeCaptionPanel("Collector Flow", "Collector Flow", 0, 375, 300.0, 375.0, 250.0, 300.0, 0.0, 250.0, "100px", "100px");
 		new GaugePlotWaiter(100, 3);
 	}
 	private void addGauge4()
 	{
 		getStatusTextArea().addStatus("Adding Solenoid Flow Gauge");
 		gaugeGrid.setWidget(0, 2, collectorFlowGaugeCaptionPanel);
-		solenoidFlowGaugeCaptionPanel = new GaugeCaptionPanel("Solenoid Flow", 0, 50, 30.0, 50.0, 25.0, 30.0, 0.0, 25.0, "100px", "100px");
+		solenoidFlowGaugeCaptionPanel = new GaugeCaptionPanel("Solenoid Flow", "Solenoid Flow", 0, 50, 30.0, 50.0, 25.0, 30.0, 0.0, 25.0, "100px", "100px");
 		new GaugePlotWaiter(100, 4);
 	}
 	private void addGauge5()
 	{
 		getStatusTextArea().addStatus("Adding Input Temp Gauge");
 		gaugeGrid.setWidget(1, 0, solenoidFlowGaugeCaptionPanel);
-		inputTempGaugeCaptionPanel = new GaugeCaptionPanel("Input Temp", 10.0, 40.0, 10.0, 25.0, 25.0, 35.0, 35.0, 40.0, "100px", "100px");
+		inputTempGaugeCaptionPanel = new GaugeCaptionPanel("Input Temp", "Input Temp", 10.0, 40.0, 10.0, 25.0, 25.0, 35.0, 35.0, 40.0, "100px", "100px");
 		new GaugePlotWaiter(100, 5);
 	}
 	private void addGauge6()
 	{
 		getStatusTextArea().addStatus("Adding Modulator Pressure");
 		gaugeGrid.setWidget(1, 1, inputTempGaugeCaptionPanel);
-		modPressGaugeCaptionPanel = new GaugeCaptionPanel("Mod Press.", 0.0, 8.0, 4.0, 6.0, 0.0, 4.0, 6.0, 8.0, "100px", "100px");
+		modPressGaugeCaptionPanel = new GaugeCaptionPanel("Mod Press.", "Mod Press.", 0.0, 8.0, 4.0, 6.0, 0.0, 4.0, 6.0, 8.0, "100px", "100px");
 		new GaugePlotWaiter(100, 6);
 	}
 	private void startMqtt()

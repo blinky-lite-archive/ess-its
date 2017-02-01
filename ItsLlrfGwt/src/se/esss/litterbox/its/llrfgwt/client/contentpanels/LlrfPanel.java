@@ -1,11 +1,12 @@
 package se.esss.litterbox.its.llrfgwt.client.contentpanels;
 
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -16,6 +17,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.llrfgwt.client.EntryPointApp;
+import se.esss.litterbox.its.llrfgwt.client.googleplots.GaugeCaptionPanel;
 import se.esss.litterbox.its.llrfgwt.client.googleplots.TimePlotCaptionPanel;
 import se.esss.litterbox.its.llrfgwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.llrfgwt.client.gskel.GskelSettingButtonGrid;
@@ -32,10 +34,12 @@ public class LlrfPanel extends GskelVerticalPanel
 	Button cancelButton  = new Button("Cancel");
 	boolean settingsPermitted = false;
 	boolean settingsEnabled = false;
+	boolean rfPowerOn = false;
 	
 	private TextBox rfFreqTextBox = new TextBox();
 	private TextBox rfPowLvlTextBox = new TextBox();
-	private CheckBox rfPowOnCheckBox = new CheckBox();
+	private Button rfPowerOnButton = new Button("On");
+	private Button rfPowerOffButton = new Button("Off");
 	private Label rfPowerReading1 = new Label();
 	private Label rfPowerReading2 = new Label();
 	private Label rfWattReading1 = new Label();
@@ -46,7 +50,9 @@ public class LlrfPanel extends GskelVerticalPanel
 	String powerMeterMqttTopic;
 	String rfSigGenMqttTopic;
 	TimePlotCaptionPanel powerPlot;
-
+	GaugeCaptionPanel klystronPowerGaugeCaptionPanel;
+	VerticalPanel settingsAndGaugePanel = new VerticalPanel();
+	
 	public boolean isSettingsPermitted() {return settingsPermitted;}
 	public void setSettingsPermitted(boolean settingsPermitted) {this.settingsPermitted = settingsPermitted;}
 
@@ -60,19 +66,26 @@ public class LlrfPanel extends GskelVerticalPanel
 		superCreated = true;
 		this.getGskelTabLayoutScrollPanel().setStyleName("ItsLlrfPanel");
 		HorizontalPanel hp1 = new HorizontalPanel();
-		hp1.add(settingsCaptionPanel());
+		settingsAndGaugePanel.add(settingsCaptionPanel());
+		hp1.add(settingsAndGaugePanel);
 		String[] timingChannelName = {"ScpTrg", "RFGate", "PMTrg", "CH4"};
 		hp1.add(new IceCubeTimerPanel("LLRF Timer", llrfIceCubetimerMqttTopic, timingChannelName, settingsPermitted, entryPointApp));
 		String[] plotLegend = {"Input","Output"};
 		powerPlot = new TimePlotCaptionPanel(500, "Klystron Power", "dBm", plotLegend, "600px", "400px");
 		hp1.add(powerPlot);
 		add(hp1);
-		new powerPlotWaiter(50);
+		new PlotWaiter(300, 0);
 	}
 	private void loadMqttData()
 	{
 		powerMeterMqttData = new PowerMeterMqttData();
 		rFSigGenMqttData = new RFSigGenMqttData();
+	}
+	private void loadKlystronPowerGaugeCaptionPanel()
+	{
+		klystronPowerGaugeCaptionPanel = new GaugeCaptionPanel("Klystron", "Power (kW)", 0.0, 1000.0, 600.0, 1000.0, 300.0, 600.0, 0.0, 300.0, "200px", "200px");
+		settingsAndGaugePanel.add(klystronPowerGaugeCaptionPanel);
+		new PlotWaiter(300, 1);
 	}
 
 	@Override
@@ -99,6 +112,11 @@ public class LlrfPanel extends GskelVerticalPanel
 		rfPowerReading2.setSize(textBoxWidth, "1.0em");
 		rfWattReading1.setSize(textBoxWidth, "1.0em");
 		rfWattReading2.setSize(textBoxWidth, "1.0em");
+		HorizontalPanel rfOnOffPanel = new HorizontalPanel();
+		rfOnOffPanel.add(rfPowerOffButton);
+		rfOnOffPanel.add(rfPowerOnButton);
+		rfPowerOffButton.addClickHandler(new RfOnButtonClickHandler(false));
+		rfPowerOnButton.addClickHandler(new RfOnButtonClickHandler(true));
 
 		for (int irow = 0; irow < 8; ++irow)
 		{
@@ -118,8 +136,8 @@ public class LlrfPanel extends GskelVerticalPanel
 		settingGrid.setWidget(2, 1, rfPowLvlTextBox);
 		settingGrid.setWidget(2, 2, new Label("dBm"));
 		
-		settingGrid.setWidget(3, 0, new Label("RF Power On"));
-		settingGrid.setWidget(3, 1, rfPowOnCheckBox);
+		settingGrid.setWidget(3, 0, new Label("RF Power"));
+		settingGrid.setWidget(3, 1, rfOnOffPanel);
 		settingGrid.setWidget(3, 2, new Label(""));
 				
 		settingGrid.setWidget(4, 0, new Label("Input Power"));
@@ -152,7 +170,21 @@ public class LlrfPanel extends GskelVerticalPanel
 	{
 		rfFreqTextBox.setEnabled(enabled);
 		rfPowLvlTextBox.setEnabled(enabled);
-		rfPowOnCheckBox.setEnabled(enabled);
+		rfPowerOffButton.setEnabled(enabled);
+		rfPowerOnButton.setEnabled(enabled);
+	}
+	private void setRfPowerButtonStyle()
+	{
+		if (rfPowerOn)
+		{
+			rfPowerOffButton.setStyleName("rfOffButtonNotActivated");
+			rfPowerOnButton.setStyleName("rfOnButtonActivated");
+		}
+		else
+		{
+			rfPowerOffButton.setStyleName("rfOffButtonActivated");
+			rfPowerOnButton.setStyleName("rfOnButtonNotActivated");
+		}
 	}
 	private void updateRfSigGenSettings()
 	{
@@ -163,9 +195,9 @@ public class LlrfPanel extends GskelVerticalPanel
 			rfPowLvlTextBox.setText(rFSigGenMqttData.getJsonValue("rfPowLvl"));
 			String rfPowerStateText = rFSigGenMqttData.getJsonValue("rfPowOn");
 			rfPowerStateText = rfPowerStateText.trim();
-			boolean rfPowerState = false;
-			if (rfPowerStateText.equals("ON")) rfPowerState = true;
-			rfPowOnCheckBox.setValue(rfPowerState);
+			rfPowerOn = false;
+			if (rfPowerStateText.equals("ON")) rfPowerOn = true;
+			setRfPowerButtonStyle();
 		} catch (Exception e) 
 		{
 			entryPointApp.setupApp.getStatusTextArea().addStatus(e.getMessage());
@@ -186,6 +218,7 @@ public class LlrfPanel extends GskelVerticalPanel
 			wattRead[1] = Math.pow(10.0, (powerRead[1] - 60.0) / 10.0);
 			rfWattReading1.setText(NumberFormat.getFormat("###.####").format(wattRead[0]));
 			rfWattReading2.setText(NumberFormat.getFormat("###.####").format(wattRead[1]));
+			klystronPowerGaugeCaptionPanel.updateReadings(wattRead[1]);
 			
 		}
 		catch(Exception e)
@@ -209,11 +242,33 @@ public class LlrfPanel extends GskelVerticalPanel
 		jsonArray[1][0] = "rfPowLvl";
 		jsonArray[1][1] = Double.toString(rfPowLvl);
 		String rfOn = "OFF";
-		if (rfPowOnCheckBox.getValue()) rfOn = "ON";
+		if (rfPowerOn) rfOn = "ON";
 		jsonArray[2][0] = "rfPowOn";
 		jsonArray[2][1] = rfOn;
 		entryPointApp.mqttService.publishJsonArray(rfSigGenMqttTopic, jsonArray, settingsPermitted, entryPointApp.setupApp.isDebug(), "ok", new LlrfPublishSettingsCallback());
 		enableInput(false);		
+	}
+	class RfOnButtonClickHandler implements ClickHandler
+	{
+		boolean powerButtonOn;
+		RfOnButtonClickHandler(boolean powerButtonOn)
+		{
+			this.powerButtonOn  = powerButtonOn;
+		}
+		@Override
+		public void onClick(ClickEvent event) 
+		{
+			if (powerButtonOn)
+			{
+				rfPowerOn = true;
+			}
+			else
+			{
+				rfPowerOn = false;
+			}
+			setRfPowerButtonStyle();
+		}
+		
 	}
 	class SettingButtonGrid extends GskelSettingButtonGrid
 	{
@@ -296,13 +351,17 @@ public class LlrfPanel extends GskelVerticalPanel
 			entryPointApp.setupApp.getStatusTextArea().addStatus("Success: Putting LLRF Settings");
 		}
 	}
-	class powerPlotWaiter extends GskelLoadWaiter
+	class PlotWaiter extends GskelLoadWaiter
 	{
-		public powerPlotWaiter(int loopTimeMillis) {super(loopTimeMillis, 0);}
+		public PlotWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
 		@Override
 		public boolean isLoaded() {return powerPlot.isLoaded();}
 		@Override
-		public void taskAfterLoad() {loadMqttData();}
+		public void taskAfterLoad() 
+		{
+			if (getItask() == 0) loadKlystronPowerGaugeCaptionPanel();
+			if (getItask() == 1) loadMqttData();
+		}
 		
 	}
 }
