@@ -114,6 +114,19 @@ public abstract class SimpleMqttClient implements MqttCallback
 		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();
 		setStatus("Unsubscribed from all topics");
 	}
+	public void unsubscribe(String topic) throws Exception
+	{
+		for (int ii = 0; ii < mqttMessageInfoSubscribeList.size(); ++ii)
+		{
+			if (mqttMessageInfoSubscribeList.get(ii).getTopicString().equals(topic))
+			{
+				mqttClient.unsubscribe(topic);
+				mqttMessageInfoSubscribeList.remove(ii);
+				setStatus("Unsubscribing to: " + topic);
+				return;
+			}
+		}
+	}
 	public void disconnect() throws Exception
 	{
 		mqttClient.disconnect();

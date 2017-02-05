@@ -22,12 +22,12 @@ public class CheckIpAddresslAsyncCallback implements AsyncCallback<String[]>
 	@Override
 	public void onSuccess(String[] result) 
 	{
-		entryPointApp.setupApp.getStatusTextArea().addStatus("IP address = " + result[0]);
+		entryPointApp.setupApp.getStatusTextArea().addStatus("User Name = " + result[0]);
 		boolean ipOkay = Boolean.parseBoolean(result[1]);
 		if (!ipOkay)
 		{
 			entryPointApp.setupApp.getMessageDialog().setImageUrl("images/warning.jpg");
-			entryPointApp.setupApp.getMessageDialog().setMessage("Warning", "Outside user: You can look but not touch", true);
+			entryPointApp.setupApp.getMessageDialog().setMessage("Warning", result[0] + ": You can look but not touch", true);
 			WaitTimer waitTimer = new WaitTimer();
 			waitTimer.scheduleRepeating(200);
 			waitTimer.run();

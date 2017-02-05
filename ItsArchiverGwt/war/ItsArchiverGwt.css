@@ -19,3 +19,15 @@ h1 {
 	font-weight: bold;
 	background-color: #0095CD;
 }
+.TopicGridHeaderRow {
+	color: #FFFFFF;
+	font-size: 2.0em;
+	font-weight: bold;
+	background-color: #0095CD;
+}
+.TopicGridDataRow {
+	color: #f9ff00;
+	font-size: 1.0em;
+	font-weight: normal;
+	background-color: #0095CD;
+}

@@ -1,4 +1,4 @@
-<project name="RaspberryPiCamera" basedir="." default="default">
+<project name="ItsArchiverGwt" basedir="." default="default">
  
 	<target name="default" depends="buildwar,deploy"></target>
  

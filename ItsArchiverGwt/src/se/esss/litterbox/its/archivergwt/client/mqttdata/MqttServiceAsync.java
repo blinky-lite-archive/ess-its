@@ -1,11 +1,16 @@
 package se.esss.litterbox.its.archivergwt.client.mqttdata;
 
+import java.util.ArrayList;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import se.esss.litterbox.its.archivergwt.shared.ArchiveTopic;
 
 public interface MqttServiceAsync 
 {
-	void getJsonArray(String topic, boolean debug, String[][] debugResponse, AsyncCallback<String[][]> callback);
-	void getMessage(String topic, boolean debug, byte[] debugResponse, AsyncCallback<byte[]> callback);
+
 	void publishMessage(String topic, byte[] message, boolean settingsEnabled, boolean debug, String debugResponse, AsyncCallback<String> callback);
-	void publishJsonArray(String topic, String[][] jsonArray, boolean settingsEnabled, boolean debug,String debugResponse, AsyncCallback<String> callback);
+	void getTopicList(boolean debug, String debugResponse, AsyncCallback<ArrayList<ArchiveTopic>> callback);
+	void addTopic(ArchiveTopic archiveTopic, boolean settingsEnabled, boolean debug, String debugResponse, AsyncCallback<ArrayList<ArchiveTopic>> callback);
+	void deleteTopic(int index, boolean settingsEnabled, boolean debug, String debugResponse, AsyncCallback<ArrayList<ArchiveTopic>> callback);
 }
