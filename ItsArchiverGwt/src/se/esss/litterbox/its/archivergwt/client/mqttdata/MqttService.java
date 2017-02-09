@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import se.esss.litterbox.its.archivergwt.shared.ArchiveJsonData;
 import se.esss.litterbox.its.archivergwt.shared.ArchiveTopic;
 
 /**
@@ -17,4 +18,5 @@ public interface MqttService  extends RemoteService
 	ArrayList<ArchiveTopic> getTopicList(boolean debug, String debugResponse);
 	ArrayList<ArchiveTopic> addTopic(ArchiveTopic archiveTopic, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception;
 	ArrayList<ArchiveTopic> deleteTopic(int index, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception;
+	public ArrayList<ArchiveJsonData> getArchiveData(ArrayList<ArchiveJsonData> archiveJsonDataList, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception;
 }

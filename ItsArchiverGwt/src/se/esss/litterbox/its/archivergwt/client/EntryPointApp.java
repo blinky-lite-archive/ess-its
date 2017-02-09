@@ -5,7 +5,7 @@ import com.google.gwt.core.client.GWT;
 
 import se.esss.litterbox.its.archivergwt.client.callbacks.CheckIpAddresslAsyncCallback;
 import se.esss.litterbox.its.archivergwt.client.contentpanels.RegisterTopicsPanel;
-import se.esss.litterbox.its.archivergwt.client.gskel.GskelLoadWaiter;
+import se.esss.litterbox.its.archivergwt.client.contentpanels.TopicPlotPanel;
 import se.esss.litterbox.its.archivergwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.archivergwt.client.mqttdata.MqttService;
 import se.esss.litterbox.its.archivergwt.client.mqttdata.MqttServiceAsync;
@@ -18,12 +18,13 @@ public class EntryPointApp implements EntryPoint
 	public GskelSetupApp setupApp;
 	public final MqttServiceAsync mqttService = GWT.create(MqttService.class);
 	boolean settingsPermitted;
+	TopicPlotPanel topicPlotPanel = null;
 
 	public void onModuleLoad() 
 	{
 		setupApp = new GskelSetupApp(this);
 		setupApp.setDebug(false);
-		setupApp.setVersionDate("February 3, 2017 10:53");
+		setupApp.setVersionDate("February 9, 2017 05:54");
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
@@ -35,25 +36,7 @@ public class EntryPointApp implements EntryPoint
 	public void initializeTabs(boolean settingsPermitted)
 	{
 		this.settingsPermitted = settingsPermitted;
-		loadTab1();
-	}
-	private void loadTab1()
-	{
-		new RegisterTopicsPanel(setupApp, this, settingsPermitted);
-		new TabLoadWaiter(100, 1);
-	}
-	class TabLoadWaiter extends GskelLoadWaiter
-	{
-		public TabLoadWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
-		@Override
-		public boolean isLoaded() 
-		{
-			return true;
-		}
-		@Override
-		public void taskAfterLoad() 
-		{
-			if (getItask() == 1);
-		}
+		topicPlotPanel = new TopicPlotPanel(this, settingsPermitted);
+		new RegisterTopicsPanel(topicPlotPanel, this, settingsPermitted);
 	}
 }

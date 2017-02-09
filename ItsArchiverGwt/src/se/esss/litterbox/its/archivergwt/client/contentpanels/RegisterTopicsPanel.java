@@ -21,7 +21,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.archivergwt.client.EntryPointApp;
-import se.esss.litterbox.its.archivergwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.archivergwt.client.gskel.GskelVerticalPanel;
 import se.esss.litterbox.its.archivergwt.shared.ArchiveTopic;
 
@@ -38,14 +37,15 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 	private RadioButton jsondataRadioButton = new RadioButton("dataTypeRadioGroup", "JSONDATA");
 	private TextBox deleteTopicTextBox = new TextBox();
 	private int lastTopicIndex = 0;
+	TopicPlotPanel topicPlotPanel = null;
 
-	public RegisterTopicsPanel(GskelSetupApp setupApp,  EntryPointApp entryPointApp, boolean settingsPermitted) 
+	public RegisterTopicsPanel(TopicPlotPanel topicPlotPanel, EntryPointApp entryPointApp, boolean settingsPermitted) 
 	{
-		super("Register Topics", "noTabStyle", setupApp);
+		super("Register Topics", "noTabStyle", entryPointApp.setupApp);
 		this.getGskelTabLayoutScrollPanel().setStyleName("GskelVertPanel");
 		this.settingsPermitted = settingsPermitted;
 		this.entryPointApp = entryPointApp;
-		entryPointApp.mqttService.getTopicList(entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback());
+		entryPointApp.mqttService.getTopicList(entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback(true));
 		TopicListTimer tlt = new TopicListTimer();
 		tlt.scheduleRepeating(10000);
 		HorizontalPanel hp1 = new HorizontalPanel();
@@ -54,6 +54,8 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 		topicGrid = new Grid(1,7);
 		hp1.add(topicGrid);
 		add(hp1);
+		
+		this.topicPlotPanel = topicPlotPanel;
 	}
 	private void updateTopicGrid(ArrayList<ArchiveTopic> archiveTopicList)
 	{
@@ -87,7 +89,14 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 			topicGrid.setWidget(ii + 1, 3, new Label(Long.toString(archiveTopicList.get(ii).getWritePeriodMilli() / 1000)));
 			topicGrid.setWidget(ii + 1, 4, new Label(new Date(archiveTopicList.get(ii).getTimeOfCreationMilli()).toString()));
 			topicGrid.setWidget(ii + 1, 5, new Label(new Date(archiveTopicList.get(ii).getTimeOfLastWriteMilli()).toString()));
-			topicGrid.setWidget(ii + 1, 6, new Label(new String(archiveTopicList.get(ii).getMessage())));
+			if (archiveTopicList.get(ii).getMessage() != null)
+			{
+				topicGrid.setWidget(ii + 1, 6, new Label(new String(archiveTopicList.get(ii).getMessage())));
+			}
+			else
+			{
+				topicGrid.setWidget(ii + 1, 6, new Label("No Data"));
+			}
 			if (archiveTopicList.get(ii).getIndex() > lastTopicIndex) lastTopicIndex = archiveTopicList.get(ii).getIndex();
 		}
 	}
@@ -155,7 +164,7 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 			at.setTopic(addTopicTextBox.getText().trim());
 			long period = Long.parseLong(addTopicPeriodTextBox.getText());
 			at.setWritePeriodMilli(period * 1000);
-			entryPointApp.mqttService.addTopic(at, settingsPermitted, entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback());
+			entryPointApp.mqttService.addTopic(at, settingsPermitted, entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback(true));
 			
 		} catch (NumberFormatException nfe)
 		{
@@ -171,7 +180,7 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 		try
 		{
 			int index = Integer.parseInt(deleteTopicTextBox.getText().trim());
-			entryPointApp.mqttService.deleteTopic(index, settingsPermitted, entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback());
+			entryPointApp.mqttService.deleteTopic(index, settingsPermitted, entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback(true));
 		} catch (NumberFormatException nfe)
 		{
 			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure on deleting topic: " + nfe.getMessage());
@@ -189,16 +198,21 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 		@Override
 		public void run() 
 		{
-			entryPointApp.mqttService.getTopicList(entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback());
+			entryPointApp.mqttService.getTopicList(entryPointApp.setupApp.isDebug(), null, new GetTopicListCallback(false));
 		}
 	}
 	class GetTopicListCallback implements AsyncCallback<ArrayList<ArchiveTopic>>
 	{
+		boolean notifyUpdate;
+		GetTopicListCallback(boolean notifyUpdate)
+		{
+			this.notifyUpdate = notifyUpdate;
+		}
 
 		@Override
 		public void onFailure(Throwable caught) 
 		{
-			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: test Callback");
+			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: GetTopicListCallback");
 			entryPointApp.setupApp.getStatusTextArea().addStatus(caught.getMessage());
 			actionCaptionPanel.setVisible(settingsPermitted);
 		}
@@ -208,6 +222,7 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 		{
 			actionCaptionPanel.setVisible(settingsPermitted);
 			updateTopicGrid(result);
+			if (notifyUpdate) topicPlotPanel.topicUpdateInterfaceAction(result);
 		}
 	}
 	class TopicActionButtonClickHandler implements ClickHandler
@@ -224,5 +239,10 @@ public class RegisterTopicsPanel extends GskelVerticalPanel
 			if (action.equals("Delete")) deleteTopic();
 			
 		}
+	}
+	public interface TopicUpdateInterface 
+	{
+		void topicUpdateInterfaceAction(ArrayList<ArchiveTopic> archiveTopicList);
+
 	}
 }

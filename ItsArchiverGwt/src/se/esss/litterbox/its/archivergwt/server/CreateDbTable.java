@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Date;
 
+
 public class CreateDbTable 
 {
 	public static final int JSONDATA = 1;
@@ -89,13 +90,39 @@ public class CreateDbTable
         dbConnection.close();
         System.out.println("Topic: " + topic + " deleted.");
 	}
+	public static void getTopics() throws Exception
+	{
+        Connection dbConnection = DriverManager.getConnection("jdbc:h2:" + "./war/itsDB/itsDB", "", "");
+		String selectQuery = "select * from ITSTOPICS";
+        PreparedStatement selectPreparedStatement = dbConnection.prepareStatement(selectQuery);
+        ResultSet rs = selectPreparedStatement.executeQuery();
+        while (rs.next()) 
+        {
+            System.out.println("id: " + rs.getInt("id") + " topic: " + rs.getString("topic") + " datatype: " + rs.getString("datatype") + " period: " + rs.getInt("period") + " toc: " + new Date(rs.getLong("toc")).toString() + " tolw: " + new Date(rs.getLong("tolw")).toString());
+        }
+        dbConnection.close();
+	}
+	public static void getArchiveData() throws Exception
+	{
+        Connection dbConnection = DriverManager.getConnection("jdbc:h2:" + "./war/itsDB/itsDB", "", "");
+		String selectQuery = "select * from ITSARCHIVE";
+        PreparedStatement selectPreparedStatement = dbConnection.prepareStatement(selectQuery);
+        ResultSet rs = selectPreparedStatement.executeQuery();
+        while (rs.next()) 
+        {
+            System.out.println("Date: " + new Date(rs.getLong("tod")).toString() + " topic: " + rs.getString("topic"));
+        }
+        dbConnection.close();
+	}
 	public static void main(String[] args) throws Exception 
 	{
         Class.forName("org.h2.Driver");
-		createTables();
-        addTopicToTable("itsGeiger01/get/cpm", JSONDATA, 10);
-        addTopicToTable("itsSolarMeter01/get/cond", JSONDATA, 10);
+//		createTables();
+//        addTopicToTable("itsGeiger01/get/cpm", JSONDATA, 10);
+//        addTopicToTable("itsSolarMeter01/get/cond", JSONDATA, 10);
 //        removeTopicFromTable("itsSolarMeter01/get/cond");
+        getTopics();
+        getArchiveData();
 	}
 
 }

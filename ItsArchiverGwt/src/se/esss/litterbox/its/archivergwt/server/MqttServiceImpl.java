@@ -1,6 +1,7 @@
 package se.esss.litterbox.its.archivergwt.server;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,6 +17,7 @@ import org.json.simple.parser.ParseException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import se.esss.litterbox.its.archivergwt.client.mqttdata.MqttService;
+import se.esss.litterbox.its.archivergwt.shared.ArchiveJsonData;
 import se.esss.litterbox.its.archivergwt.shared.ArchiveTopic;
 
 
@@ -26,6 +28,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	private boolean mqttClientInitialized = false;
 	private ArrayList<ArchiveTopic> archiveTopicList = new ArrayList<ArchiveTopic>();
 	private Connection dbConnection;
+	private boolean readOnly = false;
 	
 	public void init()
 	{
@@ -34,7 +37,14 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		{
 			Class.forName("org.h2.Driver");
 			String dbDirPath = getServletContext().getRealPath("itsDB");
-	        dbConnection = DriverManager.getConnection("jdbc:h2:" + dbDirPath + "/itsDB", "", "");
+			if (readOnly)
+			{
+				dbConnection = DriverManager.getConnection("jdbc:h2:" + dbDirPath + "/itsDB;ACCESS_MODE_DATA=r", "", "");
+			}
+			else
+			{
+				dbConnection = DriverManager.getConnection("jdbc:h2:" + dbDirPath + "/itsDB", "", "");
+			}
 			mqttClient = new MqttServiceImpClient(this, "ItsArchiverWebApp", getMqttDataPath(), cleanSession);
 			mqttClientInitialized = true;
 			getTopics();
@@ -50,7 +60,8 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	private void getTopics() throws Exception
 	{
-        String selectQuery = "select * from ITSTOPICS";
+		archiveTopicList = new ArrayList<ArchiveTopic>();
+		String selectQuery = "select * from ITSTOPICS";
         PreparedStatement selectPreparedStatement = dbConnection.prepareStatement(selectQuery);
         ResultSet rs = selectPreparedStatement.executeQuery();
         while (rs.next()) 
@@ -95,16 +106,19 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	        	at.setTimeOfLastWriteMilli(now.getTime());
 	        	at.setMessage(message);
 	        	if (at.getDataType() == ArchiveTopic.JSONDATA) at.setJsonData(getJsonArray(message));
-	        	PreparedStatement insertPreparedStatement = null;
-	        	String insertQuery = "INSERT INTO ITSARCHIVE" + "(tod, topic, datatype, payload) values" + "(?,?,?,?)";
-	        	insertPreparedStatement = dbConnection.prepareStatement(insertQuery);
-	        	insertPreparedStatement.setLong(1, now.getTime());
-	        	insertPreparedStatement.setString(2, topic);
-	        	insertPreparedStatement.setInt(3, at.getDataType());
-	        	insertPreparedStatement.setBytes(4, message);
-	        	insertPreparedStatement.executeUpdate();
-	        	insertPreparedStatement.close();
-	        	dbConnection.commit();
+	    		if (!readOnly)
+	    		{
+		        	PreparedStatement insertPreparedStatement = null;
+		        	String insertQuery = "INSERT INTO ITSARCHIVE" + "(tod, topic, datatype, payload) values" + "(?,?,?,?)";
+		        	insertPreparedStatement = dbConnection.prepareStatement(insertQuery);
+		        	insertPreparedStatement.setLong(1, now.getTime());
+		        	insertPreparedStatement.setString(2, topic);
+		        	insertPreparedStatement.setInt(3, at.getDataType());
+		        	insertPreparedStatement.setBytes(4, message);
+		        	insertPreparedStatement.executeUpdate();
+		        	insertPreparedStatement.close();
+		        	dbConnection.commit();
+	    		}
 	        }
 	        catch (Exception e)
 	        {
@@ -133,6 +147,69 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		}
 		return data;
 	}
+	private void getArchiveJsonData(ArchiveJsonData ajd) throws Exception
+	{
+        String selectQuery = "select * from ITSARCHIVE where topic=? and tod>=? and tod<?";
+        PreparedStatement selectPreparedStatement = null;
+        selectPreparedStatement = dbConnection.prepareStatement(selectQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        selectPreparedStatement.setString(1, ajd.getTopic());
+        selectPreparedStatement.setLong(2, ajd.getStartTime());
+        selectPreparedStatement.setLong(3, ajd.getStopTime());
+        ResultSet rs = selectPreparedStatement.executeQuery();
+        int ncount = 0;
+        while (rs.next()) {++ncount;}
+        if (ncount < 1) throw new Exception("No data found for requested time period and topic");
+        double[] deviceData = new double[ncount];
+        double[] timeData = new double[ncount];
+        rs.beforeFirst();
+        rs.next();
+        if (rs.getInt("datatype") !=  ArchiveTopic.JSONDATA) throw new Exception("Requested data not JSON data");
+        String[][] jsonData = getJsonArray(rs.getBytes("payload"));
+        int ikey = -1;
+        for (int ii = 0; ii < jsonData.length; ++ii)
+        {
+        	if (jsonData[ii][0].equals(ajd.getDeviceName())) ikey = ii;
+        }
+        if (ikey < 0) throw new Exception("JSON device not found in query");
+        int icount = 0;
+        rs.beforeFirst();
+        while (rs.next())
+        {
+        	jsonData = getJsonArray(rs.getBytes("payload"));
+        	try{deviceData[icount] = Double.parseDouble(jsonData[ikey][1]);}
+        	catch (NumberFormatException nfe) {throw new Exception("JSON Data not a number");}
+        	timeData[icount] = (double) (((rs.getLong("tod") - ajd.getStartTime())) / 1000);
+        	timeData[icount] = timeData[icount] / 3600.0;
+ //       	System.out.println(icount + " " + jsonData[ikey][0] + " " + jsonData[ikey][1] + " " + deviceData[icount] + " " + timeData[icount]);
+        	++icount;
+        }
+        selectPreparedStatement.close();
+        ajd.setDeviceData(deviceData);
+        ajd.setTimeData(timeData);
+        writeTraceDataCsvFile(ajd);
+ 	}
+	private void writeTraceDataCsvFile(ArchiveJsonData ajd) throws Exception
+	{
+		if(readOnly) return;
+		String traceFilePath = getServletContext().getRealPath("traceData/trace" + Integer.toString(ajd.getTrace()) + ".csv");
+		PrintWriter pw = new PrintWriter(traceFilePath);
+		pw.println("topic," + ajd.getTopic());
+		pw.println("device," + ajd.getDeviceName());
+		pw.println("startTime," + new Date(ajd.getStartTime()).toString());
+		pw.println("stopTime," + new Date(ajd.getStopTime()).toString());
+		pw.println("time (hours),value");
+		for (int ii = 0; ii < ajd.getTimeData().length; ++ii)
+		{
+			pw.println(Double.toString(ajd.getTimeData()[ii]) + "," + Double.toString(ajd.getDeviceData()[ii]));
+		}
+		pw.close();
+	}
+	@Override
+	public ArrayList<ArchiveJsonData> getArchiveData(ArrayList<ArchiveJsonData> archiveJsonDataList, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
+	{
+		for (int ii = 0; ii < archiveJsonDataList.size(); ++ii) getArchiveJsonData(archiveJsonDataList.get(ii));
+		return archiveJsonDataList;
+	}
 	@Override
 	public String publishMessage(String topic, byte[] message, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
 	{
@@ -146,6 +223,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	@Override
 	public ArrayList<ArchiveTopic> addTopic(ArchiveTopic archiveTopic, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
 	{
+		if (readOnly) throw new Exception("Database in READONLY");
 		ArchiveTopic checkArchiveTopic = ArchiveTopic.getArchiveTopic(archiveTopic.getTopic(), archiveTopicList);
 		if (checkArchiveTopic != null) throw new Exception(archiveTopic.getTopic() + " already exists");
 		archiveTopicList.add(archiveTopic);
@@ -168,6 +246,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	@Override
 	public ArrayList<ArchiveTopic> deleteTopic(int index, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
 	{
+		if (readOnly) throw new Exception("Database in READONLY");
 		ArchiveTopic checkArchiveTopic = ArchiveTopic.getArchiveTopic(index, archiveTopicList);
 		if (checkArchiveTopic == null) throw new Exception("Topic " + index + " does not exist");
         mqttClient.unsubscribe(checkArchiveTopic.getTopic());
