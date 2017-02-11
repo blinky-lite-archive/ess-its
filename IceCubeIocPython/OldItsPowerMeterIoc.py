@@ -5,33 +5,21 @@ import sys
 import usbtmc
 
 #should be unique for each Ioc
-clientId = "itsRfSigGen01Ioc"
-subscribeTopic = "itsRfSigGen01/set/#"
-publishtopic = "itsRfSigGen01/get"
+clientId = "itsPowerMeter01Ioc"
+subscribeTopic = "itsPowerMeter01/set/#"
+publishtopic = "itsPowerMeter01/get"
 periodicPollPeriodSecs = 1
 
 # Power meter initialization
-usbInst =  usbtmc.Instrument(2733, 72)
-usbCommand = "*RST"
+usbInst =  usbtmc.Instrument(2733, 27)
+usbCommand = "SYST:PRES"
 print "Sending " + usbCommand + " to device"
 usbInst.write(usbCommand)
 time.sleep(2)
-usbCommand = "FREQ 352.21MHZ"
+usbCommand = "*RCL 1"
 print "Sending " + usbCommand + " to device"
 usbInst.write(usbCommand)
-usbCommand = "POW -30"
-print "Sending " + usbCommand + " to device"
-usbInst.write(usbCommand)
-usbCommand = "OUTP OFF"
-print "Sending " + usbCommand + " to device"
-usbInst.write(usbCommand)
-usbCommand = "PULM:SOUR EXT"
-print "Sending " + usbCommand + " to device"
-usbInst.write(usbCommand)
-usbCommand = "SOUR:PULM:TRIG:EXT:IMP G10K"
-print "Sending " + usbCommand + " to device"
-usbInst.write(usbCommand)
-usbCommand = "PULM:STAT ON"
+usbCommand = "INIT:ALL:CONT ON"
 print "Sending " + usbCommand + " to device"
 usbInst.write(usbCommand)
 
@@ -43,21 +31,30 @@ brokerPort = 1883
 brokertimeout = 60
 
 def getDataFromDevice():
-# code here to be executed in periodic poll and set to local device
-    return ""
+    # code here to be executed in periodic poll and set to local device
+    usbCommand = "SENS1:AVER:RES"
+    print "Sending " + usbCommand + " to device"
+    usbInst.write(usbCommand)
+    usbCommand = "FETC1?"
+    print "Sending " + usbCommand + " to device"
+    power1 = usbInst.ask(usbCommand)
+    print "Received " + power1 + " from device"
+    power1f = float(power1) + 43.9
+    power1 = str(power1f)
+    usbCommand = "SENS2:AVER:RES"
+    print "Sending " + usbCommand + " to device"
+    usbInst.write(usbCommand)
+    usbCommand = "FETC2?"
+    print "Sending " + usbCommand + " to device"
+    power2 = usbInst.ask(usbCommand)
+    print "Received " + power2 + " from device"
+    power2f = float(power2) + 59.5 + 7.2
+    power2 = str(power2f)
+    data = {"power1": power1, "power2": power2}
+    return json.dumps(data)
 def handleIncomingMessage(topic, message):
-# handle messages from broker
-    if "/set/rf" in topic:
-        data = json.loads(str(message))
-        usbCommand = "OUTP " + data['rfPowOn']
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "FREQ " + data['rfFreq'] + "MHZ"
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
-        usbCommand = "POW " + data['rfPowLvl']
-        print "Sending " + usbCommand + " to device"
-        usbInst.write(usbCommand)
+    # handle messages from broker
+#    if "/set/init" in topic:
     return
 
 userName = sys.argv[1]
