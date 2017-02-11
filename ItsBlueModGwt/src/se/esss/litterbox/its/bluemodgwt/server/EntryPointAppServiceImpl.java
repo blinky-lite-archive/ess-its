@@ -21,16 +21,11 @@ public class EntryPointAppServiceImpl extends RemoteServiceServlet implements En
 	@Override
 	public String[] checkIpAddress(boolean debug) throws Exception 
 	{
-		String[] okIpAddresses = {"130.235.82.5", "192.168.0.105", "127.0.0.1"};
-		String ip = getThreadLocalRequest().getRemoteAddr();
-		boolean ipOkay = false;
-		for (int ii = 0; ii < okIpAddresses.length; ++ii)
-		{
-			if (ip.equals(okIpAddresses[ii])) ipOkay = true;
-		}
+		String userName = getThreadLocalRequest().getUserPrincipal().getName();
+		boolean userOkay = getThreadLocalRequest().isUserInRole("webAppSettingsPermitted");
 		String[] returnData = new String[2];
-		returnData[0] = ip;
-		returnData[1] = Boolean.toString(ipOkay);
+		returnData[0] = userName;
+		returnData[1] = Boolean.toString(userOkay);
 		return returnData;
 	}
 	@Override

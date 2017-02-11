@@ -16,7 +16,7 @@ import se.esss.litterbox.its.watersystemgwt.client.mqttdata.MqttService;
 public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 {
 	MqttServiceImpClient mqttClient;
-	String[] topics = {"itsWaterSystem/get", "itsCernMod/get/wtrp"};
+	String[] topics = {"itsWaterSystem/get", "itsCernMod/get/temp"};
 	byte[][] messages;
 	boolean mqttClientInitialized = false;
 	

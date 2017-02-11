@@ -9,7 +9,7 @@ import se.esss.litterbox.its.envmongwt.client.gskel.GskelSetupApp;
 
 public class EntryPointApp implements EntryPoint 
 {
-	private GskelSetupApp setupApp;
+	public GskelSetupApp setupApp;
 	public GskelSetupApp getSetupApp() {return setupApp;}
 
 	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);

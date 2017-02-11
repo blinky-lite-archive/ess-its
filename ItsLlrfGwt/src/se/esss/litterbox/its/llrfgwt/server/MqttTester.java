@@ -45,14 +45,23 @@ public class MqttTester  extends SimpleMqttClient
 		outputData.put("channel4", "1 1100 2000");
 		mqttTester.publishMessage("itsClkRecvr01/set/channel", outputData.toJSONString().getBytes(), 0, retained);
 
+		outputData = new JSONObject();
+		outputData.put("channel1", "1 1000 2000");
+		outputData.put("channel2", "0 1000 2000");
+		outputData.put("channel3", "0 1000 2000");
+		outputData.put("channel4", "0 1000 2000");
+		mqttTester.publishMessage("itsClkRecvr02/set/channel", outputData.toJSONString().getBytes(), 0, retained);
+
+		outputData = new JSONObject();
 		outputData.put("rfPowOn", "ON");
 		outputData.put("rfFreq", "353.0");
 		outputData.put("rfPowLvl", "2.5");
 		mqttTester.publishMessage("itsRfSigGen01/set/rf", outputData.toJSONString().getBytes(), 0, retained);
 
 		
-		outputData.put("power1", "42.5");
-		outputData.put("power2", "79.6");
+		outputData = new JSONObject();
+		outputData.put("power1", "1.2");
+		outputData.put("power2", "3.4");
 		mqttTester.publishMessage("itsPowerMeter01/get", outputData.toJSONString().getBytes(), 0, retained);
 	}
 

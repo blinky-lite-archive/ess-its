@@ -39,7 +39,7 @@ public class EntryPointApp implements EntryPoint
 	}
 	private void loadTab1()
 	{
-		new GaugeShowCasePanel("Gauges", "itsWaterSystem/get", "itsCernMod/get/wtrp", setupApp);
+		new GaugeShowCasePanel("Gauges", "itsWaterSystem/get", "itsCernMod/get/temp", setupApp);
 		new TabLoadWaiter(500, 1);
 	}
 	class TabLoadWaiter extends GskelLoadWaiter

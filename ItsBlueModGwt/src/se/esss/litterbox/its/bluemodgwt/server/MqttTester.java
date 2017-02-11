@@ -1,6 +1,9 @@
 package se.esss.litterbox.its.bluemodgwt.server;
 
 import java.net.URL;
+
+import org.json.simple.JSONObject;
+
 import se.esss.litterbox.icecube.bytedevice.ByteDeviceList;
 import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
@@ -52,6 +55,7 @@ public class MqttTester  extends SimpleMqttClient
 		}
 		
 	}
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
 		MqttTester mqttTester = new MqttTester("ItsCernModTester", "../itsmqttbroker.dat");
@@ -68,6 +72,13 @@ public class MqttTester  extends SimpleMqttClient
 		boolean retained = true;
 		mqttTester.publishMessage("itsCernMod/set/mod", mqttTester.setByteDevice.getByteArray(), 0, retained);
 
+		JSONObject outputData = new JSONObject();
+		outputData = new JSONObject();
+		outputData.put("channel1", "1 1000 2000");
+		outputData.put("channel2", "0 1000 2000");
+		outputData.put("channel3", "0 1000 2000");
+		outputData.put("channel4", "0 1000 2000");
+		mqttTester.publishMessage("itsClkRecvr02/set/channel", outputData.toJSONString().getBytes(), 0, retained);
 		
 		
 	}
