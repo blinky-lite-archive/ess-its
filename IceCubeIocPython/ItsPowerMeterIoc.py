@@ -84,9 +84,9 @@ if __name__ == "__main__":
     itsPowerMeterIOC.handleIncomingMessage = handleIncomingMessage
     itsPowerMeterIOC.periodicPollPeriodSecs = 2
     itsPowerMeterIOC.mqttStart(
-            clientId       = "itsPowerMeter01Ioc",
-            subscribeTopic = "itsPowerMeter01/set/#",
-            publishTopic   = "itsPowerMeter01/get")
+            clientId       = "itsPowerMeter02Ioc",
+            subscribeTopic = "itsPowerMeter02/set/#",
+            publishTopic   = "itsPowerMeter02/get")
     itsPowerMeterIOC.client.user_data_set(itsPowerMeterIOC.powerMeter)
 
     itsPowerMeterIOC.run()
