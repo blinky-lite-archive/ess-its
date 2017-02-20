@@ -58,21 +58,11 @@ class PowerMeterIOC(GenericIOC):
         self.powerMeter = powerMeter
 
     def getDataFromDevice(self):
-        usbCommand = "FETC1?"
-        print "Sending " + usbCommand + " to device"
-        power1 = self.powerMeter.ask(usbCommand)
-        print "Received " + power1 + " from device"
-        power1f = float(power1) + 43.9
-        power1 = str(power1f)
-        time.sleep(2)
+        power1 = self.powerMeter.getPower(1) + 43.9
+        power2 = self.powerMeter.getPower(2) + 59.5 + 7.2
 
-        usbCommand = "FETC2?"
-        print "Sending " + usbCommand + " to device"
-        power2 = self.powerMeter.ask(usbCommand)
-        print "Received " + power2 + " from device"
-        power2f = float(power2) + 59.5 + 7.2
-        power2 = str(power2f)
-        data = {"power1": power1, "power2": power2}
+        data = {"power1": str(power1), "power2": str(power2)}
+        print data
         return json.dumps(data)
 
 if __name__ == "__main__":
