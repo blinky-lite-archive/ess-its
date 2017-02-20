@@ -82,7 +82,7 @@ if __name__ == "__main__":
     itsPowerMeterIOC = PowerMeterIOC(brokerFile = 'itsmqttbroker.dat')
 
     itsPowerMeterIOC.handleIncomingMessage = handleIncomingMessage
-    itsPowerMeterIOC.periodicPollPeriodSecs = 2
+    itsPowerMeterIOC.periodicPollPeriodSecs = 0
     itsPowerMeterIOC.mqttStart(
             clientId       = "itsPowerMeter02Ioc",
             subscribeTopic = "itsPowerMeter02/set/#",
