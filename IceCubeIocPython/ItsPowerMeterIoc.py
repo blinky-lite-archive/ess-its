@@ -31,7 +31,11 @@ class PowerMeter(object):
     def turn_on_measurements(self):
         self.write_to_device("INIT:ALL:CONT ON")
 
-    def getPower(self, channel_number):
+    def getPower(self, channel_number=None):
+        if not channel_number:
+            p1 = float(self.request_from_device("FETC1?"))
+            p2 = float(self.request_from_device("FETC2?"))
+            return (p1, p2)
         power = float(self.request_from_device("FETC%s?" % channel_number))
         return power
 
