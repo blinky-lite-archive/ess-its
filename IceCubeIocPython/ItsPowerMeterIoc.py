@@ -37,25 +37,12 @@ class PowerMeter(object):
 
 class PowerMeterIOC(GenericIOC):
     def initialiseDevice(self):
-        powerMeter =  usbtmc.Instrument(2733, 27)
-
-        # Preset menu
-        usbCommand = "SYST:PRES"
-        print "Sending " + usbCommand + " to device"
-        powerMeter.write(usbCommand)
+        self.powerMeter =  PowerMeter(2733, 27)
+        self.powerMeter.connect()
+        self.powerMeter.preset()
         time.sleep(2)
-
-        # Recall state 1
-        usbCommand = "*RCL 1"
-        print "Sending " + usbCommand + " to device"
-        powerMeter.write(usbCommand)
-
-        # Initiate continuous measurements
-        usbCommand = "INIT:ALL:CONT ON"
-        print "Sending " + usbCommand + " to device"
-        powerMeter.write(usbCommand)
-
-        self.powerMeter = powerMeter
+        #self.powerMeter.recall_state(1)
+        self.powerMeter.turn_on_measurements()
 
     def getDataFromDevice(self):
         power1 = self.powerMeter.getPower(1) + 43.9
