@@ -15,6 +15,7 @@ public class GskelResizeHandler implements ResizeHandler
 	@Override
 	public void onResize(ResizeEvent event) 
 	{
+		setupApp.setStatusTextAreaVisible();
 		setupApp.getStatusTextArea().setSize(Window.getClientWidth() - 10 - setupApp.getLogoPanelWidth(), setupApp.getStatusTextAreaHeight());
 		setupApp.getGskelTabLayoutPanel().setSize(setupApp.getGskelTabLayoutPanelWidth(), setupApp.getGskelTabLayoutPanelHeight());			
 	}

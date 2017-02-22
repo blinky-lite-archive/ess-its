@@ -20,7 +20,7 @@ public class EntryPointApp implements EntryPoint
 	public ModulatorSettingPanel modulatorSettingPanel = null;
 	public void onModuleLoad() 
 	{
-		setupApp = new GskelSetupApp();
+		setupApp = new GskelSetupApp(this);
 		setupApp.setDebug(false);
 		setupApp.setVersionDate("January 31, 2017 14:49");
 		setupApp.setVersion("v1.0");

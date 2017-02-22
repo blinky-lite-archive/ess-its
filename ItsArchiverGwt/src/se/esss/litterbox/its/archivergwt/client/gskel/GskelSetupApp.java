@@ -27,11 +27,13 @@ public class GskelSetupApp
 	private GskelFrameDialog frameDialog;
 	private EntryPointApp entryPointApp;
 
-	private int statusTextAreaHeight = 150;
+	private int statusTextAreaHeightVisible = 150;
 	private int gskelTabLayoutPanelHeightBarHeightPx = 30;
 	private int logoPanelWidth = 200;
 	private Image logoImage = new Image("images/gwtLogo.jpg");
 	private Label titleLabel = new Label("GWT Skeleton");
+	private HorizontalPanel logoAndStatusPanel;
+	private int oldWindowHeight = -1;
 
 
 // Getters
@@ -45,7 +47,6 @@ public class GskelSetupApp
 	public GskelFrameDialog getFrameDialog() {return frameDialog;}
 	public GskelTabLayoutPanel getGskelTabLayoutPanel() {return gskelTabLayoutPanel;}
 	public int getGskelTabLayoutPanelHeightBarHeightPx() {return gskelTabLayoutPanelHeightBarHeightPx;}
-	public int getStatusTextAreaHeight() {return statusTextAreaHeight;}
 	public int getLogoPanelWidth() {return logoPanelWidth;}
 	public EntryPointAppServiceAsync getEntryPointAppService() {return entryPointAppService;}
 	public EntryPointApp getEntryPointApp() {return entryPointApp;}
@@ -59,25 +60,25 @@ public class GskelSetupApp
 	{
 		this.entryPointApp = entryPointApp;
 		gskelTabLayoutPanel = new GskelTabLayoutPanel(gskelTabLayoutPanelHeightBarHeightPx, this, getGskelTabLayoutPanelWidth(), getGskelTabLayoutPanelHeight());
-		statusTextArea = new GskelStatusTextArea(Window.getClientWidth() - 10, statusTextAreaHeight);
+		statusTextArea = new GskelStatusTextArea(Window.getClientWidth() - 10, statusTextAreaHeightVisible);
 	    statusTextArea.setMaxBufferSize(100);
 
         optionDialog =  new GskelOptionDialog();
         messageDialog =  new GskelMessageDialog();
         frameDialog = new GskelFrameDialog(this);
-	    VerticalPanel logoPanel = new VerticalPanel();
+    	VerticalPanel logoPanel = new VerticalPanel();
 		logoPanel.setWidth(logoPanelWidth + "px");
 		logoPanel.add(logoImage);
 	    titleLabel.setStyleName("titleLabel");
 	    logoPanel.add(titleLabel);
 		
-		HorizontalPanel hp1 = new HorizontalPanel();
+	    logoAndStatusPanel = new HorizontalPanel();
 	    
-		hp1.add(logoPanel);
-		hp1.add(statusTextArea);
+	    logoAndStatusPanel.add(logoPanel);
+	    logoAndStatusPanel.add(statusTextArea);
 		VerticalPanel vp1 = new VerticalPanel();
 		vp1.add(gskelTabLayoutPanel);
-	    vp1.add(hp1);
+	    vp1.add(logoAndStatusPanel);
 		RootLayoutPanel.get().add(vp1);
 		Window.addResizeHandler(new GskelResizeHandler(this));
 
@@ -102,7 +103,32 @@ public class GskelSetupApp
 	}
 	public int getGskelTabLayoutPanelHeight()
 	{
-		return Window.getClientHeight() - statusTextAreaHeight - 15;
+		return Window.getClientHeight() - 15 - getStatusTextAreaHeight();
+	}
+	public void setStatusTextAreaVisible() 
+	{
+		int windowHeight = Window.getClientHeight();
+
+		if (oldWindowHeight < 0)
+		{
+			oldWindowHeight = windowHeight;
+			return;
+		}
+		if (oldWindowHeight < windowHeight)
+		{
+			logoAndStatusPanel.setVisible(true);
+		}
+		else
+		{
+			logoAndStatusPanel.setVisible(false);
+		}
+		oldWindowHeight = windowHeight;
+	}
+	public int getStatusTextAreaHeight() 
+	{
+		if (oldWindowHeight < 0) return statusTextAreaHeightVisible;
+		if (logoAndStatusPanel.isVisible()) return statusTextAreaHeightVisible;
+		return 0;
 	}
 
 }

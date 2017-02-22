@@ -19,7 +19,7 @@ public class EntryPointApp implements EntryPoint
 	LlrfPanel llrfPanel = null;
 	public void onModuleLoad() 
 	{
-		setupApp = new GskelSetupApp();
+		setupApp = new GskelSetupApp(this);
 		setupApp.setDebug(false);
 		setupApp.setVersionDate("January 30, 2017 07:34");
 		setupApp.setVersion("v1.0");
