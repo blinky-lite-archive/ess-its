@@ -272,8 +272,21 @@ public class TopicPlotPanel extends GskelVerticalPanel implements TopicUpdateInt
 			long stopT = stopDate.getTime() + (hour * 3600 * 1000) + (min * 60 * 1000);
 			if (stopT < startT)
 			{
+				getSetupApp().getMessageDialog().setImageUrl("images/warning.jpg");
+				getSetupApp().getMessageDialog().setMessage("Error", "Stop time < Start time", true);
 				entryPointApp.setupApp.getStatusTextArea().addStatus("Error on getting plot data: Stop time < Start time");
 				return;
+			}
+			if (!settingsPermitted)
+			{
+				if ((stopT - startT) > 24 * 3600 * 1000)
+				{
+					getSetupApp().getMessageDialog().setImageUrl("images/warning.jpg");
+					getSetupApp().getMessageDialog().setMessage("Error", "Time period cannot be greater than 24 hours for non-teststand users", true);
+
+					entryPointApp.setupApp.getStatusTextArea().addStatus("Error on getting plot data: Time period cannot be greater than 24 hours for non-teststand users");
+					return;
+				}
 			}
 			for (int irow = 0; irow < maxNumTraces; ++irow)
 			{
@@ -297,6 +310,8 @@ public class TopicPlotPanel extends GskelVerticalPanel implements TopicUpdateInt
 							}
 							catch (Exception e)
 							{
+								getSetupApp().getMessageDialog().setImageUrl("images/warning.jpg");
+								getSetupApp().getMessageDialog().setMessage("Error", "Failure on getting plot data: " + e.getMessage(), true);
 								entryPointApp.setupApp.getStatusTextArea().addStatus("Failure on getting plot data: " + e.getMessage());
 								
 							}
@@ -320,6 +335,8 @@ public class TopicPlotPanel extends GskelVerticalPanel implements TopicUpdateInt
 		@Override
 		public void onFailure(Throwable caught) 
 		{
+			getSetupApp().getMessageDialog().setImageUrl("images/warning.jpg");
+			getSetupApp().getMessageDialog().setMessage("Error", "Failure: GetArchiveDataCallback" + caught.getMessage(), true);
 			entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: GetArchiveDataCallback");
 			entryPointApp.setupApp.getStatusTextArea().addStatus(caught.getMessage());
 			plotSetupCaptionPanel.setVisible(true);
@@ -353,6 +370,8 @@ public class TopicPlotPanel extends GskelVerticalPanel implements TopicUpdateInt
 			}
 			catch (Exception e)
 			{
+				getSetupApp().getMessageDialog().setImageUrl("images/warning.jpg");
+				getSetupApp().getMessageDialog().setMessage("Error", "Failure: Setting up plot Panel " + e.getMessage(), true);
 				entryPointApp.setupApp.getStatusTextArea().addStatus("Failure: Setting up plot Panel " + e.getMessage());
 			}
 		}

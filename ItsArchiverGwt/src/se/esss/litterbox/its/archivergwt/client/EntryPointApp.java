@@ -24,7 +24,7 @@ public class EntryPointApp implements EntryPoint
 	{
 		setupApp = new GskelSetupApp(this);
 		setupApp.setDebug(false);
-		setupApp.setVersionDate("February 9, 2017 05:54");
+		setupApp.setVersionDate("February 23, 2017 09:28");
 		setupApp.setVersion("v1.0");
 		setupApp.setAuthor("Dave McGinnis david.mcginnis@esss.se");
 		setupApp.setLogoImage("images/gwtLogo.jpg");
