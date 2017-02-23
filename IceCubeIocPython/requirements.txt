@@ -1,0 +1,7 @@
+appdirs==1.4.0
+packaging==16.8
+paho-mqtt==1.2
+pyparsing==2.1.10
+python-usbtmc==0.8
+pyusb==1.0.0
+six==1.10.0
