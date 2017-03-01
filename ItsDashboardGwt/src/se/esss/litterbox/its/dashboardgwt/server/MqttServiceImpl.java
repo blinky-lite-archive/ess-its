@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.watersystemgwt.server;
+package se.esss.litterbox.its.dashboardgwt.server;
 
 import java.io.File;
 import java.util.Iterator;
@@ -9,7 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import se.esss.litterbox.its.watersystemgwt.client.mqttdata.MqttService;
+import se.esss.litterbox.its.dashboardgwt.client.mqttdata.MqttService;
 
 
 @SuppressWarnings("serial")
@@ -28,7 +28,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-			mqttClient = new MqttServiceImpClient(this, "ItsWaterSystemWebApp", getMqttDataPath(), cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsDashboardWebApp", getMqttDataPath(), cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
