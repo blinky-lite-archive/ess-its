@@ -1,143 +1,220 @@
 package se.esss.litterbox.its.dashboardgwt.client.contentpanels;
 
-import com.google.gwt.user.client.ui.Grid;
+import java.util.Date;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.dashboardgwt.client.EntryPointApp;
-import se.esss.litterbox.its.dashboardgwt.client.googleplots.GaugeCaptionPanel;
+import se.esss.litterbox.its.dashboardgwt.client.googleplots.ThermCaptionPanel;
 import se.esss.litterbox.its.dashboardgwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.dashboardgwt.client.mqttdata.MqttData;
 
 public class GaugeDashboard extends VerticalPanel
 {
 	EntryPointApp entryPointApp;
-	String gaugeMqttTopic;
-	String modPressTopic;
-	String returnPressTopic;
-	Grid gaugeGrid;
-	GaugeCaptionPanel bodyFlowGaugeCaptionPanel;
-	GaugeCaptionPanel tankFlowgaugeCaptionPanel;
-	GaugeCaptionPanel collectorFlowGaugeCaptionPanel;
-	GaugeCaptionPanel solenoidFlowGaugeCaptionPanel;
-	GaugeCaptionPanel inputTempGaugeCaptionPanel;
-	GaugeCaptionPanel modPressGaugeCaptionPanel;
-	GaugeCaptionPanel returnPressGaugeCaptionPanel;
-	GaugeCaptionPanel mod1TempGaugeCaptionPanel;
-	GaugeCaptionPanel mod2TempGaugeCaptionPanel;
-	GaugeMqttData gaugeMqttData;
-	ModPressMqttData modPressMqttData;
-	ReturnPressMqttData returnPressMqttData;
+	ThermCaptionPanel[] statPanel = new ThermCaptionPanel[21];
+	private int plotLoadTimeMs = 100;
+	private String red = "#ff0000";
+	private String yellow = "#ffff00";
+	private String green = "#00ff00";
+	private String plotWidth = "95px";
+	private String plotHeight = "170px";
+	private int fontPixelSize = 15;
+	private int chartAreaPixelLeftOffset = 55;
+	private int chartAreaPixelWidth = 20;
+	private double chartAreaOpacity = 0.5;
+	private String chartAreaBackgroundColor = "#aaaaaa";
+	private String plotBackgroundColor = "#0095CD";
+	private String gridlineColor = "#000000";
+	int rfSystemOffset = 7;
+	int modOffset = 14;
+	int waterOffset = 0;
+	Date startTime = new Date();
 	
-	public GaugeDashboard(String gaugeMqttTopic, String modPressTopic, String returnPressTopic, EntryPointApp entryPointApp) 
+	public GaugeDashboard(EntryPointApp entryPointApp) 
 	{
-		this.gaugeMqttTopic = gaugeMqttTopic;
-		this.modPressTopic = modPressTopic;
-		this.returnPressTopic = returnPressTopic;
 		this.entryPointApp = entryPointApp;
 		setStyleName("GskelVertPanel");
-		gaugeGrid = new Grid(3, 3);
-		add(gaugeGrid);
-		addGauge1();
+		
+		CaptionPanel rfStatusCaptionPanel = new CaptionPanel("RF System Status");
+		HorizontalPanel rfStatusHorizontalPanel = new HorizontalPanel();
+		rfStatusCaptionPanel.add(rfStatusHorizontalPanel);
+		add(rfStatusCaptionPanel);
+		
+		String[] rfSysPlotTitle = {"RF Power", "CPM", "Cath V", "Trig W", "Trig. Duty", "Trig Freq", "State"};
+		double[] rfSysMinValue = {0.0, 0.0, 0.0, 500, 0.0, 0.0, 0.0 };
+		double[][] rfSysMaxValue = {
+				{400,   800, 1000},
+				{ 25,    40,   70},
+				{ 70,   115,  140},
+				{1000, 2000, 3000},
+				{ 1.0,  4.0,  6.0},
+				{  5,    15,   20},
+				{  1,     3,    4}};
+		String[][] rfSysColor = { 
+				{yellow, green, red},
+				{green, yellow, red},
+				{yellow, green, green},
+				{green, green, green},
+				{green, green, green},
+				{green, green, green},
+				{green, green, green}};
+
+		for (int ii = 0; ii < 7; ++ii)
+		{
+			statPanel[ii + rfSystemOffset] = new ThermCaptionPanel(rfSysPlotTitle[ii], entryPointApp);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setMinValue(rfSysMinValue[ii]);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setMax(rfSysMaxValue[ii]);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setColor(rfSysColor[ii]);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setPlotWidth(plotWidth);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setPlotHeight(plotHeight);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setFontPixelSize(fontPixelSize);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setChartAreaPixelLeftOffset(chartAreaPixelLeftOffset);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setChartAreaPixelWidth(chartAreaPixelWidth);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setChartAreaOpacity(chartAreaOpacity);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setChartAreaBackgroundColor(chartAreaBackgroundColor);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setPlotBackgroundColor(plotBackgroundColor);
+			statPanel[ii + rfSystemOffset].getThermPlotPanel().setGridlineColor(gridlineColor);
+			rfStatusHorizontalPanel.add(statPanel[ii + rfSystemOffset]);
+		}
+
+		CaptionPanel modStatusCaptionPanel = new CaptionPanel("Modulator Status");
+		HorizontalPanel modStatusHorizontalPanel = new HorizontalPanel();
+		modStatusCaptionPanel.add(modStatusHorizontalPanel);
+		add(modStatusCaptionPanel);
+		
+		String[] modPlotTitle = {"Mod Press", "Mod1 Temp", "Mod2 Temp", "Mod3 Temp", "Mod V", "Mod I", "Mod P"};
+		double[] modMinValue = {0.0, 10, 10, 10, 0.0, 0.0, 0.0 };
+		double[][] modMaxValue = {
+				{  4,     6,    8},
+				{ 30,    40,   60},
+				{ 30,    40,   60},
+				{ 30,    40,   60},
+				{  3,     5,    6},
+				{  6,    10,   15},
+				{ 50,   100,  140}};
+		String[][] modColor = { 
+				{yellow, green, red},
+				{green, yellow, red},
+				{green, yellow, red},
+				{green, yellow, red},
+				{yellow, green, red},
+				{yellow, green, red},
+				{yellow, green, red}};
+
+		for (int ii = 0; ii < 7; ++ii)
+		{
+			statPanel[ii + modOffset] = new ThermCaptionPanel(modPlotTitle[ii], entryPointApp);
+			statPanel[ii + modOffset].getThermPlotPanel().setMinValue(modMinValue[ii]);
+			statPanel[ii + modOffset].getThermPlotPanel().setMax(modMaxValue[ii]);
+			statPanel[ii + modOffset].getThermPlotPanel().setColor(modColor[ii]);
+			statPanel[ii + modOffset].getThermPlotPanel().setPlotWidth(plotWidth);
+			statPanel[ii + modOffset].getThermPlotPanel().setPlotHeight(plotHeight);
+			statPanel[ii + modOffset].getThermPlotPanel().setFontPixelSize(fontPixelSize);
+			statPanel[ii + modOffset].getThermPlotPanel().setChartAreaPixelLeftOffset(chartAreaPixelLeftOffset);
+			statPanel[ii + modOffset].getThermPlotPanel().setChartAreaPixelWidth(chartAreaPixelWidth);
+			statPanel[ii + modOffset].getThermPlotPanel().setChartAreaOpacity(chartAreaOpacity);
+			statPanel[ii + modOffset].getThermPlotPanel().setChartAreaBackgroundColor(chartAreaBackgroundColor);
+			statPanel[ii + modOffset].getThermPlotPanel().setPlotBackgroundColor(plotBackgroundColor);
+			statPanel[ii + modOffset].getThermPlotPanel().setGridlineColor(gridlineColor);
+			modStatusHorizontalPanel.add(statPanel[ii + modOffset]);
+		}
+
+		CaptionPanel waterStatusCaptionPanel = new CaptionPanel("Water System Status");
+		HorizontalPanel waterStatusHorizontalPanel = new HorizontalPanel();
+		waterStatusCaptionPanel.add(waterStatusHorizontalPanel);
+		add(waterStatusCaptionPanel);
+		
+		String[] waterSysPlotTitle = {"Body Flow", "Tank Flow", "Collector Flow", "Solenoid Flow", "Rtn Press.", "Input Temp", "Hall Temp"};
+		double[] waterSysMinValue = {0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0 };
+		double[][] waterSysMaxValue = {
+				{ 13,    18,   30},
+				{  9,    11,   15},
+				{250,   300,  375},
+				{ 25,    30,   50},
+				{  0.5,   1.5,  3},
+				{ 17,    30,   40},
+				{ 17,    30,   40}};
+		String[][] waterSysColor = { 
+				{red, yellow, green},
+				{red, yellow, green},
+				{red, yellow, green},
+				{red, yellow, green},
+				{yellow, green, red},
+				{yellow, green, red},
+				{yellow, green, red}};
+		for (int ii = 0; ii < 7; ++ii)
+		{
+			statPanel[ii + waterOffset] = new ThermCaptionPanel(waterSysPlotTitle[ii], entryPointApp);
+			statPanel[ii + waterOffset].getThermPlotPanel().setMinValue(waterSysMinValue[ii]);
+			statPanel[ii + waterOffset].getThermPlotPanel().setMax(waterSysMaxValue[ii]);
+			statPanel[ii + waterOffset].getThermPlotPanel().setColor(waterSysColor[ii]);
+			statPanel[ii + waterOffset].getThermPlotPanel().setPlotWidth(plotWidth);
+			statPanel[ii + waterOffset].getThermPlotPanel().setPlotHeight(plotHeight);
+			statPanel[ii + waterOffset].getThermPlotPanel().setFontPixelSize(fontPixelSize);
+			statPanel[ii + waterOffset].getThermPlotPanel().setChartAreaPixelLeftOffset(chartAreaPixelLeftOffset);
+			statPanel[ii + waterOffset].getThermPlotPanel().setChartAreaPixelWidth(chartAreaPixelWidth);
+			statPanel[ii + waterOffset].getThermPlotPanel().setChartAreaOpacity(chartAreaOpacity);
+			statPanel[ii + waterOffset].getThermPlotPanel().setChartAreaBackgroundColor(chartAreaBackgroundColor);
+			statPanel[ii + waterOffset].getThermPlotPanel().setPlotBackgroundColor(plotBackgroundColor);
+			statPanel[ii + waterOffset].getThermPlotPanel().setGridlineColor(gridlineColor);
+			waterStatusHorizontalPanel.add(statPanel[ii + waterOffset]);
+		}
+		addStatPanel(0);
 	}
-	private void addGauge1()
+	private void addStatPanel(int ipanel)
 	{
-		bodyFlowGaugeCaptionPanel = new GaugeCaptionPanel("Body Flow", "Body Flow", 0, 30, 18.0, 30.0, 13.0, 18.0, 0.0, 13.0, "100px", "100px");
-		new GaugePlotWaiter(200, 1);
-	}
-	private void addGauge2()
-	{
-		gaugeGrid.setWidget(0, 0, bodyFlowGaugeCaptionPanel);
-		tankFlowgaugeCaptionPanel = new GaugeCaptionPanel("Tank Flow", "Tank Flow", 0, 15, 11.0, 15.0, 9.0, 11.0, 0.0, 9.0, "100px", "100px");
-		new GaugePlotWaiter(200, 2);
-	}
-	private void addGauge3()
-	{
-		gaugeGrid.setWidget(0, 1, tankFlowgaugeCaptionPanel);
-		collectorFlowGaugeCaptionPanel = new GaugeCaptionPanel("Collector Flow", "Collector Flow", 0, 375, 300.0, 375.0, 250.0, 300.0, 0.0, 250.0, "100px", "100px");
-		new GaugePlotWaiter(200, 3);
-	}
-	private void addGauge4()
-	{
-		gaugeGrid.setWidget(0, 2, collectorFlowGaugeCaptionPanel);
-		solenoidFlowGaugeCaptionPanel = new GaugeCaptionPanel("Solenoid Flow", "Solenoid Flow", 0, 50, 30.0, 50.0, 25.0, 30.0, 0.0, 25.0, "100px", "100px");
-		new GaugePlotWaiter(200, 4);
-	}
-	private void addGauge5()
-	{
-		gaugeGrid.setWidget(1, 0, solenoidFlowGaugeCaptionPanel);
-		modPressGaugeCaptionPanel = new GaugeCaptionPanel("Mod Press.", "Mod Press.", 0.0, 8.0, 4.0, 6.0, 0.0, 4.0, 6.0, 8.0, "100px", "100px");
-		new GaugePlotWaiter(200, 5);
-	}
-	private void addGauge6()
-	{
-		gaugeGrid.setWidget(1, 1, modPressGaugeCaptionPanel);
-		returnPressGaugeCaptionPanel = new GaugeCaptionPanel("Rtn Press.", "Rtn Press.", 0.0, 3.0, 0.5, 1.5, 0.0, 0.5, 1.5, 3.0, "100px", "100px");
-		new GaugePlotWaiter(200, 6);
-	}
-	private void addGauge7()
-	{
-		gaugeGrid.setWidget(1, 2, returnPressGaugeCaptionPanel);
-		inputTempGaugeCaptionPanel = new GaugeCaptionPanel("Input Temp", "Input Temp", 10.0, 40.0, 10.0, 25.0, 25.0, 35.0, 35.0, 40.0, "100px", "100px");
-		new GaugePlotWaiter(200, 7);
-	}
-	private void addGauge8()
-	{
-		gaugeGrid.setWidget(2, 0, inputTempGaugeCaptionPanel);
-		mod1TempGaugeCaptionPanel = new GaugeCaptionPanel("Mod1 Temp.", "Mod1 Temp.", 10.0, 60.0, 10.0, 30.0, 30.0, 45.0, 45.0, 60.0, "100px", "100px");
-		new GaugePlotWaiter(200, 8);
-	}
-	private void addGauge9()
-	{
-		gaugeGrid.setWidget(2, 1, mod1TempGaugeCaptionPanel);
-		mod2TempGaugeCaptionPanel = new GaugeCaptionPanel("Mod2 Temp.", "Mod2 Temp.", 10.0, 60.0, 10.0, 30.0, 30.0, 45.0, 45.0, 60.0, "100px", "100px");
-		new GaugePlotWaiter(200, 9);
+		statPanel[ipanel].initialize();
+		new GaugePlotWaiter(plotLoadTimeMs, ipanel);
+		GWT.log(Integer.toString(ipanel));
+
 	}
 	private void startMqtt()
 	{
-		gaugeGrid.setWidget(2, 2, mod2TempGaugeCaptionPanel);
-		gaugeMqttData = new GaugeMqttData(entryPointApp);
-		modPressMqttData = new ModPressMqttData(entryPointApp);
-		returnPressMqttData = new ReturnPressMqttData(entryPointApp);
+		GWT.log("Starting MQTT");
+		new WaterMqttData(entryPointApp);
+		new ModPressMqttData(entryPointApp);
+		new ReturnPressMqttData(entryPointApp);
+		new RfPowerMqttData(entryPointApp);
+		new GeigerMqttData(entryPointApp);
+		new ModPower1MqttData(entryPointApp);
+		new ModPower2MqttData(entryPointApp);
+		new ModStateMqttData(entryPointApp);
+		new SolarMeterMqttData(entryPointApp);
 	}
 	class GaugePlotWaiter extends GskelLoadWaiter
 	{
-		public GaugePlotWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
+		public GaugePlotWaiter(int loopTimeMillis, int itask) 
+		{
+			super(loopTimeMillis, itask);
+
+		}
 		@Override
 		public boolean isLoaded() 
 		{
 			boolean loaded = false;
-			if (getItask() == 1) loaded = bodyFlowGaugeCaptionPanel.isLoaded();
-			if (getItask() == 2) loaded = tankFlowgaugeCaptionPanel.isLoaded();
-			if (getItask() == 3) loaded = collectorFlowGaugeCaptionPanel.isLoaded();
-			if (getItask() == 4) loaded = solenoidFlowGaugeCaptionPanel.isLoaded();
-			if (getItask() == 5) loaded = modPressGaugeCaptionPanel.isLoaded();
-			if (getItask() == 6) loaded = returnPressGaugeCaptionPanel.isLoaded();
-			if (getItask() == 7) loaded = inputTempGaugeCaptionPanel.isLoaded();
-			if (getItask() == 8) loaded = mod1TempGaugeCaptionPanel.isLoaded();
-			if (getItask() == 9) loaded = mod2TempGaugeCaptionPanel.isLoaded();
+			for (int ii = 0; ii < 21; ++ii)
+				if (getItask() == ii) loaded = statPanel[ii].isLoaded();
 			return loaded;
 		}
 		@Override
 		public void taskAfterLoad() 
 		{
-			if (getItask() == 1) addGauge2();
-			if (getItask() == 2) addGauge3();
-			if (getItask() == 3) addGauge4();
-			if (getItask() == 4) addGauge5();
-			if (getItask() == 5) addGauge6();
-			if (getItask() == 6) addGauge7();
-			if (getItask() == 7) addGauge8();
-			if (getItask() == 8) addGauge9();
-			if (getItask() == 9) startMqtt();
+			for (int ii = 0; ii < 20; ++ii)
+				if (getItask() == ii) addStatPanel(ii + 1);
+			if (getItask() == 20) startMqtt();
 		}
 		
 	}
-	class GaugeMqttData extends MqttData
+	class WaterMqttData extends MqttData
 	{
 
-		public GaugeMqttData(EntryPointApp entryPointApp) 
+		public WaterMqttData(EntryPointApp entryPointApp) 
 		{
-			super(gaugeMqttTopic, MqttData.JSONDATA, 1000, entryPointApp);
+			super("itsWaterSystem/get", MqttData.JSONDATA, 1000, entryPointApp);
 		}
 
 		@Override
@@ -145,11 +222,11 @@ public class GaugeDashboard extends VerticalPanel
 		{
 			try
 			{
-				bodyFlowGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("body")));
-				tankFlowgaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("tank")));
-				collectorFlowGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("collector")));
-				solenoidFlowGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("solenoid")));
-				inputTempGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("inputTemp")));
+				statPanel[0 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("body")));
+				statPanel[1 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("tank")));
+				statPanel[2 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("collector")));
+				statPanel[3 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("solenoid")));
+				statPanel[5 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("inputTemp")));
 			}
 			catch (Exception e)
 			{
@@ -162,7 +239,7 @@ public class GaugeDashboard extends VerticalPanel
 
 		public ModPressMqttData(EntryPointApp entryPointApp) 
 		{
-			super(modPressTopic, MqttData.JSONDATA, 1000, entryPointApp);
+			super("itsCernMod/get/temp", MqttData.JSONDATA, 1000, entryPointApp);
 		}
 
 		@Override
@@ -170,9 +247,123 @@ public class GaugeDashboard extends VerticalPanel
 		{
 			try
 			{
-				modPressGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("wtrp")));
-				mod1TempGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("tmod1")));
-				mod2TempGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("tmod2")));
+				statPanel[0 + modOffset].updateReadings(Double.parseDouble(getJsonValue("wtrp")));
+				statPanel[1 + modOffset].updateReadings(Double.parseDouble(getJsonValue("tmod1")));
+				statPanel[2 + modOffset].updateReadings(Double.parseDouble(getJsonValue("tmod2")));
+				statPanel[3 + modOffset].updateReadings(Double.parseDouble(getJsonValue("tmod3")));
+			}
+			catch (Exception e)
+			{
+			}
+			
+		}
+	}
+	class ModPower1MqttData extends MqttData
+	{
+
+		public ModPower1MqttData(EntryPointApp entryPointApp) 
+		{
+			super("itsCernMod/get/power1", MqttData.JSONDATA, 1000, entryPointApp);
+		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			try
+			{
+				statPanel[4 + modOffset].updateReadings(Double.parseDouble(getJsonValue("volts")));
+				statPanel[5 + modOffset].updateReadings(Double.parseDouble(getJsonValue("current")));
+				statPanel[6 + modOffset].updateReadings(Double.parseDouble(getJsonValue("power")));
+			}
+			catch (Exception e)
+			{
+			}
+			
+		}
+	}
+	class ModPower2MqttData extends MqttData
+	{
+
+		public ModPower2MqttData(EntryPointApp entryPointApp) 
+		{
+			super("itsCernMod/get/power2", MqttData.JSONDATA, 1000, entryPointApp);
+		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			try
+			{
+				statPanel[2 + rfSystemOffset].updateReadings(Double.parseDouble(getJsonValue("cathV")));
+			}
+			catch (Exception e)
+			{
+			}
+			
+		}
+	}
+	class RfPowerMqttData extends MqttData
+	{
+
+		public RfPowerMqttData(EntryPointApp entryPointApp) 
+		{
+			super("itsPowerMeter01/get", MqttData.JSONDATA, 1000, entryPointApp);
+		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			try
+			{
+				double wattRead = Math.pow(10.0, (Double.parseDouble(getJsonValue("power2")) - 60.0) / 10.0);
+				statPanel[0 + rfSystemOffset].updateReadings(wattRead);
+				entryPointApp.klystronPower = wattRead;
+			}
+			catch (Exception e)
+			{
+			}
+			
+		}
+	}
+	class GeigerMqttData extends MqttData
+	{
+
+		public GeigerMqttData(EntryPointApp entryPointApp) 
+		{
+			super("itsGeiger01/get/cpm", MqttData.JSONDATA, 1000, entryPointApp);
+		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			try
+			{
+				statPanel[1 + rfSystemOffset].updateReadings(Double.parseDouble(getJsonValue("cpmGet")));
+			}
+			catch (Exception e)
+			{
+			}
+			
+		}
+	}
+	class ModStateMqttData extends MqttData
+	{
+
+		public ModStateMqttData(EntryPointApp entryPointApp) 
+		{
+			super("itsCernMod/get/state", MqttData.JSONDATA, 1000, entryPointApp);
+		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			try
+			{
+				statPanel[3 + rfSystemOffset].updateReadings(Double.parseDouble(getJsonValue("pulseWidth")));
+				statPanel[4 + rfSystemOffset].updateReadings(Double.parseDouble(getJsonValue("duty")));
+				statPanel[5 + rfSystemOffset].updateReadings(Double.parseDouble(getJsonValue("freq")));
+				statPanel[6 + rfSystemOffset].updateReadings(Double.parseDouble(getJsonValue("stateOn")));
+				entryPointApp.dutyFactor = Double.parseDouble(getJsonValue("duty"));
 			}
 			catch (Exception e)
 			{
@@ -185,7 +376,7 @@ public class GaugeDashboard extends VerticalPanel
 
 		public ReturnPressMqttData(EntryPointApp entryPointApp) 
 		{
-			super(returnPressTopic, MqttData.JSONDATA, 1000, entryPointApp);
+			super("itspressureMeter/get", MqttData.JSONDATA, 1000, entryPointApp);
 		}
 
 		@Override
@@ -193,7 +384,36 @@ public class GaugeDashboard extends VerticalPanel
 		{
 			try
 			{
-				returnPressGaugeCaptionPanel.updateReadings(Double.parseDouble(getJsonValue("pressure")));
+				statPanel[4 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("pressure")));
+			}
+			catch (Exception e)
+			{
+			}
+			
+		}
+	}
+	class SolarMeterMqttData extends MqttData
+	{
+
+		public SolarMeterMqttData(EntryPointApp entryPointApp) 
+		{
+			super("itsSolarMeter01/get/cond", MqttData.JSONDATA, 1000, entryPointApp);
+		}
+
+		@Override
+		public void doSomethingWithData() 
+		{
+			try
+			{
+				statPanel[6 + waterOffset].updateReadings(Double.parseDouble(getJsonValue("tempGet")));
+				Date now = new Date();
+				int secs = ((int)(now.getTime() - startTime.getTime()) )/ 1000;
+				if (secs > 60)
+				{
+					secs = 60;
+					startTime = new Date(now.getTime());
+				}
+//				statPanel[6 + waterOffset].updateReadings((double) secs);
 			}
 			catch (Exception e)
 			{

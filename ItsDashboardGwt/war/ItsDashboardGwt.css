@@ -8,8 +8,22 @@ h1 {
 }
 .titleLabel {
   display: block;
-	color: #0e25fa;
-	font-size: 1.5em;
+	color: #FFFFFF;
+	font-size: 3.0em;
+	font-weight: bold;
+	text-align: center;
+}
+.statusLabel {
+  display: block;
+	color: #FFFFFF;
+	font-size: 2.0em;
+	font-weight: bold;
+	text-align: center;
+}
+.dateLabel {
+  display: block;
+	color: #FFFFFF;
+	font-size: 1.0em;
 	font-weight: bold;
 	text-align: center;
 }
@@ -18,4 +32,9 @@ h1 {
 	font-size: 1.5em;
 	font-weight: bold;
 	background-color: #0095CD;
+}
+.logoLabel {
+  border: 2px solid silver;
+  padding: 2px;
+  background-color: #FFFFFF;
 }

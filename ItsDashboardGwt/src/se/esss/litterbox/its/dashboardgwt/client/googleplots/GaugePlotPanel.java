@@ -47,6 +47,11 @@ public class GaugePlotPanel extends HorizontalPanel
 		this.title = title;
 	}
 	public void setValue(double value) {this.value = value;}
+	public void setGaugeVisible(boolean visible)
+	{
+		if (visible) gauge.setSize(plotWidth, plotHeight);
+		gauge.setVisible(visible);
+	}
 
 	public void initialize() 
 	{
@@ -92,7 +97,10 @@ public class GaugePlotPanel extends HorizontalPanel
 		public void run() 
 		{
 			gaugePlotPanel.gauge = new Gauge();
+			gaugePlotPanel.gauge.setVisible(false);
+			gaugePlotPanel.gauge.setSize("10px", "10px");
 			gaugePlotPanel.add(gaugePlotPanel.gauge);
+			gaugePlotPanel.setHorizontalAlignment(ALIGN_CENTER);
 			gaugePlotPanel.setup();
 			gaugePlotPanel.draw();
 			gaugePlotPanel.setWidth(gaugePlotPanel.plotWidth);

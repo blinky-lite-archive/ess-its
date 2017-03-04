@@ -24,6 +24,7 @@ public class GaugeCaptionPanel extends CaptionPanel
 		if (!loaded) return;
 		gaugePlot.setValue(value);
 		gaugePlot.draw();
+		gaugePlot.setGaugeVisible(true);
 	}
 	private static class LoadPlotTimer extends Timer
 	{
