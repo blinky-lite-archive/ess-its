@@ -9,6 +9,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("entrypointapp")
 public interface EntryPointAppService extends RemoteService 
 {
-	String[] gskelServerTest(String name, boolean debug, String[] debugResponse) throws Exception;
-	String[] checkIpAddress(boolean debug) throws Exception;
+	String[] gskelServerTest(String name) throws Exception;
+	String[] checkIpAddress() throws Exception;
 }

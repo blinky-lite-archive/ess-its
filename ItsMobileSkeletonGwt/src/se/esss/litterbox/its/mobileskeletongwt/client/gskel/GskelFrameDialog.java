@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointApp;
+
 public class GskelFrameDialog extends DialogBox
 {
 	private Label informationtext = new Label();
@@ -15,12 +17,12 @@ public class GskelFrameDialog extends DialogBox
 	private double defaultHeightEM = 2.0;
 	private Button okButton = new Button("Ok");
 	private Frame frame;
-	private GskelSetupApp setupApp;
+	private EntryPointApp entryPointApp;
 
-	public GskelFrameDialog(GskelSetupApp setupApp)
+	public GskelFrameDialog(EntryPointApp entryPointApp)
 	{
 		super();
-		this.setupApp = setupApp;
+		this.entryPointApp = entryPointApp;
 		setText("Information");
 //		setAnimationEnabled(true);
 		okButton.addClickHandler(new ClickHandler() {public void onClick(ClickEvent event) {hide();}});
@@ -48,8 +50,8 @@ public class GskelFrameDialog extends DialogBox
 		okButton.setVisible(showOkButton);
 		setText(title);
 		informationtext.setText(message);
-		setPixelSize(setupApp.getGskelTabLayoutPanelWidth(), setupApp.getGskelTabLayoutPanelHeight() - 130);
-        frame.setPixelSize(setupApp.getGskelTabLayoutPanelWidth() - 20, setupApp.getGskelTabLayoutPanelHeight() - 150);
+		setPixelSize(entryPointApp.getSetup().getGskelTabLayoutPanelWidth(), entryPointApp.getSetup().getGskelTabLayoutPanelHeight() - 130);
+        frame.setPixelSize(entryPointApp.getSetup().getGskelTabLayoutPanelWidth() - 20, entryPointApp.getSetup().getGskelTabLayoutPanelHeight() - 150);
 		setPopupPosition(0, 30);
         show();
 	}

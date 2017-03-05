@@ -73,7 +73,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	@SuppressWarnings("rawtypes")
 	@Override
-	public String[][] getJsonArray(String topic, boolean debug, String[][] debugResponse) throws Exception  
+	public String[][] getJsonArray(String topic) throws Exception  
 	{
 		if (!mqttClientInitialized) throw new Exception("Mqtt client not initialized.");
 
@@ -99,7 +99,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public String publishJsonArray(String topic, String[][] jsonArray,  boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
+	public String publishJsonArray(String topic, String[][] jsonArray,  boolean settingsEnabled) throws Exception
 	{
 		if (!mqttClientInitialized) throw new Exception("Mqtt client not initialized.");
 		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");
@@ -111,7 +111,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 
 	}
 	@Override
-	public byte[] getMessage(String topic, boolean debug, byte[] debugResponse) throws Exception
+	public byte[] getMessage(String topic) throws Exception
 	{
 		if (!mqttClientInitialized) throw new Exception("Mqtt client not initialized.");
 		int itopic = getTopicIndex(topic);
@@ -120,7 +120,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		return messages[itopic];
 	}
 	@Override
-	public String publishMessage(String topic, byte[] message, boolean settingsEnabled, boolean debug, String debugResponse) throws Exception
+	public String publishMessage(String topic, byte[] message, boolean settingsEnabled) throws Exception
 	{
 		if (!mqttClientInitialized) throw new Exception("Mqtt client not initialized.");
 		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");

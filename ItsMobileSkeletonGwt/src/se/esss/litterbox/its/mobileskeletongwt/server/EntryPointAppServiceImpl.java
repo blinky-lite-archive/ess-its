@@ -11,21 +11,16 @@ import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointAppService;
 public class EntryPointAppServiceImpl extends RemoteServiceServlet implements EntryPointAppService 
 {
 	@Override
-	public String[] gskelServerTest(String name, boolean debug, String[] debugResponse) throws Exception 
+	public String[] gskelServerTest(String name) throws Exception 
 	{
 		System.out.println(name);
-		if (debug)
-		{
-			try {Thread.sleep(3000);} catch (InterruptedException e) {}
-			return debugResponse;
-		}
 		try {Thread.sleep(3000);} catch (InterruptedException e) {}
 		String[] answer = {"high", "low"};
 		return answer;
 	}
 
 	@Override
-	public String[] checkIpAddress(boolean debug) throws Exception 
+	public String[] checkIpAddress() throws Exception 
 	{
 		try
 		{

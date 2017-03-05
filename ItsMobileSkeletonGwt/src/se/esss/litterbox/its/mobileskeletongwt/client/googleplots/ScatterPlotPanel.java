@@ -86,7 +86,6 @@ public class ScatterPlotPanel extends HorizontalPanel
 		// Set options
 		options = ScatterChartOptions.create();
 		options.setBackgroundColor("#f0f0f0");
-		options.setFontName("Tahoma");
 		options.setTitle(title);
 		options.setHAxis(HAxis.create(xaxisLabel));
 		options.setVAxis(VAxis.create(yaxisLabel));

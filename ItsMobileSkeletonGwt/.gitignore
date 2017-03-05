@@ -12,7 +12,7 @@
 /war/*-tcpbrokershiftrio1883
 /*-tcpbrokershiftrio1883
 /.settings/com.google.appengine.eclipse.core.prefs
-/ItsMobileSkeletonGwt.war
+/*.war
 /bin/
 /.settings/
 /.gwt/

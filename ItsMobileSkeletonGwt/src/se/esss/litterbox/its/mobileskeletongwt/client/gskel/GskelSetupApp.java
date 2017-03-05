@@ -1,134 +1,135 @@
 package se.esss.litterbox.its.mobileskeletongwt.client.gskel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointAppService;
 import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointAppServiceAsync;
-
+import se.esss.litterbox.its.mobileskeletongwt.client.mqttdata.MqttService;
+import se.esss.litterbox.its.mobileskeletongwt.client.mqttdata.MqttServiceAsync;
 
 public class GskelSetupApp 
 {
-	private final EntryPointAppServiceAsync entryPointAppService = GWT.create(EntryPointAppService.class);
-	private boolean debug = false;
-	private String versionDate = "July 31, 2015 17:18";
-	private String version = "v1.9";
-	private String author = "Dave McGinnis david.mcginnis@esss.se";
-	private GskelStatusTextArea statusTextArea;
 	private GskelTabLayoutPanel gskelTabLayoutPanel;
+	private GskelVerticalPanel gskelVerticalPanel;
 	private GskelOptionDialog optionDialog;
 	private GskelMessageDialog messageDialog;
 	private GskelFrameDialog frameDialog;
-	private EntryPointApp entryPointApp;
+	private boolean mobile = false;
+	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
+	private final EntryPointAppServiceAsync entryPointAppService = GWT.create(EntryPointAppService.class);
+	private boolean settingsPermitted;
+	private VerticalPanel mainVerticalPanel = new VerticalPanel();
+	private HorizontalPanel titlePanel = new HorizontalPanel();
+	private boolean tabbedLayout = false;
 
-	private int statusTextAreaHeightVisible = 150;
 	private int gskelTabLayoutPanelHeightBarHeightPx = 30;
-	private int logoPanelWidth = 200;
-	private Image logoImage = new Image("images/gwtLogo.jpg");
-	private Label titleLabel = new Label("GWT Skeleton");
-	private HorizontalPanel logoAndStatusPanel;
-	private int oldWindowHeight = -1;
 
 
 // Getters
-	public boolean isDebug() {return debug;}
-	public String getVersion() {return version;}
-	public String getVersionDate() {return versionDate;}
-	public String getAuthor() {return author;}
-	public GskelStatusTextArea getStatusTextArea() {return statusTextArea;}
+	public boolean isMobile() {return mobile;}
 	public GskelOptionDialog getOptionDialog() {return optionDialog;}
 	public GskelMessageDialog getMessageDialog() {return messageDialog;}
 	public GskelFrameDialog getFrameDialog() {return frameDialog;}
 	public GskelTabLayoutPanel getGskelTabLayoutPanel() {return gskelTabLayoutPanel;}
-	public int getGskelTabLayoutPanelHeightBarHeightPx() {return gskelTabLayoutPanelHeightBarHeightPx;}
-	public int getLogoPanelWidth() {return logoPanelWidth;}
+	public MqttServiceAsync getMqttService() {return mqttService;}
 	public EntryPointAppServiceAsync getEntryPointAppService() {return entryPointAppService;}
-	public EntryPointApp getEntryPointApp() {return entryPointApp;}
+	public boolean isSettingsPermitted() {return settingsPermitted;}
+	public HorizontalPanel getTitlePanel() {return titlePanel;}
 // Setters
-	public void setDebug(boolean debug) {this.debug = debug;}
-	public void setVersionDate(String versionDate) {this.versionDate = versionDate;}
-	public void setVersion(String version) {this.version = version;}
-	public void setAuthor(String author) {this.author = author;}
+	public void setSettingsPermitted(boolean settingsPermitted) {this.settingsPermitted = settingsPermitted;}
 	
-	public GskelSetupApp(EntryPointApp entryPointApp)
+	public GskelSetupApp(EntryPointApp entryPointApp, boolean tabbedLayout)
 	{
-		this.entryPointApp = entryPointApp;
-		gskelTabLayoutPanel = new GskelTabLayoutPanel(gskelTabLayoutPanelHeightBarHeightPx, this, getGskelTabLayoutPanelWidth(), getGskelTabLayoutPanelHeight());
-		statusTextArea = new GskelStatusTextArea(Window.getClientWidth() - 10, statusTextAreaHeightVisible);
-	    statusTextArea.setMaxBufferSize(100);
+		RootLayoutPanel.get().setStyleName("RootPanel");
+		this.tabbedLayout = tabbedLayout;
+		
+		mobile = false;
+		String userAgent = Navigator.getUserAgent().toLowerCase();
+		if (userAgent.indexOf("iphone") >= 0) mobile = true;
+		if (userAgent.indexOf("ipad") >= 0) mobile = true;
+		if (userAgent.indexOf("android") >= 0) mobile = true;
+
 
         optionDialog =  new GskelOptionDialog();
         messageDialog =  new GskelMessageDialog();
-        frameDialog = new GskelFrameDialog(this);
-    	VerticalPanel logoPanel = new VerticalPanel();
-		logoPanel.setWidth(logoPanelWidth + "px");
-		logoPanel.add(logoImage);
-	    titleLabel.setStyleName("titleLabel");
-	    logoPanel.add(titleLabel);
+        frameDialog = new GskelFrameDialog(entryPointApp);
 		
-	    logoAndStatusPanel = new HorizontalPanel();
-	    
-	    logoAndStatusPanel.add(logoPanel);
-	    logoAndStatusPanel.add(statusTextArea);
-		VerticalPanel vp1 = new VerticalPanel();
-		vp1.add(gskelTabLayoutPanel);
-	    vp1.add(logoAndStatusPanel);
-		RootLayoutPanel.get().add(vp1);
-		Window.addResizeHandler(new GskelResizeHandler(this));
-
-	}
-	public void echoVersionInfo()
-	{
-	    statusTextArea.addStatus("Welcome! Version: " + version + " Last updated on: " + versionDate + " by " + author);
-	}
-	public void setLogoImage(String logoImageUrl)
-	{
-		logoImage.setUrl(logoImageUrl);
-		messageDialog.getLogoImage().setUrl(logoImageUrl);
-		optionDialog.getLogoImage().setUrl(logoImageUrl);
-	}
-	public void setLogoTitle(String logoTitle)
-	{
-		titleLabel.setText(logoTitle);
-	}
-	public int getGskelTabLayoutPanelWidth()
-	{
-		return Window.getClientWidth() + 10 - 15;
-	}
-	public int getGskelTabLayoutPanelHeight()
-	{
-		return Window.getClientHeight() - 15 - getStatusTextAreaHeight();
-	}
-	public void setStatusTextAreaVisible() 
-	{
-		int windowHeight = Window.getClientHeight();
-
-		if (oldWindowHeight < 0)
+	    mainVerticalPanel.add(titlePanel);
+		if (tabbedLayout)
 		{
-			oldWindowHeight = windowHeight;
-			return;
+			gskelTabLayoutPanel = new GskelTabLayoutPanel(gskelTabLayoutPanelHeightBarHeightPx);
+			mainVerticalPanel.add(gskelTabLayoutPanel);
 		}
-		if (oldWindowHeight < windowHeight)
+		RootLayoutPanel.get().add(mainVerticalPanel);
+		Window.addResizeHandler(new GskelResizeHandler());
+		resize();
+
+	}
+	public void addPanel(GskelVerticalPanel gskelVerticalPanel)
+	{
+		if (mainVerticalPanel.getWidgetCount() > 1) mainVerticalPanel.remove(1);
+		this.gskelVerticalPanel = gskelVerticalPanel;
+		if (gskelVerticalPanel.isScrollable())
 		{
-			logoAndStatusPanel.setVisible(true);
+			mainVerticalPanel.add(gskelVerticalPanel.getScrollPanel());
 		}
 		else
 		{
-			logoAndStatusPanel.setVisible(false);
+			mainVerticalPanel.add(gskelVerticalPanel);
 		}
-		oldWindowHeight = windowHeight;
+		resize();
 	}
-	public int getStatusTextAreaHeight() 
+	public void addPanel(GskelVerticalPanel gskelVerticalPanel, String tabTitle)
 	{
-		if (oldWindowHeight < 0) return statusTextAreaHeightVisible;
-		if (logoAndStatusPanel.isVisible()) return statusTextAreaHeightVisible;
-		return 0;
+		gskelTabLayoutPanel.addGskelVerticalPanel(gskelVerticalPanel, tabTitle);
 	}
-
+	public void setLogoImage(String logoImageUrl)
+	{
+		messageDialog.getLogoImage().setUrl(logoImageUrl);
+		optionDialog.getLogoImage().setUrl(logoImageUrl);
+	}
+	public int getGskelTabLayoutPanelWidth()
+	{
+		return Window.getClientWidth() - 5;
+	}
+	public int getGskelTabLayoutPanelHeight()
+	{
+		return Window.getClientHeight() - 25;
+	}
+	public void resize()
+	{
+		if (tabbedLayout)
+		{
+			gskelTabLayoutPanel.setSize(Window.getClientWidth(), Window.getClientHeight() - titlePanel.getOffsetHeight());
+		}
+		else
+		{
+			if (mainVerticalPanel.getWidgetCount() > 1)
+			{
+				if (gskelVerticalPanel.isScrollable())
+				{
+					
+					String swidth = Integer.toString(Window.getClientWidth()) + "px";
+					String sheight = Integer.toString(Window.getClientHeight() - titlePanel.getOffsetHeight()) + "px";
+					gskelVerticalPanel.getScrollPanel().setSize(swidth, sheight);
+				}
+			}
+		}
+	}
+	public class GskelResizeHandler implements ResizeHandler
+	{
+		@Override
+		public void onResize(ResizeEvent event) 
+		{
+			resize();
+		}
+	}
 }

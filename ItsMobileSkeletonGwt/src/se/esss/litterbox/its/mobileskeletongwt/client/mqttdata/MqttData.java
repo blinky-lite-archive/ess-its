@@ -1,5 +1,6 @@
 package se.esss.litterbox.its.mobileskeletongwt.client.mqttdata;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -60,7 +61,7 @@ public abstract class MqttData
 		@Override
 		public void onFailure(Throwable caught) 
 		{
-			mqttData.entryPointApp.setupApp.getStatusTextArea().addStatus("Error on GetJsonDataAsyncCallback: " +  mqttData.topic);
+			GWT.log("Error on GetJsonDataAsyncCallback: " +  mqttData.topic);
 		}
 		@Override
 		public void onSuccess(String[][] result) 
@@ -81,7 +82,7 @@ public abstract class MqttData
 		@Override
 		public void onFailure(Throwable caught) 
 		{
-			mqttData.entryPointApp.setupApp.getStatusTextArea().addStatus("Error on GetByteDataAsyncCallback: " +  mqttData.topic);
+			GWT.log("Error on GetByteDataAsyncCallback: " +  mqttData.topic);
 		}
 		@Override
 		public void onSuccess(byte[] result) 
@@ -100,7 +101,7 @@ public abstract class MqttData
 		@Override
 		public void run() 
 		{
-			mqttData.entryPointApp.mqttService.getJsonArray(mqttData.topic, mqttData.entryPointApp.setupApp.isDebug(), null, new GetJsonDataAsyncCallback(mqttData));
+			mqttData.entryPointApp.getSetup().getMqttService().getJsonArray(mqttData.topic, new GetJsonDataAsyncCallback(mqttData));
 		}
 		
 	}
@@ -114,7 +115,7 @@ public abstract class MqttData
 		@Override
 		public void run() 
 		{
-			mqttData.entryPointApp.mqttService.getMessage(mqttData.topic, mqttData.entryPointApp.setupApp.isDebug(), null, new GetByteDataAsyncCallback(mqttData));
+			mqttData.entryPointApp.getSetup().getMqttService().getMessage(mqttData.topic, new GetByteDataAsyncCallback(mqttData));
 		}
 		
 	}

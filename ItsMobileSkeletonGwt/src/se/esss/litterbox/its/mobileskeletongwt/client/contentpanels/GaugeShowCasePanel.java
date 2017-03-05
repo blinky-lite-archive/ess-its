@@ -1,17 +1,16 @@
 package se.esss.litterbox.its.mobileskeletongwt.client.contentpanels;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Grid;
 
 import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.googleplots.GaugeCaptionPanel;
 import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelLoadWaiter;
-import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelVerticalPanel;
 import se.esss.litterbox.its.mobileskeletongwt.client.mqttdata.MqttData;
 
 public class GaugeShowCasePanel extends GskelVerticalPanel
 {
-	String gaugeMqttTopic;
 	Grid gaugeGrid;
 	GaugeCaptionPanel gaugeCaptionPanel1;
 	GaugeCaptionPanel gaugeCaptionPanel2;
@@ -19,45 +18,35 @@ public class GaugeShowCasePanel extends GskelVerticalPanel
 	GaugeMqttData gaugeMqttData;
 
 
-	public GaugeShowCasePanel(String tabTitle, String gaugeMqttTopic, GskelSetupApp setupApp) 
+	public GaugeShowCasePanel(EntryPointApp entryPointApp) 
 	{
-		super(tabTitle, "gwtTab", setupApp);
-		this.getGskelTabLayoutScrollPanel().setStyleName("GskelVertPanel");
-		this.gaugeMqttTopic = gaugeMqttTopic;
+		super(true, entryPointApp);
 		gaugeGrid = new Grid(1, 3);
 		add(gaugeGrid);
 		addGauge1();
 	}
 	private void addGauge1()
 	{
-		getStatusTextArea().addStatus("Adding Gauge1");
 		gaugeCaptionPanel1 = new GaugeCaptionPanel("testDevice01", "testDevice01", 0, 100, 0.0, 30.0, 30.0, 60.0, 60.0, 100.0, "100px", "100px");
 		new GaugePlotWaiter(100, 1);
 	}
 	private void addGauge2()
 	{
-		getStatusTextArea().addStatus("Adding Gauge2");
 		gaugeGrid.setWidget(0, 0, gaugeCaptionPanel1);
 		gaugeCaptionPanel2 = new GaugeCaptionPanel("testDevice02", "testDevice02", 0, 100, 0.0, 30.0, 30.0, 60.0, 60.0, 100.0, "100px", "100px");
 		new GaugePlotWaiter(100, 2);
 	}
 	private void addGauge3()
 	{
-		getStatusTextArea().addStatus("Adding Gauge3");
 		gaugeGrid.setWidget(0, 1, gaugeCaptionPanel2);
 		gaugeCaptionPanel3 = new GaugeCaptionPanel("testDevice03", "testDevice03", 0, 100, 0.0, 30.0, 30.0, 60.0, 60.0, 100.0, "100px", "100px");
 		new GaugePlotWaiter(100, 3);
 	}
 	private void startMqtt()
 	{
-		getStatusTextArea().addStatus("Starting Gauge Mqtt");
 		gaugeGrid.setWidget(0, 2, gaugeCaptionPanel3);
 		gaugeMqttData = new GaugeMqttData(getEntryPointApp());
 	}
-	@Override
-	public void tabLayoutPanelInterfaceAction(String message) {}
-	@Override
-	public void optionDialogInterfaceAction(String choiceButtonText) {}
 	class GaugePlotWaiter extends GskelLoadWaiter
 	{
 		public GaugePlotWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
@@ -84,7 +73,7 @@ public class GaugeShowCasePanel extends GskelVerticalPanel
 
 		public GaugeMqttData(EntryPointApp entryPointApp) 
 		{
-			super(gaugeMqttTopic, MqttData.JSONDATA, 1000, entryPointApp);
+			super("mqttTester/get/gauges", MqttData.JSONDATA, 1000, entryPointApp);
 		}
 
 		@Override
@@ -98,7 +87,7 @@ public class GaugeShowCasePanel extends GskelVerticalPanel
 			}
 			catch (Exception e)
 			{
-				getStatusTextArea().addStatus(e.getMessage());
+				GWT.log(e.getMessage());
 			}
 			
 		}

@@ -8,14 +8,30 @@ h1 {
 }
 .titleLabel {
   display: block;
-	color: #0e25fa;
 	font-size: 1.5em;
 	font-weight: bold;
 	text-align: center;
 }
-.GskelVertPanel {
+.RootPanel {
 	color: #FFFFFF;
-	font-size: 1.5em;
-	font-weight: bold;
 	background-color: #0095CD;
 }
+.skelTab {
+	background-color: #FFFFFF;
+	color: #0095CD;
+}
+@external gwt-TabLayoutPanelTabs;
+.gwt-TabLayoutPanelTabs {	
+	background-color: #0082B3 !important;
+}
+@external gwt-TabLayoutPanelTab;
+.gwt-TabLayoutPanelTab {
+   color: white  !important;
+   background: #0095CD !important;
+}
+@external gwt-TabLayoutPanelTab-selected;
+.gwt-TabLayoutPanelTab-selected {
+   color: #0095CD  !important;
+   background: white !important;
+}
+

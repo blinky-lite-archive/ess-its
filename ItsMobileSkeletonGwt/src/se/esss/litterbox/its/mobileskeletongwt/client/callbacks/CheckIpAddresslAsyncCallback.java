@@ -1,5 +1,6 @@
 package se.esss.litterbox.its.mobileskeletongwt.client.callbacks;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -16,25 +17,25 @@ public class CheckIpAddresslAsyncCallback implements AsyncCallback<String[]>
 	@Override
 	public void onFailure(Throwable caught) 
 	{
-		entryPointApp.setupApp.getStatusTextArea().addStatus("Error in getting IP Address of client. Error: " + caught.getMessage());
+		GWT.log("Error in getting IP Address of client. Error: " + caught.getMessage());
 	}
 
 	@Override
 	public void onSuccess(String[] result) 
 	{
-		entryPointApp.setupApp.getStatusTextArea().addStatus("User Name = " + result[0]);
 		boolean ipOkay = Boolean.parseBoolean(result[1]);
 		if (!ipOkay)
 		{
-			entryPointApp.setupApp.getMessageDialog().setImageUrl("images/warning.jpg");
-			entryPointApp.setupApp.getMessageDialog().setMessage("Warning", result[0] + ": You can look but not touch", true);
+			entryPointApp.getSetup().getMessageDialog().setImageUrl("images/warning.jpg");
+			entryPointApp.getSetup().getMessageDialog().setMessage("Warning", result[0] + ": You can look but not touch", true);
 			WaitTimer waitTimer = new WaitTimer();
 			waitTimer.scheduleRepeating(200);
 			waitTimer.run();
 		}
 		else
 		{
-			entryPointApp.initializeTabs(true);
+			entryPointApp.getSetup().setSettingsPermitted(true);
+			entryPointApp.initializeTabs();
 		}
 		
 	}
@@ -43,9 +44,9 @@ public class CheckIpAddresslAsyncCallback implements AsyncCallback<String[]>
 		@Override
 		public void run() 
 		{
-			if (!entryPointApp.setupApp.getMessageDialog().isShowing())
+			if (!entryPointApp.getSetup().getMessageDialog().isShowing())
 			{
-				entryPointApp.initializeTabs(false);
+				entryPointApp.getSetup().setSettingsPermitted(false);
 				cancel();
 			}
 

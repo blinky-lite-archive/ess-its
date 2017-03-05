@@ -1,29 +1,26 @@
 package se.esss.litterbox.its.mobileskeletongwt.client.contentpanels;
 
 
+import com.google.gwt.core.client.GWT;
+
 import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.googleplots.LineChartCaptionPanel;
 import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelLoadWaiter;
-import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelVerticalPanel;
 import se.esss.litterbox.its.mobileskeletongwt.client.mqttdata.MqttData;
 
 public class LineChartShowCasePanel extends GskelVerticalPanel
 {
-	String lineChartMqttTopic;
 	LineChartCaptionPanel lineChartCaptionPanel;
 	LineChartMqttData lineChartMqttData;
 
-	public LineChartShowCasePanel(String tabTitle, String lineChartMqttTopic, GskelSetupApp setupApp) 
+	public LineChartShowCasePanel(EntryPointApp entryPointApp) 
 	{
-		super(tabTitle, "gwtTab", setupApp);
-		this.getGskelTabLayoutScrollPanel().setStyleName("GskelVertPanel");
-		this.lineChartMqttTopic = lineChartMqttTopic;
+		super(false, entryPointApp);
 		addLineChart();
 	}
 	private void addLineChart()
 	{
-		getStatusTextArea().addStatus("Adding LineChart");
 		int numPts = 5;
 		String title = "LineChart";
 		String xaxisLabel = "Time (fortnights)";
@@ -35,14 +32,9 @@ public class LineChartShowCasePanel extends GskelVerticalPanel
 	}
 	private void startMqtt()
 	{
-		getStatusTextArea().addStatus("Starting LineChart Mqtt");
 		add(lineChartCaptionPanel);
 		lineChartMqttData = new LineChartMqttData(getEntryPointApp());
 	}
-	@Override
-	public void tabLayoutPanelInterfaceAction(String message) {}
-	@Override
-	public void optionDialogInterfaceAction(String choiceButtonText) {}
 
 	class LineChartPlotWaiter extends GskelLoadWaiter
 	{
@@ -66,7 +58,7 @@ public class LineChartShowCasePanel extends GskelVerticalPanel
 
 		public LineChartMqttData(EntryPointApp entryPointApp) 
 		{
-			super(lineChartMqttTopic, MqttData.BYTEDATA, 1000, entryPointApp);
+			super("mqttTester/get/line", MqttData.BYTEDATA, 1000, entryPointApp);
 		}
 
 		@Override
@@ -89,7 +81,7 @@ public class LineChartShowCasePanel extends GskelVerticalPanel
 			}
 			catch (Exception e)
 			{
-				getStatusTextArea().addStatus(e.getMessage());
+				GWT.log(e.getMessage());
 			}
 			
 		}

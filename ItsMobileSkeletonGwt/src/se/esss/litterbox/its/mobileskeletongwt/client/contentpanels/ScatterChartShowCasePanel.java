@@ -1,29 +1,26 @@
 package se.esss.litterbox.its.mobileskeletongwt.client.contentpanels;
 
 
+import com.google.gwt.core.client.GWT;
+
 import se.esss.litterbox.its.mobileskeletongwt.client.EntryPointApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.googleplots.ScatterPlotCaptionPanel;
 import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelLoadWaiter;
-import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.mobileskeletongwt.client.gskel.GskelVerticalPanel;
 import se.esss.litterbox.its.mobileskeletongwt.client.mqttdata.MqttData;
 
 public class ScatterChartShowCasePanel extends GskelVerticalPanel
 {
-	String scatterPlotMqttTopic;
 	ScatterPlotCaptionPanel scatterPlotCaptionPanel;
 	ScatterPlotMqttData lineChartMqttData;
 
-	public ScatterChartShowCasePanel(String tabTitle, String scatterPlotMqttTopic, GskelSetupApp setupApp) 
+	public ScatterChartShowCasePanel(EntryPointApp entryPointApp) 
 	{
-		super(tabTitle, "gwtTab", setupApp);
-		this.getGskelTabLayoutScrollPanel().setStyleName("GskelVertPanel");
-		this.scatterPlotMqttTopic = scatterPlotMqttTopic;
+		super(true, entryPointApp);
 		addLineChart();
 	}
 	private void addLineChart()
 	{
-		getStatusTextArea().addStatus("Adding Scatter Plot");
 		int numPts = 5;
 		String title = "ScatterPlot";
 		String xaxisLabel = "Time (fortnights)";
@@ -35,15 +32,9 @@ public class ScatterChartShowCasePanel extends GskelVerticalPanel
 	}
 	private void startMqtt()
 	{
-		getStatusTextArea().addStatus("Starting ScatterPlot Mqtt");
 		add(scatterPlotCaptionPanel);
 		lineChartMqttData = new ScatterPlotMqttData(getEntryPointApp());
 	}
-	@Override
-	public void tabLayoutPanelInterfaceAction(String message) {}
-	@Override
-	public void optionDialogInterfaceAction(String choiceButtonText) {}
-
 	class ScatterPlotPlotWaiter extends GskelLoadWaiter
 	{
 		public ScatterPlotPlotWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
@@ -66,7 +57,7 @@ public class ScatterChartShowCasePanel extends GskelVerticalPanel
 
 		public ScatterPlotMqttData(EntryPointApp entryPointApp) 
 		{
-			super(scatterPlotMqttTopic, MqttData.BYTEDATA, 1000, entryPointApp);
+			super("mqttTester/get/scatter", MqttData.BYTEDATA, 1000, entryPointApp);
 		}
 
 		@Override
@@ -90,7 +81,7 @@ public class ScatterChartShowCasePanel extends GskelVerticalPanel
 			}
 			catch (Exception e)
 			{
-				getStatusTextArea().addStatus(e.getMessage());
+				GWT.log(e.getMessage());
 			}
 			
 		}

@@ -84,7 +84,6 @@ public class LineChartPlotPanel extends HorizontalPanel
 		// Set options
 		options = LineChartOptions.create();
 		options.setBackgroundColor("#f0f0f0");
-		options.setFontName("Tahoma");
 		options.setTitle(title);
 		options.setHAxis(HAxis.create(haxisLabel));
 		options.setVAxis(VAxis.create(yaxisLabel));
