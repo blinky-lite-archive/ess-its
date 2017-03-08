@@ -16,7 +16,7 @@ import se.esss.litterbox.its.watersystem2gwt.client.mqttdata.MqttService;
 public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 {
 	MqttServiceImpClient mqttClient;
-	String[] topics = {"mqttTester/get/gauges", "mqttTester/get/line", "mqttTester/get/scatter"};
+	String[] topics = {"itsWaterSystem/get", "itsCernMod/get/temp", "itspressureMeter/get"};
 	byte[][] messages;
 	boolean mqttClientInitialized = false;
 	
@@ -28,7 +28,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-			mqttClient = new MqttServiceImpClient(this, "ItsMobileSkeletonWebApp", getMqttDataPath(), cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsWaterSystemWebApp", getMqttDataPath(), cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
@@ -45,7 +45,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		File tmpFile = new File(getServletContext().getRealPath("./"));
 		tmpFile = new File(tmpFile.getParent());
 		tmpFile = new File(tmpFile.getParent());
-		return tmpFile.getPath() + "/itsmqtttestbroker.dat";
+		return tmpFile.getPath() + "/itsmqttbroker.dat";
 		
 	}
 	public void destroy()

@@ -1,15 +1,16 @@
 package se.esss.litterbox.its.watersystem2gwt.client;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.shared.GWT;
-import com.google.gwt.user.client.ui.Label;
+import java.util.Date;
 
-import se.esss.litterbox.its.watersystem2gwt.client.callbacks.CheckIpAddresslAsyncCallback;
-import se.esss.litterbox.its.watersystem2gwt.client.contentpanels.GaugeShowCasePanel;
-import se.esss.litterbox.its.watersystem2gwt.client.contentpanels.LineChartShowCasePanel;
-import se.esss.litterbox.its.watersystem2gwt.client.contentpanels.ScatterChartShowCasePanel;
-import se.esss.litterbox.its.watersystem2gwt.client.contentpanels.TestPicPanel;
-import se.esss.litterbox.its.watersystem2gwt.client.gskel.GskelLoadWaiter;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+import se.esss.litterbox.its.watersystem2gwt.client.contentpanels.WaterGaugePanel;
 import se.esss.litterbox.its.watersystem2gwt.client.gskel.GskelSetupApp;
 
 /**
@@ -18,57 +19,43 @@ import se.esss.litterbox.its.watersystem2gwt.client.gskel.GskelSetupApp;
 public class EntryPointApp implements EntryPoint 
 {
 	private GskelSetupApp setup;
+	private Label dateLabel = new Label(new Date().toString());
+
+	public Label getDateLabel() {return dateLabel;}
 
 	// Getters
 	public GskelSetupApp getSetup() {return setup;}
 	
 	public void onModuleLoad() 
 	{
-		setup = new GskelSetupApp(this, true);
+		setup = new GskelSetupApp(this, false);
 		getSetup().setLogoImage("images/gwtLogo.jpg");
 		
-		Label titleLabel = new Label("GWT Skeleton");
+		Label titleLabel = new Label("ITS Thirsty!");
 		titleLabel.setStyleName("titleLabel");
+		dateLabel.setStyleName("dateLabel");
+		Grid titleGrid = new Grid(1,2);
+		VerticalPanel titleCell = new VerticalPanel();
+		titleCell.setWidth("932px");
+		titleCell.add(titleLabel);
+		titleCell.add(dateLabel);
+		Image logoImage = new Image("images/gwtLogo.jpg");
+		logoImage.setSize("73px", "40px");
+		titleGrid.setWidget(0, 0, titleCell);
+		titleGrid.setWidget(0, 1, logoImage);
+		CellFormatter titleGridCellFormatter = titleGrid.getCellFormatter();
+		titleGridCellFormatter.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+		titleGridCellFormatter.setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		
-		getSetup().getTitlePanel().add(titleLabel);
-		getSetup().getEntryPointAppService().checkIpAddress(new CheckIpAddresslAsyncCallback(this));		
+		getSetup().getTitlePanel().setWidth("1005px");
+		getSetup().getTitlePanel().add(titleGrid);
+//		getSetup().getEntryPointAppService().checkIpAddress(new CheckIpAddresslAsyncCallback(this));		
 		getSetup().resize();
+		initializeTabs();
 	}
 	public void initializeTabs()
 	{
-		TestPicPanel tpp1 = new TestPicPanel(false, this, "images/gwtLogo.jpg");
-		getSetup().addPanel(tpp1,"Shiftr");
-		new TabLoadWaiter(100, 1);
-	}
-	private void loadTab2()
-	{
-		getSetup().addPanel(new GaugeShowCasePanel(this), "Gauge");
-		new TabLoadWaiter(100, 2);
-	}
-	private void loadTab3()
-	{
-		getSetup().addPanel(new LineChartShowCasePanel(this), "Line");
-		new TabLoadWaiter(100, 3);
-	}
-	private void loadTab4()
-	{
-		getSetup().addPanel(new ScatterChartShowCasePanel(this), "Scatter");
-	}
-	class TabLoadWaiter extends GskelLoadWaiter
-	{
-		public TabLoadWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
-		@Override
-		public boolean isLoaded() 
-		{
-			return true;
-		}
-		@Override
-		public void taskAfterLoad() 
-		{
-			GWT.log(Integer.toString(getItask()));
-			if (getItask() == 1) loadTab2();
-			if (getItask() == 2) loadTab3();
-			if (getItask() == 3) loadTab4();
-		}
+		WaterGaugePanel wgp = new WaterGaugePanel(this);
+		setup.addPanel(wgp);
 	}
 }

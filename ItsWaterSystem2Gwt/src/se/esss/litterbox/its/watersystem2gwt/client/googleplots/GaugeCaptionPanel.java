@@ -15,9 +15,12 @@ public class GaugeCaptionPanel extends CaptionPanel
 		super(captionTitle);
 		loaded = false;
 		gaugePlot = new GaugePlotPanel(gaugeLabel, min, max, greenMin, greenMax, yellowMin, yellowMax, redMin, redMax, plotWidth, plotHeight);
+		
+	}
+	public void initialize()
+	{
 		LoadPlotTimer lpt = new LoadPlotTimer(this);
 		lpt.scheduleRepeating(50);
-		
 	}
 	public void updateReadings(double value)
 	{

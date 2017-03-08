@@ -5,7 +5,6 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -27,7 +26,7 @@ public class GskelSetupApp
 	private final EntryPointAppServiceAsync entryPointAppService = GWT.create(EntryPointAppService.class);
 	private boolean settingsPermitted;
 	private VerticalPanel mainVerticalPanel = new VerticalPanel();
-	private HorizontalPanel titlePanel = new HorizontalPanel();
+	private VerticalPanel titlePanel = new VerticalPanel();
 	private boolean tabbedLayout = false;
 
 	private int gskelTabLayoutPanelHeightBarHeightPx = 30;
@@ -42,7 +41,7 @@ public class GskelSetupApp
 	public MqttServiceAsync getMqttService() {return mqttService;}
 	public EntryPointAppServiceAsync getEntryPointAppService() {return entryPointAppService;}
 	public boolean isSettingsPermitted() {return settingsPermitted;}
-	public HorizontalPanel getTitlePanel() {return titlePanel;}
+	public VerticalPanel getTitlePanel() {return titlePanel;}
 // Setters
 	public void setSettingsPermitted(boolean settingsPermitted) {this.settingsPermitted = settingsPermitted;}
 	

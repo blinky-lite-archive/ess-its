@@ -12,6 +12,9 @@ h1 {
 	font-weight: bold;
 	text-align: center;
 }
+.dateLabel {
+	text-align: center;
+}
 .RootPanel {
 	color: #FFFFFF;
 	background-color: #0095CD;
