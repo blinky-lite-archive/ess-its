@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.ioc;
+package se.esss.litterbox.its.ioc.tester;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

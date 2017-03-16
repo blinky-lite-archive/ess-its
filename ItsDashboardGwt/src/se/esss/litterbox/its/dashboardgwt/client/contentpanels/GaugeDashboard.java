@@ -47,7 +47,7 @@ public class GaugeDashboard extends VerticalPanel
 		String[] rfSysPlotTitle = {"RF Power", "CPM", "Cath V", "Trig W", "Trig. Duty", "Trig Freq", "State"};
 		double[] rfSysMinValue = {0.0, 0.0, 0.0, 500, 0.0, 0.0, 0.0 };
 		double[][] rfSysMaxValue = {
-				{400,   800, 1000},
+				{400,   800, 1200},
 				{ 25,    40,   70},
 				{ 70,   115,  140},
 				{1000, 2000, 3000},
