@@ -24,7 +24,10 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	String[] topics = {"itsIceCube08Cam/set", "itsIceCube08Cam/image/jpg", "itsIceCube08Cam/image/date"};
 	byte[][] messages;
 	boolean mqttClientInitialized = false;
+	int imageCounterArrayIndex = -1;
+	long[] imageCounterArray = new long[10];
 	
+	boolean updateCamImage = true;
 	public void init()
 	{
 		if (topics.length < 1) return;
@@ -135,15 +138,32 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 	}
 	private void writeRaspiWebCamImage(byte[] imageInByte) 
 	{
+		if (!updateCamImage) return;
+
 		try
 		{
+			String[][] jsonArray =  getJsonArray("itsIceCube08Cam/image/date");
+			long imageCounter = 0;
+			for (int ii = 0; ii < jsonArray.length; ++ii)
+			{
+				if (jsonArray[ii][0].equals("counter")) imageCounter = Long.parseLong(jsonArray[ii][1]) ;
+			}
+			++imageCounterArrayIndex;
+			if (imageCounterArrayIndex > 9) imageCounterArrayIndex = 0;
+			int deleteIndex = imageCounterArrayIndex + 1;
+			imageCounterArray[imageCounterArrayIndex] = imageCounter;
+			if (deleteIndex > 9) deleteIndex = 0;
+			if (imageCounterArray[deleteIndex] >= 0)
+			{
+				File deleteFile = new File(getServletContext().getRealPath("images/raspiWebCamImage" + Long.toString(imageCounterArray[deleteIndex]) + ".jpg"));
+				deleteFile.delete();
+				
+			}
 			InputStream in = new ByteArrayInputStream(imageInByte);
 			BufferedImage bImageFromConvert = ImageIO.read(in);
-			File newFile = new File(getServletContext().getRealPath("images/raspiWebCamImageA.jpg"));
+			File newFile = new File(getServletContext().getRealPath("images/raspiWebCamImage" + Long.toString(imageCounter) + ".jpg"));
 	
 			ImageIO.write(bImageFromConvert, "jpg", newFile);
-			File oldfile = new File(getServletContext().getRealPath("images/raspiWebCamImage.jpg"));
-			newFile.renameTo(oldfile);
 			
 		}
 		catch (Exception e) {System.out.println("Error in writeRaspiWebCamImage: " + e.getMessage());}

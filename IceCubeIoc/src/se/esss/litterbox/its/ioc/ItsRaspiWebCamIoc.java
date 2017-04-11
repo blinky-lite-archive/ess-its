@@ -17,6 +17,8 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 {
 	private String cameraCommand = "raspistill -t 3000 -o raspiWebCamImage.jpg";
 	String mainTopic = "";
+	private long imageCounter = 0;
+
 	public ItsRaspiWebCamIoc(String clientId, String mainTopic, String mqttBrokerInfoFilePath) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath);
@@ -45,8 +47,9 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 			boolean retained = true;
 			JSONObject outputData = new JSONObject();
 			outputData.put("date", dateString);
+			outputData.put("counter", Long.toString(imageCounter));
 			publishMessage(mainTopic + "/image/date", outputData.toJSONString().getBytes(), 0, retained);
-
+			++imageCounter;
 			
 			return imageInByte;
 		} catch (Exception e) 

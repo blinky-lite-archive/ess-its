@@ -10,7 +10,6 @@ import se.esss.litterbox.its.raspiwebcamgwt.client.mqttdata.MqttData;
 public class RaspiCamImagePanel  extends GskelVerticalPanel
 {
 	Image webCamImage = null;
-	int version = 1;
 
 	public Image getWebCamImage() {return webCamImage;}
 	
@@ -34,9 +33,10 @@ public class RaspiCamImagePanel  extends GskelVerticalPanel
 		{
 			try
 			{
-				this.getEntryPointApp().getDateLabel().setText(getJsonValue("date"));
-				version++;
-				webCamImage.setUrl("images/raspiWebCamImage.jpg" + "?v" + version);
+				getEntryPointApp().getDateLabel().setText(getJsonValue("date"));
+				long imageCounter = Long.parseLong(getJsonValue("counter"));
+				webCamImage.setUrl("images/raspiWebCamImage" + Long.toString(imageCounter - 2) + ".jpg");
+				Image.prefetch("images/raspiWebCamImage" + Long.toString(imageCounter - 1) + ".jpg");
 			}
 			catch (Exception e)
 			{
