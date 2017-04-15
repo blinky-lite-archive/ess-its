@@ -42,9 +42,9 @@ public class IceCubeIocTester  extends SimpleMqttClient
 //		outputData.put("powerSet", "0");
 //		ioCtester.publishMessage("itsClkTrans01/set/power", outputData.toJSONString().getBytes(), 0, retained);
 
-		outputData.put("timelineSet", "1 1 1 1 1 1 1");
-		outputData.put("freqSet", "14");
-		ioCtester.publishMessage("itsClkTrans01/set/timeline", outputData.toJSONString().getBytes(), 0, retained);
+//		outputData.put("timelineSet", "1 1 1 1 1 1 1");
+//		outputData.put("freqSet", "14");
+//		ioCtester.publishMessage("itsClkTrans01/set/timeline", outputData.toJSONString().getBytes(), 0, retained);
 
 //		outputData.put("power", "1");
 //		ioCtester.publishMessage("homeSingleRelayIOC/set/power", outputData.toJSONString().getBytes(), 0, retained);
@@ -55,11 +55,11 @@ public class IceCubeIocTester  extends SimpleMqttClient
 		outputData.put("channel4", "1 1100 2000");
 		ioCtester.publishMessage("itsClkRecvr01/set/channel", outputData.toJSONString().getBytes(), 0, retained);
 
-		outputData.put("channel1", "1 1100 2000");
-		outputData.put("channel2", "1 1100 2000");
-		outputData.put("channel3", "1 1100 2000");
-		outputData.put("channel4", "1 1100 2000");
-		ioCtester.publishMessage("itsClkRecvr02/set/channel", outputData.toJSONString().getBytes(), 0, retained);
+//		outputData.put("channel1", "1 1100 2000");
+//		outputData.put("channel2", "1 1100 2000");
+//		outputData.put("channel3", "1 1100 2000");
+//		outputData.put("channel4", "1 1100 2000");
+//		ioCtester.publishMessage("itsClkRecvr02/set/channel", outputData.toJSONString().getBytes(), 0, retained);
 
 //		ioCtester.subscribe("itsRfSigGen01/set/rf", 0);
 		
@@ -67,6 +67,9 @@ public class IceCubeIocTester  extends SimpleMqttClient
 		outputData.put("rfFreq", "353.0");
 		outputData.put("rfPowLvl", "2.5");
 		ioCtester.publishMessage("itsRfSigGen01/set/rf", outputData.toJSONString().getBytes(), 0, retained);
+		
+		Thread.sleep(3000);
+		System.exit(0);
 		
 	}
 

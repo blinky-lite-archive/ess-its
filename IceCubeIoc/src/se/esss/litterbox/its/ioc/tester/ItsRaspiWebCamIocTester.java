@@ -27,7 +27,7 @@ public class ItsRaspiWebCamIocTester extends SimpleMqttClient
 		outputData.put("height", "600");
 		outputData.put("rot", "180");
 //		outputData.put("interval", "2000");
-		outputData.put("timeout", "3000");
+		outputData.put("timeout", "5000");
 //		outputData.put("exp", "night");
 		iocTest.publishMessage("itsIceCube08Cam/set", outputData.toJSONString().getBytes(), 0, retained);
 
