@@ -4,3 +4,5 @@
 /*-tcpbrokershiftrio1883/
 /*.dat
 /*.csv
+/*.json
+/.gitignore
