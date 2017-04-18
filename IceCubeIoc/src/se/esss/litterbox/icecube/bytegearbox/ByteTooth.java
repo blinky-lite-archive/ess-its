@@ -42,8 +42,8 @@ public class ByteTooth
 		this.name = (String) jsonObject.get("name");
 		this.description = (String) jsonObject.get("description");
 		this.toothType = (String) jsonObject.get("toothType");
-		this.byteOffsetFromGear = (int) jsonObject.get("byteOff");
-		this.bitOffsetFromGear = (byte) jsonObject.get("bitOff");
+		this.byteOffsetFromGear = (int) ((long) jsonObject.get("byteOff"));
+		this.bitOffsetFromGear = (byte) ((long) jsonObject.get("bitOff"));
 		this.writeable = (boolean) jsonObject.get("writeable");
 		this.value = (String) jsonObject.get("value");
 	}

@@ -30,8 +30,8 @@ public class ByteGear
 	public ByteGear(JSONObject jsonObject)
 	{
 		this.name = (String) jsonObject.get("name");
-		this.readOffset = (int) jsonObject.get("readByteOff");
-		this.writeOffset = (int) jsonObject.get("writeByteOff");
+		this.readOffset = (int) ((long) jsonObject.get("readByteOff"));
+		this.writeOffset = (int) ((long) jsonObject.get("writeByteOff"));
 		JSONArray readList = (JSONArray) jsonObject.get("readToothList");
 		JSONArray writeList = (JSONArray) jsonObject.get("writeToothList");
         Iterator<JSONObject> iterator = readList.iterator();
