@@ -82,18 +82,30 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 			}
 			catch (ParseException | NumberFormatException e) {System.out.println("Error: " + e.getMessage());}
 			cameraCommand = "raspistill" + cameraCommand + " -o raspiWebCamImage.jpg";
-			System.out.println("Received new camer command: " + cameraCommand);
+			System.out.println("Received new camera command: " + cameraCommand);
 		}
 		
 	}
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
-		String iocName = args[0];
-		String mainTopic = args[1];
-		int periodicPoll = Integer.parseInt(args[2]);
+		String iocName = "ItsIceCube08CamIoc";	//args[0];
+		String mainTopic = "itsIceCube08Cam";	//args[1];
+		int periodicPoll = 5000;	//Integer.parseInt(args[2]);
 		ItsRaspiWebCamIoc ioc = new ItsRaspiWebCamIoc(iocName, mainTopic, "itsmqttbroker.dat");
 		ioc.setPeriodicPollPeriodmillis(periodicPoll);
 		ioc.startIoc(mainTopic + "/set", mainTopic + "/image/jpg");
+		
+		boolean retained = true;
+		JSONObject outputData = new JSONObject();
+		outputData.put("width", "800");
+		outputData.put("height", "600");
+		outputData.put("rot", "180");
+//		outputData.put("interval", "2000");
+		outputData.put("timeout", "5000");
+//		outputData.put("exp", "night");
+		ioc.publishMessage(mainTopic + "/set", outputData.toJSONString().getBytes(), 0, retained);
+
 	}
 
 }
