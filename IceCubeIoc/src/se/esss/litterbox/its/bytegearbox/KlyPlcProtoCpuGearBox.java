@@ -8,7 +8,7 @@ public class KlyPlcProtoCpuGearBox {
 
 	public static void main(String[] args) throws Exception 
 	{
-		ByteTooth[] byteToothRead = new ByteTooth[17];
+		ByteTooth[] byteToothRead = new ByteTooth[18];
 		byteToothRead[0]		= new ByteTooth("RESET",				"BOOLEAN",		0, 		0, 		false, 		"false", 	"CPU reset command");
 		byteToothRead[1]		= new ByteTooth("LATCH_MODE",			"BOOLEAN",		0, 		1, 		false, 		"false", 	"CPU latching mode");
 		byteToothRead[2]		= new ByteTooth("INTERLOCK",			"BOOLEAN",		0, 		2, 		false, 		"false", 	"CPU Interlock/Alarm");
@@ -23,9 +23,10 @@ public class KlyPlcProtoCpuGearBox {
 		byteToothRead[11]		= new ByteTooth("STBY_MISS_SUPCOND",	"BOOLEAN",		1, 		3, 		false, 		"false", 	"STAND BY missed sup-condition");
 		byteToothRead[12]		= new ByteTooth("HV_ENA_MISS_SUPCOND",	"BOOLEAN",		1, 		4, 		false, 		"false", 	"HV Enable missed sup-condition");
 		byteToothRead[13]		= new ByteTooth("RF_ENA_MISS_SUPCOND",	"BOOLEAN",		1, 		5, 		false, 		"false", 	"RF Enable missed sup-condition");
-		byteToothRead[14]		= new ByteTooth("ACT_STATE",			"BYTE",			2, 		0, 		false, 		"0", 	"Actual State - see below the code numbers");
-		byteToothRead[15]		= new ByteTooth("SET_STATE",			"SHORT",		4, 		0, 		false, 		"0", 	"Set new command to the target 0=OFF; 1=AUX; 2=FIL; 3=STDBY; 4=HVON; 5=RFON");
-		byteToothRead[16]		= new ByteTooth("OP_MODE",				"BYTE",			6, 		0, 		false, 		"0", 	"1 = Bypass mode, 2 = Maintenance/testing mode, 3 = Normal operation, 4 = Wire test - NOT IMPLEMENTED YET");
+		byteToothRead[14]		= new ByteTooth("FORCE_DIS_MODE_ACT",	"BOOLEAN",		1, 		6, 		false, 		"false", 	"One or more signals are being disabled or forced");
+		byteToothRead[15]		= new ByteTooth("ACT_STATE",			"BYTE",			2, 		0, 		false, 		"0", 	"Actual State - see below the code numbers");
+		byteToothRead[16]		= new ByteTooth("SET_STATE",			"SHORT",		4, 		0, 		false, 		"0", 	"Set new command to the target 0=OFF; 1=AUX; 2=FIL; 3=STDBY; 4=HVON; 5=RFON");
+		byteToothRead[17]		= new ByteTooth("OP_MODE",				"BYTE",			6, 		0, 		false, 		"0", 	"1 = Bypass mode, 2 = Maintenance/testing mode, 3 = Normal operation, 4 = Wire test - NOT IMPLEMENTED YET");
 
 		ByteTooth[] byteToothWrite = new ByteTooth[9];
 		byteToothWrite[0]	= new ByteTooth("RESET",		"BOOLEAN",		0, 		0, 		true, 		"false", 	"CPU reset command");

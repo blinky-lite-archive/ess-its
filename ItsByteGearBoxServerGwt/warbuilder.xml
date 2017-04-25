@@ -1,9 +1,9 @@
-<project name="RaspberryPiCamera" basedir="." default="default">
+<project name="ItsByteGearBoxServerGwt" basedir="." default="default">
  
 	<target name="default" depends="buildwar,deploy"></target>
  
 	<target name="buildwar">
-		<war basedir="war" destfile="ItsToshiba.war" webxml="war/WEB-INF/web.xml">
+		<war basedir="war" destfile="ItsByteGearBoxServer.war" webxml="war/WEB-INF/web.xml">
 			<exclude name="WEB-INF/**" />
 			<webinf dir="war/WEB-INF/">
 				<include name="**/*.jar" />
@@ -13,7 +13,7 @@
 	</target>
  
 	<target name="deploy">
-		<copy file="ItsToshiba.war" todir="." />
+		<copy file="ItsByteGearBoxServer.war" todir="." />
 	</target>
  
 </project>

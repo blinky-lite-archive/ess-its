@@ -19,26 +19,35 @@ import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteToothGwt;
 public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements ByteGearBoxService
 {
 	ByteGearBoxServiceImpClient byteGearBoxServiceImpClient;
-	ByteGearBoxGwt[] byteGearBoxGwt;
+	ByteGearBox[] byteGearBox;
 	String[] gearBoxUrls = {
+			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoCpu.json",
+			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoAio.json",
+			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoDio.json",
+			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoPsu.json"};
+	
+/*	String[] gearBoxUrls = {
 			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json",
 			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoAio.json",
 			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoDio.json",
 			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoPsu.json"};
+*/
 	
 	public void init()
 	{
-		byteGearBoxGwt = new ByteGearBoxGwt[gearBoxUrls.length];
+		byteGearBox = new ByteGearBox[gearBoxUrls.length];
 		try 
 		{
 			boolean cleanSession = false;
 			int subscribeQos = 0;
 			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsToshibaPlcWebApp", getMqttDataPath(), cleanSession);
+			String itsnetWebLoginInfo = getItsnetWebLoginInfoPath();
 			for (int ii = 0; ii < gearBoxUrls.length; ++ii)
 			{
-				byteGearBoxGwt[ii] = convertByteGearBox(new ByteGearBox(new URL(gearBoxUrls[ii])));
-				byteGearBoxServiceImpClient.subscribe(byteGearBoxGwt[ii].getTopic() + "/set", subscribeQos);
-				byteGearBoxServiceImpClient.subscribe(byteGearBoxGwt[ii].getTopic() + "/get", subscribeQos);
+//				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]));
+				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]), itsnetWebLoginInfo);
+				byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/set", subscribeQos);
+				byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/get", subscribeQos);
 			}
 		} catch (Exception e) 
 		{
@@ -58,20 +67,28 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		return tmpFile.getPath() + "/itsmqttbroker.dat";
 		
 	}
+	public String getItsnetWebLoginInfoPath() throws Exception
+	{
+		File tmpFile = new File(getServletContext().getRealPath("./"));
+		tmpFile = new File(tmpFile.getParent());
+		tmpFile = new File(tmpFile.getParent());
+		return tmpFile.getPath() + "/itsnetWebLoginInfo.dat";
+		
+	}
 	public void setMessage(String topic, byte[] message)
 	{
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
 				if (topic.indexOf("/set") >= 0)
 				{
-					byteGearBoxGwt[ii].setWriteData(message);
+					byteGearBox[ii].setWriteData(message);
 					return;
 				}
 				if (topic.indexOf("/get") >= 0)
 				{
-					byteGearBoxGwt[ii].setReadData(message);
+					byteGearBox[ii].setReadData(message);
 					return;
 				}
 			}
@@ -139,18 +156,21 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	@Override
 	public ByteGearBoxGwt[] getByteGearBoxGwt()
 	{
+		ByteGearBoxGwt[] byteGearBoxGwt = new ByteGearBoxGwt[byteGearBox.length];
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
+			byteGearBoxGwt[ii] = convertByteGearBox(byteGearBox[ii]);
 		return byteGearBoxGwt;
 	}
 	@Override
 	public byte[][] getReadWriteMessage(String topic) throws Exception
 	{
 		byte[][] readWriteMessage = new byte[2][];
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				readWriteMessage[0] = byteGearBoxGwt[ii].getReadData();
-				readWriteMessage[1] = byteGearBoxGwt[ii].getWriteData();
+				readWriteMessage[0] = byteGearBox[ii].getReadData();
+				readWriteMessage[1] = byteGearBox[ii].getWriteData();
 				return readWriteMessage;
 			}
 		}
@@ -159,11 +179,11 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	@Override
 	public byte[] getReadMessage(String topic) throws Exception
 	{
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				return byteGearBoxGwt[ii].getReadData();
+				return byteGearBox[ii].getReadData();
 			}
 		}
 		throw new Exception("Topic not found");
@@ -171,11 +191,11 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	@Override
 	public byte[] getWriteMessage(String topic) throws Exception
 	{
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				return byteGearBoxGwt[ii].getWriteData();
+				return byteGearBox[ii].getWriteData();
 			}
 		}
 		throw new Exception("Topic not found");
@@ -183,11 +203,11 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	@Override
 	public Long getlastUpdateDate(String topic) throws Exception
 	{
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				return new Long(byteGearBoxGwt[ii].getLastDataUpdate().getTime());
+				return new Long(byteGearBox[ii].getLastDataUpdate().getTime());
 			}
 		}
 		throw new Exception("Topic not found");
@@ -195,11 +215,11 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	@Override
 	public Long getlastReadUpdateDate(String topic) throws Exception
 	{
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				return new Long(byteGearBoxGwt[ii].getLastReadDataUpdate().getTime());
+				return new Long(byteGearBox[ii].getLastReadDataUpdate().getTime());
 			}
 		}
 		throw new Exception("Topic not found");
@@ -207,11 +227,11 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	@Override
 	public Long getlastWriteUpdateDate(String topic) throws Exception
 	{
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				return new Long(byteGearBoxGwt[ii].getLastWriteDataUpdate().getTime());
+				return new Long(byteGearBox[ii].getLastWriteDataUpdate().getTime());
 			}
 		}
 		throw new Exception("Topic not found");
@@ -220,12 +240,12 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	public Long[] getlastReadWriteUpdateDate(String topic) throws Exception
 	{
 		Long[] readWriteUpdate = new Long[2];
-		for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
 		{
-			if (topic.indexOf(byteGearBoxGwt[ii].getTopic()) >= 0)
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
 			{
-				readWriteUpdate[0] = new Long(byteGearBoxGwt[ii].getLastReadDataUpdate().getTime());
-				readWriteUpdate[1] = new Long(byteGearBoxGwt[ii].getLastWriteDataUpdate().getTime());
+				readWriteUpdate[0] = new Long(byteGearBox[ii].getLastReadDataUpdate().getTime());
+				readWriteUpdate[1] = new Long(byteGearBox[ii].getLastWriteDataUpdate().getTime());
 				return readWriteUpdate;
 			}
 		}

@@ -1,7 +1,7 @@
-package se.esss.litterbox.its.mobileskeletongwt.server;
+package se.esss.litterbox.its.bytegearboxservergwt.server;
 
 import java.io.File;
-import java.net.URL;
+import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -9,45 +9,49 @@ import se.esss.litterbox.icecube.bytegearbox.ByteGear;
 import se.esss.litterbox.icecube.bytegearbox.ByteGearBox;
 import se.esss.litterbox.icecube.bytegearbox.ByteTooth;
 import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
-import se.esss.litterbox.its.mobileskeletongwt.client.bytegearboxservice.ByteGearBoxService;
-import se.esss.litterbox.its.mobileskeletongwt.shared.bytegearboxgwt.ByteGearBoxGwt;
-import se.esss.litterbox.its.mobileskeletongwt.shared.bytegearboxgwt.ByteGearGwt;
-import se.esss.litterbox.its.mobileskeletongwt.shared.bytegearboxgwt.ByteToothGwt;
+import se.esss.litterbox.its.bytegearboxservergwt.client.bytegearboxservice.ByteGearBoxService;
+import se.esss.litterbox.its.bytegearboxservergwt.shared.bytegearboxgwt.ByteGearBoxGwt;
+import se.esss.litterbox.its.bytegearboxservergwt.shared.bytegearboxgwt.ByteGearGwt;
+import se.esss.litterbox.its.bytegearboxservergwt.shared.bytegearboxgwt.ByteToothGwt;
 
 
 @SuppressWarnings("serial")
 public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements ByteGearBoxService
 {
 	ByteGearBoxServiceImpClient byteGearBoxServiceImpClient;
+//	ByteGearBoxGwt[] byteGearBoxGwt;
 	ByteGearBox[] byteGearBox;
-	String[] gearBoxUrls = {
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoCpu.json",
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoAio.json",
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoDio.json",
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoPsu.json"};
-
-/*	String[] gearBoxUrls = {
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json",
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoAio.json",
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoDio.json",
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoPsu.json"};
-*/
+	ArrayList<String> byteGearBoxJsonFiles;
+	String gearBoxDirPath;
 	
 	public void init()
 	{
-		byteGearBox = new ByteGearBox[gearBoxUrls.length];
 		try 
 		{
 			boolean cleanSession = false;
 			int subscribeQos = 0;
-			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsToshibaPlcWebApp", getMqttDataPath(), cleanSession);
-			String itsnetWebLoginInfo = getItsnetWebLoginInfoPath();
-			for (int ii = 0; ii < gearBoxUrls.length; ++ii)
+			gearBoxDirPath = getServletContext().getRealPath("/gearbox");
+			File folder = new File(gearBoxDirPath);
+			File[] listOfFiles = folder.listFiles();
+			byteGearBoxJsonFiles = new ArrayList<String>();
+			for (int ii = 0; ii < listOfFiles.length; ii++) 
 			{
-//				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]));
-				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]), itsnetWebLoginInfo);
-				byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/set", subscribeQos);
-				byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/get", subscribeQos);
+				if (listOfFiles[ii].isFile()) 
+				{
+					if (listOfFiles[ii].getName().contains(".json"))
+						byteGearBoxJsonFiles.add(listOfFiles[ii].getName());
+				}
+			}
+			java.util.Collections.sort(byteGearBoxJsonFiles);
+			byteGearBox = new ByteGearBox[byteGearBoxJsonFiles.size()];
+			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsByteGearBoxServerWebApp", getMqttDataPath(), cleanSession);
+			for (int ii = 0; ii < byteGearBoxJsonFiles.size(); ii++) 
+			{
+				{
+					byteGearBox[ii] = new ByteGearBox(gearBoxDirPath  + "/" + byteGearBoxJsonFiles.get(ii));
+					byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/set", subscribeQos);
+					byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/get", subscribeQos);
+				}
 			}
 		} catch (Exception e) 
 		{
@@ -84,11 +88,13 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 				if (topic.indexOf("/set") >= 0)
 				{
 					byteGearBox[ii].setWriteData(message);
+					try {byteGearBox[ii].writeToFile(gearBoxDirPath  + "/" + byteGearBoxJsonFiles.get(ii), false);} catch (Exception e) {e.printStackTrace();}
 					return;
 				}
 				if (topic.indexOf("/get") >= 0)
 				{
 					byteGearBox[ii].setReadData(message);
+					try {byteGearBox[ii].writeToFile(gearBoxDirPath  + "/" + byteGearBoxJsonFiles.get(ii), false);} catch (Exception e) {e.printStackTrace();}
 					return;
 				}
 			}

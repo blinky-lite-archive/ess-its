@@ -1,17 +1,21 @@
 package se.esss.litterbox.icecube.bytegearbox;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.eclipse.paho.client.mqttv3.internal.websocket.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,6 +28,9 @@ public class ByteGearBox
 	int readByteLength = 0;
 	int writeByteLength = 0;
 	ArrayList<ByteGear> byteGearList = new ArrayList<ByteGear>();
+	Date lastWriteDataUpdate = new Date((long) 0);
+	Date lastReadDataUpdate = new Date((long) 0);
+	Date lastDataUpdate = new Date((long) 0);
 	
 	public String getBroker() {return broker;}
 	public int getBrokerPort() {return brokerPort;}
@@ -33,6 +40,10 @@ public class ByteGearBox
 	public ArrayList<ByteGear> getByteGearList() {return byteGearList;}
 	public int getNumByteGear() {return byteGearList.size();}
 
+	public Date getLastWriteDataUpdate() {return lastWriteDataUpdate;}
+	public Date getLastReadDataUpdate() {return lastReadDataUpdate;}
+	public Date getLastDataUpdate() {return lastDataUpdate;}
+	
 	public ByteGearBox(String broker, int brokerPort, String topic, int readByteLength, int writeByteLength)
 	{
 		this.broker = broker;
@@ -56,11 +67,29 @@ public class ByteGearBox
         	byteGearList.add(new ByteGear(iterator.next()));
         }
 	}
-	@SuppressWarnings("unchecked")
 	public ByteGearBox(URL url) throws Exception
 	{
+		this(url, null);
+	}
+	@SuppressWarnings("unchecked")
+	public ByteGearBox(URL url, String itsnetWebLoginInfoPath) throws Exception
+	{
+		URLConnection uc = url.openConnection();
+		if (itsnetWebLoginInfoPath != null)
+		{
+		    InputStream fis = new FileInputStream(itsnetWebLoginInfoPath);
+		    InputStreamReader isr = new InputStreamReader(fis);
+		    BufferedReader br = new BufferedReader(isr);
+		    String line = br.readLine();
+		    br.close();
+		    JSONObject itsnetWebLoginInfo = (JSONObject) new JSONParser().parse(line);
+
+			String userpass = (String) itsnetWebLoginInfo.get("username") + ":" + (String) itsnetWebLoginInfo.get("key");
+			String basicAuth = "Basic " + new String(Base64.encodeBytes(userpass.getBytes()));
+			uc.setRequestProperty ("Authorization", basicAuth);
+		}
 	  
-		InputStream is = url.openStream();
+		InputStream is = uc.getInputStream();
 		BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 	    StringBuilder sb = new StringBuilder();
 	    int cp;
@@ -102,6 +131,8 @@ public class ByteGearBox
 		{
 			byteGearList.get(ii).setReadData(readByteArray);
 		}
+		lastReadDataUpdate = new Date();
+		lastDataUpdate.setTime(lastReadDataUpdate.getTime());
 	}
 	public void setWriteData(byte[] writeByteArray)
 	{
@@ -109,6 +140,8 @@ public class ByteGearBox
 		{
 			byteGearList.get(ii).setWriteData(writeByteArray);
 		}
+		lastWriteDataUpdate = new Date();
+		lastDataUpdate.setTime(lastWriteDataUpdate.getTime());
 	}
 	public byte[] getReadData() 
 	{
@@ -164,9 +197,11 @@ public class ByteGearBox
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		URL url = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoAio.json");
-		ByteGearBox byteGearBox = new ByteGearBox(url);
-//		ByteGearBox byteGearBox = new ByteGearBox("klyPlcProtoAio.json");
+		URL url = new URL("https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoCpu.json");
+		ByteGearBox byteGearBox = new ByteGearBox(url, "itsnetWebLoginInfo.dat");
+//		ByteGearBox byteGearBox = new ByteGearBox("klyPlcProtoCpu.json");
+//		URL url = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json");
+//		ByteGearBox byteGearBox = new ByteGearBox(url);
 		byteGearBox.writeToFile("test.json", true);
 	}
 }
