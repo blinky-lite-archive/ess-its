@@ -16,6 +16,14 @@ h1 {
 	color: #FFFFFF;
 	background-color: #0095CD;
 }
+.byteGearSelected {
+ 	background-color: #FFFFFF;
+	color: #0095CD;
+}
+.byteGearNotSelected {
+ 	background-color: #0095CD;
+	color: #FFFFFF;
+}
 .skelTab {
 	background-color: #FFFFFF;
 	color: #0095CD;

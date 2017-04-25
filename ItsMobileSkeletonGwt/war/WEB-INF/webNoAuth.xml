@@ -19,6 +19,13 @@
     <load-on-startup /> 
   </servlet>
   
+  <servlet>
+    <servlet-name>bytegearboxServlet</servlet-name>
+    <servlet-class>se.esss.litterbox.its.mobileskeletongwt.server.ByteGearBoxServiceImpl</servlet-class>
+    <!--     <load-on-startup /> -->
+    <load-on-startup /> 
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>entrypointappServlet</servlet-name>
     <url-pattern>/mobileskeletongwt/entrypointapp</url-pattern>
@@ -26,6 +33,10 @@
   <servlet-mapping>
     <servlet-name>mqttServlet</servlet-name>
     <url-pattern>/mobileskeletongwt/mqtt</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>bytegearboxServlet</servlet-name>
+    <url-pattern>/mobileskeletongwt/bytegearbox</url-pattern>
   </servlet-mapping>
   
   <filter>
