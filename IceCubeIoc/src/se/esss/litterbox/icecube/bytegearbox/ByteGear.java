@@ -19,6 +19,8 @@ public class ByteGear
 	public String getName() {return name;}
 	public int getReadOffset() {return readOffset;}
 	public int getWriteOffset() {return writeOffset;}
+	public int getNumReadTooth() {return readToothList.size();}
+	public int getNumWriteTooth() {return writeToothList.size();}
 	
 	public ByteGear(String name, int readOffset, int writeOffset)
 	{
@@ -30,8 +32,8 @@ public class ByteGear
 	public ByteGear(JSONObject jsonObject)
 	{
 		this.name = (String) jsonObject.get("name");
-		this.readOffset = (int) ((long) jsonObject.get("readByteOff"));
-		this.writeOffset = (int) ((long) jsonObject.get("writeByteOff"));
+		this.readOffset = Integer.parseInt((String) jsonObject.get("readByteOff"));
+		this.writeOffset = Integer.parseInt((String) jsonObject.get("writeByteOff"));
 		JSONArray readList = (JSONArray) jsonObject.get("readToothList");
 		JSONArray writeList = (JSONArray) jsonObject.get("writeToothList");
         Iterator<JSONObject> iterator = readList.iterator();
@@ -61,32 +63,32 @@ public class ByteGear
 		}
 		throw new Exception("Write ByteTooth " + name + " not found.");
 	}
-	public void loadReadDataFromByteArray(byte[] byteArray)
+	public void setReadData(byte[] byteArray)
 	{
 		for (int ii = 0; ii < readToothList.size(); ++ii)
 		{
-			readToothList.get(ii).loadDataFromByteArray(byteArray, readOffset);
+			readToothList.get(ii).setData(byteArray, readOffset);
 		}
 	}
-	public void loadWriteDataFromByteArray(byte[] byteArray)
+	public void setWriteData(byte[] byteArray)
 	{
 		for (int ii = 0; ii < writeToothList.size(); ++ii)
 		{
-			writeToothList.get(ii).loadDataFromByteArray(byteArray, writeOffset);
+			writeToothList.get(ii).setData(byteArray, writeOffset);
 		}
 	}
-	public void loadReadDataIntoByteArray(byte[] byteArray) 
+	public void getReadData(byte[] byteArray) 
 	{
 		for (int ii = 0; ii < readToothList.size(); ++ii)
 		{
-			readToothList.get(ii).loadDataIntoByteArray(byteArray, writeOffset);
+			readToothList.get(ii).getData(byteArray, writeOffset);
 		}
 	}
-	public void loadWriteDataIntoByteArray(byte[] byteArray) 
+	public void getWriteData(byte[] byteArray) 
 	{
 		for (int ii = 0; ii < writeToothList.size(); ++ii)
 		{
-			writeToothList.get(ii).loadDataIntoByteArray(byteArray, writeOffset);
+			writeToothList.get(ii).getData(byteArray, writeOffset);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -94,8 +96,8 @@ public class ByteGear
 	{
 		JSONObject outputData = new JSONObject();
 		outputData.put("name", name);
-		outputData.put("readByteOff", readOffset);
-		outputData.put("writeByteOff", writeOffset);
+		outputData.put("readByteOff", Integer.toString(readOffset));
+		outputData.put("writeByteOff", Integer.toString(writeOffset));
         JSONArray readList = new JSONArray();
         JSONArray writeList = new JSONArray();
         for (int ii = 0; ii < readToothList.size(); ++ii)

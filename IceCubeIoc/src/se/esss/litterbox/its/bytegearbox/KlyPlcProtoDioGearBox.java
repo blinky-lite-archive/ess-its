@@ -10,23 +10,23 @@ public class KlyPlcProtoDioGearBox
 	public static void main(String[] args) throws Exception 
 	{
 		ByteTooth[] byteToothRead = new ByteTooth[12];
-		byteToothRead[0]		= new ByteTooth("VAL",		"BOOLEAN",		0, 		0, 		false, 		"0", 	"Field value");
-		byteToothRead[1]		= new ByteTooth("INTERLOCK","BOOLEAN",		0, 		1, 		false, 		"0", 	"Alarm/Interlock");
-		byteToothRead[2]		= new ByteTooth("SVAL",		"BOOLEAN",		0, 		2, 		false, 		"0", 	"Simulation value");
-		byteToothRead[3]		= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		3, 		false, 		"0", 	"Interlocks disabled");
-		byteToothRead[4]		= new ByteTooth("FORCE",	"BOOLEAN",		0, 		4, 		false, 		"0", 	"Force the variable to the simulation value");
-		byteToothRead[5]		= new ByteTooth("N_FORCE",	"BOOLEAN",		0, 		5, 		false, 		"0", 	"Cannot force");
-		byteToothRead[6]		= new ByteTooth("N_LATCH",	"BOOLEAN",		0, 		6, 		false, 		"0", 	"Never Latch");
-		byteToothRead[7]		= new ByteTooth("IsFIRST",	"BOOLEAN",		0, 		7, 		false, 		"0", 	"First variable interlocked before the CPU alarm trips");
-		byteToothRead[8]		= new ByteTooth("INVERT_DO","BOOLEAN",		1, 		0, 		false, 		"0", 	"Invert DO field value");
-		byteToothRead[9]		= new ByteTooth("TMPST",	"LONG",			3, 		0, 		false, 		"0", 	"Time-stamp");
-		byteToothRead[10]		= new ByteTooth("DTYP",		"BYTE",			11, 	0, 		false, 		"0", 	"Device type");
-		byteToothRead[11]		= new ByteTooth("ERR",		"BYTE",			12, 	0, 		false, 		"0", 	"Error code");
+		byteToothRead[0]		= new ByteTooth("VAL",		"BOOLEAN",		0, 		0, 		false, 		"false", 	"Field value");
+		byteToothRead[1]		= new ByteTooth("INTERLOCK","BOOLEAN",		0, 		1, 		false, 		"false", 	"Alarm/Interlock");
+		byteToothRead[2]		= new ByteTooth("SVAL",		"BOOLEAN",		0, 		2, 		false, 		"false", 	"Simulation value");
+		byteToothRead[3]		= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		3, 		false, 		"false", 	"Interlocks disabled");
+		byteToothRead[4]		= new ByteTooth("FORCE",	"BOOLEAN",		0, 		4, 		false, 		"false", 	"Force the variable to the simulation value");
+		byteToothRead[5]		= new ByteTooth("N_FORCE",	"BOOLEAN",		0, 		5, 		false, 		"false", 	"Cannot force");
+		byteToothRead[6]		= new ByteTooth("N_LATCH",	"BOOLEAN",		0, 		6, 		false, 		"false", 	"Never Latch");
+		byteToothRead[7]		= new ByteTooth("IsFIRST",	"BOOLEAN",		0, 		7, 		false, 		"false", 	"First variable interlocked before the CPU alarm trips");
+		byteToothRead[8]		= new ByteTooth("INVERT_DO","BOOLEAN",		1, 		0, 		false, 		"false", 	"Invert DO field value");
+		byteToothRead[9]		= new ByteTooth("TMPST",	"LONG",			2, 		0, 		false, 		"0", 	"Time-stamp");
+		byteToothRead[10]		= new ByteTooth("DTYP",		"BYTE",			10, 	0, 		false, 		"0", 	"Device type");
+		byteToothRead[11]		= new ByteTooth("ERR",		"BYTE",			11, 	0, 		false, 		"0", 	"Error code");
 
 		ByteTooth[] byteToothWrite = new ByteTooth[3];
-		byteToothWrite[0]	= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		0, 		true, 		"0", 	"Interlocks disabled");
-		byteToothWrite[1]	= new ByteTooth("FORCE",	"BOOLEAN",		0, 		1, 		true, 		"0", 	"Force the variable to the simulation value");
-		byteToothWrite[2]	= new ByteTooth("SVAL",		"BOOLEAN",		0, 		2, 		true, 		"0", 	"Simulation value");
+		byteToothWrite[0]	= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		0, 		true, 		"false", 	"Interlocks disabled");
+		byteToothWrite[1]	= new ByteTooth("FORCE",	"BOOLEAN",		0, 		1, 		true, 		"false", 	"Force the variable to the simulation value");
+		byteToothWrite[2]	= new ByteTooth("SVAL",		"BOOLEAN",		0, 		2, 		true, 		"false", 	"Simulation value");
 
 		ByteGear[] byteGearE = new 	ByteGear[14];
 		byteGearE[0] = new ByteGear("KLY-RFS-HZ:EmStop", 		0, 			0);
@@ -56,7 +56,7 @@ public class KlyPlcProtoDioGearBox
 			}
 		}
 		
-		ByteGearBox byteGearBox = new ByteGearBox("tcp://broker.shiftr.io", 1883, "klyPlcProtoDio", 144, 24);
+		ByteGearBox byteGearBox = new ByteGearBox("tcp://broker.shiftr.io", 1883, "klyPlcProtoDio", 168, 28);
 		for (int ii = 0; ii < byteGearE.length; ++ii)
 		{
 			byteGearBox.getByteGearList().add(byteGearE[ii]);

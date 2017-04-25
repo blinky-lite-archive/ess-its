@@ -1,7 +1,9 @@
-package se.esss.litterbox.icecube.bytegearbox;
-import org.json.simple.JSONObject;
+package se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt;
 
-public class ByteTooth 
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class ByteToothGwt implements Serializable 
 {
 	
 	private static boolean littleEndian =  true;
@@ -24,7 +26,8 @@ public class ByteTooth
 
 	public void setValue(String value) {this.value = value;}
 	
-	public ByteTooth(String name, String toothType, int byteOffsetFromGear, int bitOffsetFromGear, boolean writeable, String value, String description)
+	public ByteToothGwt() {}
+	public ByteToothGwt(String name, String toothType, int byteOffsetFromGear, int bitOffsetFromGear, boolean writeable, String value, String description)
 	{
 		this.name = name;
 		this.description = description;
@@ -33,16 +36,6 @@ public class ByteTooth
 		this.bitOffsetFromGear = (byte) bitOffsetFromGear;
 		this.writeable = writeable;
 		this.value = value;
-	}
-	public ByteTooth(JSONObject jsonObject)
-	{
-		this.name = (String) jsonObject.get("name");
-		this.description = (String) jsonObject.get("description");
-		this.toothType = (String) jsonObject.get("toothType");
-		this.byteOffsetFromGear = Integer.parseInt( (String) jsonObject.get("byteOff"));
-		this.bitOffsetFromGear = Byte.parseByte( (String) jsonObject.get("bitOff"));
-		this.writeable = Boolean.parseBoolean((String) jsonObject.get("writeable"));
-		this.value = (String) jsonObject.get("value");
 	}
 	public void setData(byte[] byteArray, int byteGearOffset)
 	{
@@ -130,19 +123,6 @@ public class ByteTooth
 			byte[] byteChunk = doubleToBytes(value, littleEndian);;
 			for (int ii = 0; ii < 8; ++ii) byteArray[offset + ii] = byteChunk[ii];
 		}
-	}
-	@SuppressWarnings("unchecked")
-	public JSONObject getJsonObject()
-	{
-		JSONObject outputData = new JSONObject();
-		outputData.put("name", name);
-		outputData.put("description", description);
-		outputData.put("toothType", toothType);
-		outputData.put("byteOff", Integer.toString(byteOffsetFromGear));
-		outputData.put("bitOff", Byte.toString(bitOffsetFromGear));
-		outputData.put("value", value);
-		outputData.put("writeable", Boolean.toString(writeable));
-		return outputData;
 	}
 	private static byte[] floatToBytes(String val, boolean littleEndian)
 	{

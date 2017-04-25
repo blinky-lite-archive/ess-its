@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import se.esss.litterbox.its.toshibagwt.client.EntryPointApp;
 import se.esss.litterbox.its.toshibagwt.client.EntryPointAppService;
 import se.esss.litterbox.its.toshibagwt.client.EntryPointAppServiceAsync;
+import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxService;
+import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxServiceAsync;
 import se.esss.litterbox.its.toshibagwt.client.mqttdata.MqttService;
 import se.esss.litterbox.its.toshibagwt.client.mqttdata.MqttServiceAsync;
 
@@ -25,6 +27,7 @@ public class GskelSetupApp
 	private boolean mobile = false;
 	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
 	private final EntryPointAppServiceAsync entryPointAppService = GWT.create(EntryPointAppService.class);
+	private final ByteGearBoxServiceAsync byteGearBoxService = GWT.create(ByteGearBoxService.class);
 	private boolean settingsPermitted;
 	private VerticalPanel mainVerticalPanel = new VerticalPanel();
 	private HorizontalPanel titlePanel = new HorizontalPanel();
@@ -41,6 +44,7 @@ public class GskelSetupApp
 	public GskelTabLayoutPanel getGskelTabLayoutPanel() {return gskelTabLayoutPanel;}
 	public MqttServiceAsync getMqttService() {return mqttService;}
 	public EntryPointAppServiceAsync getEntryPointAppService() {return entryPointAppService;}
+	public ByteGearBoxServiceAsync getByteGearBoxService() {return byteGearBoxService;}
 	public boolean isSettingsPermitted() {return settingsPermitted;}
 	public HorizontalPanel getTitlePanel() {return titlePanel;}
 // Setters

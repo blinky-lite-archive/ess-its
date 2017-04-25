@@ -1,16 +1,15 @@
 package se.esss.litterbox.its.toshibagwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 
+import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxData;
 import se.esss.litterbox.its.toshibagwt.client.callbacks.CheckIpAddresslAsyncCallback;
-import se.esss.litterbox.its.toshibagwt.client.contentpanels.GaugeShowCasePanel;
-import se.esss.litterbox.its.toshibagwt.client.contentpanels.LineChartShowCasePanel;
-import se.esss.litterbox.its.toshibagwt.client.contentpanels.ScatterChartShowCasePanel;
-import se.esss.litterbox.its.toshibagwt.client.contentpanels.TestPicPanel;
-import se.esss.litterbox.its.toshibagwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.toshibagwt.client.gskel.GskelSetupApp;
+import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteGearBoxGwt;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -18,57 +17,56 @@ import se.esss.litterbox.its.toshibagwt.client.gskel.GskelSetupApp;
 public class EntryPointApp implements EntryPoint 
 {
 	private GskelSetupApp setup;
+	private ByteGearBoxData[] byteGearBoxData;
+	private int byteGearBoxDataTimerPeriodMillis = 1000;
 
+
+	// Setters
+	public void setByteGearBoxData(ByteGearBoxData[] byteGearBoxData) {this.byteGearBoxData = byteGearBoxData;}
+	
 	// Getters
 	public GskelSetupApp getSetup() {return setup;}
+	public ByteGearBoxData[] getByteGearBoxData() {return byteGearBoxData;}
+	public int getByteGearBoxDataTimerPeriodMillis() {return byteGearBoxDataTimerPeriodMillis;}
 	
 	public void onModuleLoad() 
 	{
 		setup = new GskelSetupApp(this, true);
 		getSetup().setLogoImage("images/gwtLogo.jpg");
 		
-		Label titleLabel = new Label("GWT Skeleton");
+		Label titleLabel = new Label("ITS ToshibaPLC");
 		titleLabel.setStyleName("titleLabel");
 		
 		getSetup().getTitlePanel().add(titleLabel);
 		getSetup().getEntryPointAppService().checkIpAddress(new CheckIpAddresslAsyncCallback(this));		
 		getSetup().resize();
+//		RootLayoutPanel.get().setWidth("980px");
+//		RootLayoutPanel.get().setHeight("665px");
 	}
 	public void initializeTabs()
 	{
-		TestPicPanel tpp1 = new TestPicPanel(false, this, "images/gwtLogo.jpg");
-		getSetup().addPanel(tpp1,"Shiftr");
-		new TabLoadWaiter(100, 1);
+		getSetup().getByteGearBoxService().getByteGearBoxGwt(new GetByteGearBoxGwtAsyncCallback(this));
 	}
-	private void loadTab2()
+	static class GetByteGearBoxGwtAsyncCallback implements AsyncCallback<ByteGearBoxGwt[]>
 	{
-		getSetup().addPanel(new GaugeShowCasePanel(this), "Gauge");
-		new TabLoadWaiter(100, 2);
-	}
-	private void loadTab3()
-	{
-		getSetup().addPanel(new LineChartShowCasePanel(this), "Line");
-		new TabLoadWaiter(100, 3);
-	}
-	private void loadTab4()
-	{
-		getSetup().addPanel(new ScatterChartShowCasePanel(this), "Scatter");
-	}
-	class TabLoadWaiter extends GskelLoadWaiter
-	{
-		public TabLoadWaiter(int loopTimeMillis, int itask) {super(loopTimeMillis, itask);}
-		@Override
-		public boolean isLoaded() 
+		EntryPointApp entryPointApp;
+		GetByteGearBoxGwtAsyncCallback(EntryPointApp entryPointApp)
 		{
-			return true;
+			this.entryPointApp = entryPointApp;
 		}
 		@Override
-		public void taskAfterLoad() 
+		public void onFailure(Throwable caught) {GWT.log(caught.getMessage());}
+
+		@Override
+		public void onSuccess(ByteGearBoxGwt[] byteGearBoxGwt) 
 		{
-			GWT.log(Integer.toString(getItask()));
-			if (getItask() == 1) loadTab2();
-			if (getItask() == 2) loadTab3();
-			if (getItask() == 3) loadTab4();
+			entryPointApp.setByteGearBoxData(new ByteGearBoxData[byteGearBoxGwt.length]);
+			for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+			{
+				entryPointApp.getByteGearBoxData()[ii] = new ByteGearBoxData(byteGearBoxGwt[ii], entryPointApp.getByteGearBoxDataTimerPeriodMillis(), entryPointApp);
+				entryPointApp.getSetup().addPanel(entryPointApp.getByteGearBoxData()[ii].getByteGearBoxDataPanel(), entryPointApp.getByteGearBoxData()[ii].getByteGearBoxGwt().getTopic());
+			}
 		}
+		
 	}
 }

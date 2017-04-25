@@ -10,15 +10,15 @@ public class KlyPlcProtoAioGearBox
 	public static void main(String[] args) throws Exception 
 	{
 		ByteTooth[] byteToothRead = new ByteTooth[20];
-		byteToothRead[0] = new ByteTooth("WARNING",		"BOOLEAN",		0, 		0, 		false, 		"0", 	"Warning flag");
-		byteToothRead[1] = new ByteTooth("INTERLOCK",	"BOOLEAN",		0, 		1, 		false, 		"0", 	"Alarm/Interlock");
-		byteToothRead[2] = new ByteTooth("DISABLE",		"BOOLEAN",		0, 		2, 		false, 		"0", 	"Interlocks disabled");
-		byteToothRead[3] = new ByteTooth("FORCE",		"BOOLEAN",		0, 		3, 		false, 		"0", 	"Force the variable to the simulation value");
-		byteToothRead[4] = new ByteTooth("N_FORCE",		"BOOLEAN",		0, 		4, 		false, 		"0", 	"Cannot force");
-		byteToothRead[5] = new ByteTooth("N_LATCH",		"BOOLEAN",		0, 		5, 		false, 		"0", 	"Never Latch");
-		byteToothRead[6] = new ByteTooth("IsFIRST",		"BOOLEAN",		0, 		6, 		false, 		"0", 	"First variable interlocked before the CPU alarm trips");
-		byteToothRead[7] = new ByteTooth("LOW_ALARM",	"BOOLEAN",		0, 		7, 		false, 		"0", 	"Low alarm detection");
-		byteToothRead[8] = new ByteTooth("HIGH_ALARM",	"BOOLEAN",		1, 		0, 		false, 		"0", 	"High alarm detection");
+		byteToothRead[0] = new ByteTooth("WARNING",		"BOOLEAN",		0, 		0, 		false, 		"false", 	"Warning flag");
+		byteToothRead[1] = new ByteTooth("INTERLOCK",	"BOOLEAN",		0, 		1, 		false, 		"false", 	"Alarm/Interlock");
+		byteToothRead[2] = new ByteTooth("DISABLE",		"BOOLEAN",		0, 		2, 		false, 		"false", 	"Interlocks disabled");
+		byteToothRead[3] = new ByteTooth("FORCE",		"BOOLEAN",		0, 		3, 		false, 		"false", 	"Force the variable to the simulation value");
+		byteToothRead[4] = new ByteTooth("N_FORCE",		"BOOLEAN",		0, 		4, 		false, 		"false", 	"Cannot force");
+		byteToothRead[5] = new ByteTooth("N_LATCH",		"BOOLEAN",		0, 		5, 		false, 		"false", 	"Never Latch");
+		byteToothRead[6] = new ByteTooth("IsFIRST",		"BOOLEAN",		0, 		6, 		false, 		"false", 	"First variable interlocked before the CPU alarm trips");
+		byteToothRead[7] = new ByteTooth("LOW_ALARM",	"BOOLEAN",		0, 		7, 		false, 		"false", 	"Low alarm detection");
+		byteToothRead[8] = new ByteTooth("HIGH_ALARM",	"BOOLEAN",		1, 		0, 		false, 		"false", 	"High alarm detection");
 		byteToothRead[9] = new ByteTooth("TMPST",		"LONG",			2, 		0, 		false, 		"0", 	"Time-stamp");
 		byteToothRead[10] = new ByteTooth("DTYP",		"BYTE",			10, 	0, 		false, 		"0", 	"Device type");
 		byteToothRead[11] = new ByteTooth("ERR",		"SHORT",		12, 	0, 		false, 		"0", 	"Error code");
@@ -32,14 +32,14 @@ public class KlyPlcProtoAioGearBox
 		byteToothRead[19] = new ByteTooth("VAL",		"SHORT",		42, 	0, 		false, 		"0", 	"Field Value");
 		
 		ByteTooth[] byteToothWrite = new ByteTooth[8];
-		byteToothWrite[0]	= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		0, 		true, 		"0", 	"Variable disable");
-		byteToothWrite[1]	= new ByteTooth("FORCE",	"BOOLEAN",		0, 		0, 		true, 		"0", 	"Force the variable to the simulation value");
+		byteToothWrite[0]	= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		0, 		true, 		"false", 	"Variable disable");
+		byteToothWrite[1]	= new ByteTooth("FORCE",	"BOOLEAN",		0, 		1, 		true, 		"false", 	"Force the variable to the simulation value");
 		byteToothWrite[2]	= new ByteTooth("HIHI",		"FLOAT",		2, 		0, 		true, 		"0", 	"Hihi Alarm limit");
 		byteToothWrite[3]	= new ByteTooth("HIGH",		"FLOAT",		6, 		0, 		true, 		"0", 	"High Alarm limit");
 		byteToothWrite[4]	= new ByteTooth("LOW",		"FLOAT",		10, 	0, 		true, 		"0", 	"Low Alarm limit");
 		byteToothWrite[5]	= new ByteTooth("LOLO",		"FLOAT",		14, 	0, 		true, 		"0", 	"Lolo Alarm limit");
 		byteToothWrite[6]	= new ByteTooth("AOFF",		"FLOAT",		18, 	0, 		true, 		"0", 	"Adjustment Offset");
-		byteToothWrite[7]	= new ByteTooth("AOFF",		"FLOAT",		22, 	0, 		true, 		"0", 	"Simulation Value");
+		byteToothWrite[7]	= new ByteTooth("SVAL",		"FLOAT",		22, 	0, 		true, 		"0", 	"Simulation Value");
 		
 		ByteGear[] byteGearE = new 	ByteGear[27];
 		byteGearE[0] = new ByteGear("KLY_IP_ISn_Current", 				0, 		0);

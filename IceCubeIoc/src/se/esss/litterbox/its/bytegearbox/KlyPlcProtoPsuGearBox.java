@@ -10,25 +10,25 @@ public class KlyPlcProtoPsuGearBox
 	public static void main(String[] args) throws Exception 
 	{
 		ByteTooth[] filByteToothRead = new ByteTooth[59];
-		filByteToothRead[0]		= new ByteTooth("ON_STATUS",		"BOOLEAN",		0, 		0, 		false, 		"0", 	"PSU is Operating normally");
-		filByteToothRead[1]		= new ByteTooth("STARTED",			"BOOLEAN",		0, 		1, 		false, 		"0", 	"PSU has received the ON Command");
-		filByteToothRead[2]		= new ByteTooth("STOPPED",			"BOOLEAN",		0, 		2, 		false, 		"0", 	"PSU is NOT operating");
-		filByteToothRead[3]		= new ByteTooth("WARMUP",			"BOOLEAN",		0, 		3, 		false, 		"0", 	"PSU start procedure is running");
-		filByteToothRead[4]		= new ByteTooth("TEMP_REACHED",		"BOOLEAN",		0, 		4, 		false, 		"0", 	"PSU is at operating temperature - Warmup Done");
-		filByteToothRead[5]		= new ByteTooth("I_REG",			"BOOLEAN",		0, 		5, 		false, 		"0", 	"HIGH= the PSU is in constant cuttent mode");
-		filByteToothRead[6]		= new ByteTooth("LOC_REM_ST",		"BOOLEAN",		0, 		6, 		false, 		"0", 	"HIGH=REMOTE,FALSE=LOCAL");
-		filByteToothRead[7]		= new ByteTooth("N_LATCH",			"BOOLEAN",		0, 		7, 		false, 		"0", 	"Disable Latching from PLC code");
-		filByteToothRead[8]		= new ByteTooth("N_FORCE",			"BOOLEAN",		1, 		0, 		false, 		"0", 	"Disable forcing from PLC code");
-		filByteToothRead[9]		= new ByteTooth("IsFIRST",			"BOOLEAN",		1, 		1, 		false, 		"0", 	"Is the PSU Interlock the first Interlock?");
-		filByteToothRead[10]	= new ByteTooth("WARNING",			"BOOLEAN",		1, 		2, 		false, 		"0", 	"PSU Warning Bit");
-		filByteToothRead[11]	= new ByteTooth("INTERLOCK",		"BOOLEAN",		1, 		3, 		false, 		"0", 	"PSU Interlock Bit");
-		filByteToothRead[12]	= new ByteTooth("FORCE_ON",			"BOOLEAN",		1, 		4, 		false, 		"0", 	"Feedback ForceON");
-		filByteToothRead[13]	= new ByteTooth("S_ON_STATUS",		"BOOLEAN",		1, 		5, 		false, 		"0", 	"Feedback ON_STATUS input");
-		filByteToothRead[14]	= new ByteTooth("S_I_REG",			"BOOLEAN",		1, 		6, 		false, 		"0", 	"Feedback I_REG input");
-		filByteToothRead[15]	= new ByteTooth("S_FAULT",			"BOOLEAN",		1, 		7, 		false, 		"0", 	"Feedback FAULT input");
-		filByteToothRead[16]	= new ByteTooth("S_LOC_REM",		"BOOLEAN",		2, 		0, 		false, 		"0", 	"Feedback LOC_REM input");
-		filByteToothRead[17]	= new ByteTooth("I_RAMP_ON",		"BOOLEAN",		2, 		1, 		false, 		"0", 	"Feedback for Current Ramp ON");
-		filByteToothRead[18]	= new ByteTooth("V_RAMP_ON",		"BOOLEAN",		2, 		2, 		false, 		"0", 	"Feedback for Voltage Ramp ON");
+		filByteToothRead[0]		= new ByteTooth("ON_STATUS",		"BOOLEAN",		0, 		0, 		false, 		"false", 	"PSU is Operating normally");
+		filByteToothRead[1]		= new ByteTooth("STARTED",			"BOOLEAN",		0, 		1, 		false, 		"false", 	"PSU has received the ON Command");
+		filByteToothRead[2]		= new ByteTooth("STOPPED",			"BOOLEAN",		0, 		2, 		false, 		"false", 	"PSU is NOT operating");
+		filByteToothRead[3]		= new ByteTooth("WARMUP",			"BOOLEAN",		0, 		3, 		false, 		"false", 	"PSU start procedure is running");
+		filByteToothRead[4]		= new ByteTooth("TEMP_REACHED",		"BOOLEAN",		0, 		4, 		false, 		"false", 	"PSU is at operating temperature - Warmup Done");
+		filByteToothRead[5]		= new ByteTooth("I_REG",			"BOOLEAN",		0, 		5, 		false, 		"false", 	"HIGH= the PSU is in constant cuttent mode");
+		filByteToothRead[6]		= new ByteTooth("LOC_REM_ST",		"BOOLEAN",		0, 		6, 		false, 		"false", 	"HIGH=REMOTE,FALSE=LOCAL");
+		filByteToothRead[7]		= new ByteTooth("N_LATCH",			"BOOLEAN",		0, 		7, 		false, 		"false", 	"Disable Latching from PLC code");
+		filByteToothRead[8]		= new ByteTooth("N_FORCE",			"BOOLEAN",		1, 		0, 		false, 		"false", 	"Disable forcing from PLC code");
+		filByteToothRead[9]		= new ByteTooth("IsFIRST",			"BOOLEAN",		1, 		1, 		false, 		"false", 	"Is the PSU Interlock the first Interlock?");
+		filByteToothRead[10]	= new ByteTooth("WARNING",			"BOOLEAN",		1, 		2, 		false, 		"false", 	"PSU Warning Bit");
+		filByteToothRead[11]	= new ByteTooth("INTERLOCK",		"BOOLEAN",		1, 		3, 		false, 		"false", 	"PSU Interlock Bit");
+		filByteToothRead[12]	= new ByteTooth("FORCE_ON",			"BOOLEAN",		1, 		4, 		false, 		"false", 	"Feedback ForceON");
+		filByteToothRead[13]	= new ByteTooth("S_ON_STATUS",		"BOOLEAN",		1, 		5, 		false, 		"false", 	"Feedback ON_STATUS input");
+		filByteToothRead[14]	= new ByteTooth("S_I_REG",			"BOOLEAN",		1, 		6, 		false, 		"false", 	"Feedback I_REG input");
+		filByteToothRead[15]	= new ByteTooth("S_FAULT",			"BOOLEAN",		1, 		7, 		false, 		"false", 	"Feedback FAULT input");
+		filByteToothRead[16]	= new ByteTooth("S_LOC_REM",		"BOOLEAN",		2, 		0, 		false, 		"false", 	"Feedback LOC_REM input");
+		filByteToothRead[17]	= new ByteTooth("I_RAMP_ON",		"BOOLEAN",		2, 		1, 		false, 		"false", 	"Feedback for Current Ramp ON");
+		filByteToothRead[18]	= new ByteTooth("V_RAMP_ON",		"BOOLEAN",		2, 		2, 		false, 		"false", 	"Feedback for Voltage Ramp ON");
 		filByteToothRead[19]	= new ByteTooth("DTYP",				"BYTE",			3, 		0, 		false, 		"0", 	"PSU Type");
 		filByteToothRead[20]	= new ByteTooth("ERR",				"SHORT",		4, 		0, 		false, 		"0", 	"Different error bits stored in the word descibed in the code");
 		filByteToothRead[21]	= new ByteTooth("TOTAL_WARMUP_LEFT","FLOAT",		6, 		0, 		false, 		"0", 	"How much time is left before operation");
@@ -71,16 +71,16 @@ public class KlyPlcProtoPsuGearBox
 		filByteToothRead[58]	= new ByteTooth("TOTAL_WARMPUP_T",	"FLOAT",		158, 	0, 		false, 		"0", 	"Sum of the SetPoints time");
 
 		ByteTooth[] filByteToothWrite = new ByteTooth[36];
-		filByteToothWrite[0]		= new ByteTooth("START",		"BOOLEAN",		0, 		0, 		true, 		"0", 	"Start PSU operation. TRUE=ENABLED");
-		filByteToothWrite[1]		= new ByteTooth("STOP",			"BOOLEAN",		0, 		1, 		true, 		"0", 	"Stop PSU and reset Timers TRUE = STOP");
-		filByteToothWrite[2]		= new ByteTooth("FORCE",		"BOOLEAN",		0, 		2, 		true, 		"0", 	"Force PSU block TRUE = FORCE all inputs");
-		filByteToothWrite[3]		= new ByteTooth("S_ON_STATUS",	"BOOLEAN",		0, 		3, 		true, 		"0", 	"Force ON_STATUS input");
-		filByteToothWrite[4]		= new ByteTooth("S_IVAL",		"BOOLEAN",		0, 		4, 		true, 		"0", 	"Force I_REG input");
-		filByteToothWrite[5]		= new ByteTooth("S_LOC_REM",	"BOOLEAN",		0, 		5, 		true, 		"0", 	"Force LOC_REM input");
-		filByteToothWrite[6]		= new ByteTooth("S_FAULT",		"BOOLEAN",		0, 		6, 		true, 		"0", 	"Force FAULT input");
-		filByteToothWrite[7]		= new ByteTooth("I_RAMP_ON",	"BOOLEAN",		0, 		7, 		true, 		"0", 	"Enable ramping for Current SP");
-		filByteToothWrite[8]		= new ByteTooth("V_RAMP_ON",	"BOOLEAN",		1, 		0, 		true, 		"0", 	"Enable ramping for Voltage SP");
-		filByteToothWrite[9]		= new ByteTooth("RESET",		"BOOLEAN",		1, 		1, 		true, 		"0", 	"Reset PSU");
+		filByteToothWrite[0]		= new ByteTooth("START",		"BOOLEAN",		0, 		0, 		true, 		"false", 	"Start PSU operation. TRUE=ENABLED");
+		filByteToothWrite[1]		= new ByteTooth("STOP",			"BOOLEAN",		0, 		1, 		true, 		"false", 	"Stop PSU and reset Timers TRUE = STOP");
+		filByteToothWrite[2]		= new ByteTooth("FORCE",		"BOOLEAN",		0, 		2, 		true, 		"false", 	"Force PSU block TRUE = FORCE all inputs");
+		filByteToothWrite[3]		= new ByteTooth("S_ON_STATUS",	"BOOLEAN",		0, 		3, 		true, 		"false", 	"Force ON_STATUS input");
+		filByteToothWrite[4]		= new ByteTooth("S_IVAL",		"BOOLEAN",		0, 		4, 		true, 		"false", 	"Force I_REG input");
+		filByteToothWrite[5]		= new ByteTooth("S_LOC_REM",	"BOOLEAN",		0, 		5, 		true, 		"false", 	"Force LOC_REM input");
+		filByteToothWrite[6]		= new ByteTooth("S_FAULT",		"BOOLEAN",		0, 		6, 		true, 		"false", 	"Force FAULT input");
+		filByteToothWrite[7]		= new ByteTooth("I_RAMP_ON",	"BOOLEAN",		0, 		7, 		true, 		"false", 	"Enable ramping for Current SP");
+		filByteToothWrite[8]		= new ByteTooth("V_RAMP_ON",	"BOOLEAN",		1, 		0, 		true, 		"false", 	"Enable ramping for Voltage SP");
+		filByteToothWrite[9]		= new ByteTooth("RESET",		"BOOLEAN",		1, 		1, 		true, 		"false", 	"Reset PSU");
 		filByteToothWrite[10]		= new ByteTooth("TIME_COLD_SP1","FLOAT",		2, 		0, 		true, 		"0", 	"Setpoint1 Time");
 		filByteToothWrite[11]		= new ByteTooth("TIME_COLD_SP2","FLOAT",		6, 		0, 		true, 		"0", 	"Setpoint2 Time");
 		filByteToothWrite[12]		= new ByteTooth("TIME_COLD_SP3","FLOAT",		10, 	0, 		true, 		"0", 	"Setpoint3 Time");
@@ -109,21 +109,21 @@ public class KlyPlcProtoPsuGearBox
 		filByteToothWrite[35]		= new ByteTooth("TOL_InWARMUP_SP",	"FLOAT",		102, 	0, 		true, 		"0", 	"Maximum allowed difference between IMON and IPGM");
 
 		ByteTooth[] solByteToothRead = new ByteTooth[37];
-		solByteToothRead[0]		= new ByteTooth("ON_STATUS",	"BOOLEAN",		0, 		0, 		false, 		"0", 	"PSU is Operating normally");
-		solByteToothRead[1]		= new ByteTooth("STARTED",		"BOOLEAN",		0, 		1, 		false, 		"0", 	"PSU has received the ON Command");
-		solByteToothRead[2]		= new ByteTooth("STOPPED",		"BOOLEAN",		0, 		2, 		false, 		"0", 	"PSU is NOT operating");
-		solByteToothRead[3]		= new ByteTooth("I_REG",		"BOOLEAN",		0, 		3, 		false, 		"0", 	"HIGH= the PSU is in constant cuttent mode");
-		solByteToothRead[4]		= new ByteTooth("LOC_REM_ST",	"BOOLEAN",		0, 		4, 		false, 		"0", 	"HIGH=REMOTE,FALSE=LOCAL");
-		solByteToothRead[5]		= new ByteTooth("N_LATCH",		"BOOLEAN",		0, 		5, 		false, 		"0", 	"Disable Latching from PLC code");
-		solByteToothRead[6]		= new ByteTooth("N_FORCE",		"BOOLEAN",		0, 		6, 		false, 		"0", 	"Disable forcing from PLC code");
-		solByteToothRead[7]		= new ByteTooth("IsFIRST",		"BOOLEAN",		0, 		7, 		false, 		"0", 	"Is the PSU Interlock the first Interlock?");
-		solByteToothRead[8]		= new ByteTooth("WARNING",		"BOOLEAN",		1, 		0, 		false, 		"0", 	"PSU Warning Bit");
-		solByteToothRead[9]		= new ByteTooth("INTERLOCK",	"BOOLEAN",		1, 		1, 		false, 		"0", 	"PSU Interlock Bit");
-		solByteToothRead[10]	= new ByteTooth("FORCE_ON",		"BOOLEAN",		1, 		2, 		false, 		"0", 	"Feedback ForceON");
-		solByteToothRead[11]	= new ByteTooth("S_ON_STATUS",	"BOOLEAN",		1, 		3, 		false, 		"0", 	"Feedback ON_STATUS input");
-		solByteToothRead[12]	= new ByteTooth("S_IREG",		"BOOLEAN",		1, 		4, 		false, 		"0", 	"Feedback I_REG input");
-		solByteToothRead[13]	= new ByteTooth("S_FAULT",		"BOOLEAN",		1, 		5, 		false, 		"0", 	"Feedback FAULT input");
-		solByteToothRead[14]	= new ByteTooth("S_LOC_REM",	"BOOLEAN",		1, 		6, 		false, 		"0", 	"Feedback LOC_REM input");
+		solByteToothRead[0]		= new ByteTooth("ON_STATUS",	"BOOLEAN",		0, 		0, 		false, 		"false", 	"PSU is Operating normally");
+		solByteToothRead[1]		= new ByteTooth("STARTED",		"BOOLEAN",		0, 		1, 		false, 		"false", 	"PSU has received the ON Command");
+		solByteToothRead[2]		= new ByteTooth("STOPPED",		"BOOLEAN",		0, 		2, 		false, 		"false", 	"PSU is NOT operating");
+		solByteToothRead[3]		= new ByteTooth("I_REG",		"BOOLEAN",		0, 		3, 		false, 		"false", 	"HIGH= the PSU is in constant cuttent mode");
+		solByteToothRead[4]		= new ByteTooth("LOC_REM_ST",	"BOOLEAN",		0, 		4, 		false, 		"false", 	"HIGH=REMOTE,FALSE=LOCAL");
+		solByteToothRead[5]		= new ByteTooth("N_LATCH",		"BOOLEAN",		0, 		5, 		false, 		"false", 	"Disable Latching from PLC code");
+		solByteToothRead[6]		= new ByteTooth("N_FORCE",		"BOOLEAN",		0, 		6, 		false, 		"false", 	"Disable forcing from PLC code");
+		solByteToothRead[7]		= new ByteTooth("IsFIRST",		"BOOLEAN",		0, 		7, 		false, 		"false", 	"Is the PSU Interlock the first Interlock?");
+		solByteToothRead[8]		= new ByteTooth("WARNING",		"BOOLEAN",		1, 		0, 		false, 		"false", 	"PSU Warning Bit");
+		solByteToothRead[9]		= new ByteTooth("INTERLOCK",	"BOOLEAN",		1, 		1, 		false, 		"false", 	"PSU Interlock Bit");
+		solByteToothRead[10]	= new ByteTooth("FORCE_ON",		"BOOLEAN",		1, 		2, 		false, 		"false", 	"Feedback ForceON");
+		solByteToothRead[11]	= new ByteTooth("S_ON_STATUS",	"BOOLEAN",		1, 		3, 		false, 		"false", 	"Feedback ON_STATUS input");
+		solByteToothRead[12]	= new ByteTooth("S_IREG",		"BOOLEAN",		1, 		4, 		false, 		"false", 	"Feedback I_REG input");
+		solByteToothRead[13]	= new ByteTooth("S_FAULT",		"BOOLEAN",		1, 		5, 		false, 		"false", 	"Feedback FAULT input");
+		solByteToothRead[14]	= new ByteTooth("S_LOC_REM",	"BOOLEAN",		1, 		6, 		false, 		"false", 	"Feedback LOC_REM input");
 		solByteToothRead[15]	= new ByteTooth("DTYP",			"BYTE",			2, 		0, 		false, 		"0", 	"PSU Type");
 		solByteToothRead[16]	= new ByteTooth("ERR",			"SHORT",		4, 		0, 		false, 		"0", 	"Different error bits stored in the word descibed in the code");
 		solByteToothRead[17]	= new ByteTooth("UPTIME_NO_HV",	"INT",			6, 		0, 		false, 		"0", 	"PSU uptime without HighVoltage");
@@ -148,14 +148,14 @@ public class KlyPlcProtoPsuGearBox
 		solByteToothRead[36]	= new ByteTooth("SOL_MAX_V",	"FLOAT",		86, 		0, 		false, 		"0", 	"The maximum allowed Solenoid voltage hardwired in the PSU code");
 
 		ByteTooth[] solByteToothWrite = new ByteTooth[20];
-		solByteToothWrite[0]		= new ByteTooth("START",		"BOOLEAN",		0, 		0, 		true, 		"0", 	"Start PSU operation. TRUE=ENABLED");
-		solByteToothWrite[1]		= new ByteTooth("STOP",			"BOOLEAN",		0, 		1, 		true, 		"0", 	"Stop PSU and reset Timers TRUE = STOP");
-		solByteToothWrite[2]		= new ByteTooth("FORCE",		"BOOLEAN",		0, 		2, 		true, 		"0", 	"Force PSU block TRUE = FORCE all inputs");
-		solByteToothWrite[3]		= new ByteTooth("S_ON_STATUS",	"BOOLEAN",		0, 		3, 		true, 		"0", 	"Force ON_STATUS input");
-		solByteToothWrite[4]		= new ByteTooth("S_IREG",		"BOOLEAN",		0, 		4, 		true, 		"0", 	"Force I_REG input");
-		solByteToothWrite[5]		= new ByteTooth("S_LOC_REM",	"BOOLEAN",		0, 		5, 		true, 		"0", 	"Force LOC_REM input");
-		solByteToothWrite[6]		= new ByteTooth("S_FAULT",		"BOOLEAN",		0, 		6, 		true, 		"0", 	"Force FAULT input");
-		solByteToothWrite[7]		= new ByteTooth("RESET",		"BOOLEAN",		0, 		7, 		true, 		"0", 	"Reset PSU");
+		solByteToothWrite[0]		= new ByteTooth("START",		"BOOLEAN",		0, 		0, 		true, 		"false", 	"Start PSU operation. TRUE=ENABLED");
+		solByteToothWrite[1]		= new ByteTooth("STOP",			"BOOLEAN",		0, 		1, 		true, 		"false", 	"Stop PSU and reset Timers TRUE = STOP");
+		solByteToothWrite[2]		= new ByteTooth("FORCE",		"BOOLEAN",		0, 		2, 		true, 		"false", 	"Force PSU block TRUE = FORCE all inputs");
+		solByteToothWrite[3]		= new ByteTooth("S_ON_STATUS",	"BOOLEAN",		0, 		3, 		true, 		"false", 	"Force ON_STATUS input");
+		solByteToothWrite[4]		= new ByteTooth("S_IREG",		"BOOLEAN",		0, 		4, 		true, 		"false", 	"Force I_REG input");
+		solByteToothWrite[5]		= new ByteTooth("S_LOC_REM",	"BOOLEAN",		0, 		5, 		true, 		"false", 	"Force LOC_REM input");
+		solByteToothWrite[6]		= new ByteTooth("S_FAULT",		"BOOLEAN",		0, 		6, 		true, 		"false", 	"Force FAULT input");
+		solByteToothWrite[7]		= new ByteTooth("RESET",		"BOOLEAN",		0, 		7, 		true, 		"false", 	"Reset PSU");
 		solByteToothWrite[8]		= new ByteTooth("I_SP",			"FLOAT",		2, 		0, 		true, 		"0", 	"Setpoint Current");
 		solByteToothWrite[9]		= new ByteTooth("V_SP",			"FLOAT",		6, 		0, 		true, 		"0", 	"Setpoint Voltage");
 		solByteToothWrite[10]		= new ByteTooth("S_VMON",		"FLOAT",		10, 	0, 		true, 		"0", 	"Force VMON input");
@@ -189,7 +189,7 @@ public class KlyPlcProtoPsuGearBox
 		byteGearS[1] = new ByteGear("SOLENOID2", 		250, 			156);
 		byteGearS[2] = new ByteGear("SOLENOID3", 		340, 			206);
 
-		for (int ii = 0; ii < byteGearF.length; ++ii)
+		for (int ii = 0; ii < byteGearS.length; ++ii)
 		{
 			for (int ir = 0; ir < solByteToothRead.length; ++ir)
 			{

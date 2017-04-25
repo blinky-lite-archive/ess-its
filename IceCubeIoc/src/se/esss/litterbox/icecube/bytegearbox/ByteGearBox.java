@@ -31,6 +31,7 @@ public class ByteGearBox
 	public int getReadByteLength() {return readByteLength;}
 	public int getWriteByteLength() {return writeByteLength;}
 	public ArrayList<ByteGear> getByteGearList() {return byteGearList;}
+	public int getNumByteGear() {return byteGearList.size();}
 
 	public ByteGearBox(String broker, int brokerPort, String topic, int readByteLength, int writeByteLength)
 	{
@@ -44,10 +45,10 @@ public class ByteGearBox
 	public ByteGearBox(JSONObject jsonObject)
 	{
 		this.broker = (String) jsonObject.get("broker");
-		this.brokerPort  = (int) jsonObject.get("brokerport");
+		this.brokerPort  = Integer.parseInt((String) jsonObject.get("brokerport"));
 		this.topic  = (String) jsonObject.get("topic");
-		this.readByteLength  = (int) jsonObject.get("readByteLength");
-		this.writeByteLength  = (int) jsonObject.get("writeByteLength");
+		this.readByteLength  = Integer.parseInt((String) jsonObject.get("readByteLength"));
+		this.writeByteLength  = Integer.parseInt((String) jsonObject.get("writeByteLength"));
 		JSONArray byteGearArray = (JSONArray) jsonObject.get("byteGears");
         Iterator<JSONObject> iterator = byteGearArray.iterator();
         while (iterator.hasNext()) 
@@ -70,11 +71,11 @@ public class ByteGearBox
 		is.close();
 	    JSONObject jsonObject  = (JSONObject) new JSONParser().parse(sb.toString());
 		this.broker = (String) jsonObject.get("broker");
-		this.brokerPort  = (int) ((long) jsonObject.get("brokerport"));
+		this.brokerPort  = Integer.parseInt((String) jsonObject.get("brokerport"));
 		
 		this.topic  = (String) jsonObject.get("topic");
-		this.readByteLength  = (int) ((long) jsonObject.get("readByteLength"));
-		this.writeByteLength  = (int) ((long) jsonObject.get("writeByteLength"));
+		this.readByteLength  = Integer.parseInt((String) jsonObject.get("readByteLength"));
+		this.writeByteLength  = Integer.parseInt((String) jsonObject.get("writeByteLength"));
 		JSONArray byteGearArray = (JSONArray) jsonObject.get("byteGears");
         Iterator<JSONObject> iterator = byteGearArray.iterator();
         while (iterator.hasNext()) 
@@ -95,43 +96,47 @@ public class ByteGearBox
 		}
 		throw new Exception("ByteGear " + name + " not found.");
 	}
-	public void loadReadDataFromByteArray(byte[] readByteArray)
+	public void setReadData(byte[] readByteArray)
 	{
 		for (int ii = 0; ii < byteGearList.size(); ++ii)
 		{
-			byteGearList.get(ii).loadReadDataFromByteArray(readByteArray);
+			byteGearList.get(ii).setReadData(readByteArray);
 		}
 	}
-	public void loadWriteDataFromByteArray(byte[] writeByteArray)
+	public void setWriteData(byte[] writeByteArray)
 	{
 		for (int ii = 0; ii < byteGearList.size(); ++ii)
 		{
-			byteGearList.get(ii).loadWriteDataFromByteArray(writeByteArray);
+			byteGearList.get(ii).setWriteData(writeByteArray);
 		}
 	}
-	public void loadReadDataIntoByteArray(byte[] readByteArray) 
+	public byte[] getReadData() 
 	{
+		byte[] readByteArray = new byte[readByteLength];
 		for (int ii = 0; ii < byteGearList.size(); ++ii)
 		{
-			byteGearList.get(ii).loadReadDataIntoByteArray(readByteArray);
+			byteGearList.get(ii).getReadData(readByteArray);
 		}
+		return readByteArray;
 	}
-	public void loadWriteDataIntoByteArray(byte[] writeByteArray) 
+	public byte[] getWriteData() 
 	{
+		byte[] writeByteArray = new byte[writeByteLength];
 		for (int ii = 0; ii < byteGearList.size(); ++ii)
 		{
-			byteGearList.get(ii).loadWriteDataIntoByteArray(writeByteArray);
+			byteGearList.get(ii).getWriteData(writeByteArray);
 		}
+		return writeByteArray;
 	}
 	@SuppressWarnings("unchecked")
 	public JSONObject getJsonObject()
 	{
 		JSONObject outputData = new JSONObject();
 		outputData.put("broker", broker);
-		outputData.put("brokerport", brokerPort);
+		outputData.put("brokerport", Integer.toString(brokerPort));
 		outputData.put("topic", topic);
-		outputData.put("readByteLength", readByteLength);
-		outputData.put("writeByteLength", writeByteLength);
+		outputData.put("readByteLength", Integer.toString(readByteLength));
+		outputData.put("writeByteLength", Integer.toString(writeByteLength));
         JSONArray byteGearArray = new JSONArray();
         for (int ii = 0; ii < byteGearList.size(); ++ii)
         {
@@ -161,6 +166,7 @@ public class ByteGearBox
 	{
 		URL url = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoAio.json");
 		ByteGearBox byteGearBox = new ByteGearBox(url);
-		byteGearBox.writeToFile("test.json", false);
+//		ByteGearBox byteGearBox = new ByteGearBox("klyPlcProtoAio.json");
+		byteGearBox.writeToFile("test.json", true);
 	}
 }
