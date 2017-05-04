@@ -26,13 +26,6 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoDio.json",
 			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoPsu.json"};
 
-/*	String[] gearBoxUrls = {
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json",
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoAio.json",
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoDio.json",
-			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoPsu.json"};
-*/
-	
 	public void init()
 	{
 		byteGearBox = new ByteGearBox[gearBoxUrls.length];
@@ -40,7 +33,7 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		{
 			boolean cleanSession = false;
 			int subscribeQos = 0;
-			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsToshibaPlcWebApp", getMqttDataPath(), cleanSession);
+			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsMobileSkeletonWebApp", getMqttDataPath(), cleanSession);
 			String itsnetWebLoginInfo = getItsnetWebLoginInfoPath();
 			for (int ii = 0; ii < gearBoxUrls.length; ++ii)
 			{

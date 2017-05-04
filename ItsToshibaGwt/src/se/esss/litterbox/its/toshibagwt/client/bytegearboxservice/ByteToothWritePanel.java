@@ -106,8 +106,17 @@ public class ByteToothWritePanel extends VerticalPanel
 			}
 			else
 			{
+				String toothType = byteGearGwt.getWriteToothList().get(ii).getType();
 				TextBox valueTextBox = (TextBox) byteGearGrid.getWidget(ii + 2, 1);
 				valueTextBox.setText(byteGearGwt.getWriteToothList().get(ii).getValue());
+				if (toothType.equals("FLOAT"))
+				{
+					valueTextBox.setText(twoPlaces.format(Double.parseDouble(byteGearGwt.getWriteToothList().get(ii).getValue())));
+				}
+				if (toothType.equals("DOUBLE"))
+				{
+					valueTextBox.setText(twoPlaces.format(Double.parseDouble(byteGearGwt.getWriteToothList().get(ii).getValue())));
+				}
 			}
 		}
 	}

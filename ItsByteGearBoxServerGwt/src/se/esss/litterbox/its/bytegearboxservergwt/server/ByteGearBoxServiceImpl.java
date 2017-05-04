@@ -19,7 +19,6 @@ import se.esss.litterbox.its.bytegearboxservergwt.shared.bytegearboxgwt.ByteToot
 public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements ByteGearBoxService
 {
 	ByteGearBoxServiceImpClient byteGearBoxServiceImpClient;
-//	ByteGearBoxGwt[] byteGearBoxGwt;
 	ByteGearBox[] byteGearBox;
 	ArrayList<String> byteGearBoxJsonFiles;
 	String gearBoxDirPath;
@@ -30,7 +29,8 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		{
 			boolean cleanSession = false;
 			int subscribeQos = 0;
-			gearBoxDirPath = getServletContext().getRealPath("/gearbox");
+			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsByteGearBoxServerWebApp", getMqttDataPath(), cleanSession);
+			gearBoxDirPath = getGearBoxPath();
 			File folder = new File(gearBoxDirPath);
 			File[] listOfFiles = folder.listFiles();
 			byteGearBoxJsonFiles = new ArrayList<String>();
@@ -44,7 +44,6 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 			}
 			java.util.Collections.sort(byteGearBoxJsonFiles);
 			byteGearBox = new ByteGearBox[byteGearBoxJsonFiles.size()];
-			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsByteGearBoxServerWebApp", getMqttDataPath(), cleanSession);
 			for (int ii = 0; ii < byteGearBoxJsonFiles.size(); ii++) 
 			{
 				{
@@ -61,6 +60,24 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	}
 	public void destroy()
 	{
+		try 
+		{
+			byteGearBoxServiceImpClient.reconnectOk = false;
+			byteGearBoxServiceImpClient.unsubscribeAll();
+			byteGearBoxServiceImpClient.disconnect();
+			System.out.println("Ending ItsByteGearBoxServerWebApp");
+		} catch (Exception e) 
+		{
+			System.out.println("Error: " + e.getMessage());
+
+		}
+	}
+	private String getGearBoxPath() throws Exception
+	{
+		File tmpFile = new File(getServletContext().getRealPath("./"));
+		tmpFile = new File(tmpFile.getParent());
+		tmpFile = new File(tmpFile.getParent());
+		return tmpFile.getPath() + "/IceCubeDeviceProtocols/gearbox";
 		
 	}
 	private String getMqttDataPath() throws Exception
@@ -71,38 +88,10 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		return tmpFile.getPath() + "/itsmqttbroker.dat";
 		
 	}
-	public String getItsnetWebLoginInfoPath() throws Exception
-	{
-		File tmpFile = new File(getServletContext().getRealPath("./"));
-		tmpFile = new File(tmpFile.getParent());
-		tmpFile = new File(tmpFile.getParent());
-		return tmpFile.getPath() + "/itsnetWebLoginInfo.dat";
-		
-	}
-	public void setMessage(String topic, byte[] message)
-	{
-		for (int ii = 0; ii < byteGearBox.length; ++ii)
-		{
-			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
-			{
-				if (topic.indexOf("/set") >= 0)
-				{
-					byteGearBox[ii].setWriteData(message);
-					try {byteGearBox[ii].writeToFile(gearBoxDirPath  + "/" + byteGearBoxJsonFiles.get(ii), false);} catch (Exception e) {e.printStackTrace();}
-					return;
-				}
-				if (topic.indexOf("/get") >= 0)
-				{
-					byteGearBox[ii].setReadData(message);
-					try {byteGearBox[ii].writeToFile(gearBoxDirPath  + "/" + byteGearBoxJsonFiles.get(ii), false);} catch (Exception e) {e.printStackTrace();}
-					return;
-				}
-			}
-		}
-	}
 	static class ByteGearBoxServiceImpClient extends SimpleMqttClient
 	{
 		ByteGearBoxServiceImpl byteGearBoxServiceImpl;
+		boolean reconnectOk = true;
 		public ByteGearBoxServiceImpClient(ByteGearBoxServiceImpl byteGearBoxServiceImpl, String clientId, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception 
 		{
 			super(clientId, mqttBrokerInfoFilePath, cleanSession);
@@ -112,6 +101,52 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		public void newMessage(String topic, byte[] message) 
 		{
 			byteGearBoxServiceImpl.setMessage(topic, message);
+		}
+		@Override
+		public void lostMqttConnection(Throwable arg0) 
+		{
+			if (!reconnectOk)
+			{
+				try 
+				{
+					unsubscribeAll();
+					disconnect();
+					return;
+				} catch (Exception e) {setStatus("Error on disconnect: " + arg0.getMessage());}
+			}
+			try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+		}
+	}
+	public void setMessage(String topic, byte[] message)
+	{
+		for (int ii = 0; ii < byteGearBox.length; ++ii)
+		{
+			if (topic.indexOf(byteGearBox[ii].getTopic()) >= 0)
+			{
+				if (topic.indexOf("/set") >= 0)
+				{
+					int numWriteMessages = message.length / byteGearBox[ii].getWriteByteLength();
+					byte[] lastMessage = new byte[byteGearBox[ii].getWriteByteLength()];
+					for (int ij = 0; ij < byteGearBox[ii].getWriteByteLength(); ++ij)
+					{
+						lastMessage[ij] = message[ij + byteGearBox[ii].getWriteByteLength() * (numWriteMessages - 1)];
+					}
+					byteGearBox[ii].setWriteData(lastMessage);
+					try {byteGearBox[ii].writeToFile(gearBoxDirPath  + "/" + byteGearBoxJsonFiles.get(ii), false);} catch (Exception e) {e.printStackTrace();}
+					return;
+				}
+				if (topic.indexOf("/get") >= 0)
+				{
+					int numReadMessages = message.length / byteGearBox[ii].getReadByteLength();
+					byte[] lastMessage = new byte[byteGearBox[ii].getReadByteLength()];
+					for (int ij = 0; ij < byteGearBox[ii].getReadByteLength(); ++ij)
+					{
+						lastMessage[ij] = message[ij + byteGearBox[ii].getReadByteLength() * (numReadMessages - 1)];
+					}
+					byteGearBox[ii].setReadData(lastMessage);
+					return;
+				}
+			}
 		}
 	}
 	private static ByteToothGwt convertByteTooth(ByteTooth byteTooth)
