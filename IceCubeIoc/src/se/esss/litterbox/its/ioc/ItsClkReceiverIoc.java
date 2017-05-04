@@ -56,6 +56,11 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		if (args.length != 1)

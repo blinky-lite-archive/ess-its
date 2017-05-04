@@ -135,13 +135,10 @@ public abstract class SimpleMqttClient implements MqttCallback
 	{
 		return mqttClient.isConnected();
 	}
-	public void reconnect() throws MqttException 
+	public void reconnect() throws Exception 
 	{
-		try
-		{
-			connect();
-		}
-		catch (Exception e) {};
+		Thread.sleep(5000);
+		connect();
 		if (mqttMessageInfoSubscribeList.size() > 0)
 		{
 			for (int ii = 0; ii < mqttMessageInfoSubscribeList.size(); ++ii)
@@ -150,18 +147,12 @@ public abstract class SimpleMqttClient implements MqttCallback
 			}
 		}
 	}
+	public abstract void lostMqttConnection(Throwable arg0);
 	@Override
 	public void connectionLost(Throwable arg0)
 	{
-		while (!isConnected())
-		{
-			try
-			{
-				Thread.sleep(5000);
-				setStatus("Lost connection. Trying to reconnect." );
-				reconnect();
-			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
-		}
+		setStatus("Lost connection: " + arg0.getMessage());
+		lostMqttConnection(arg0);
 	}
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {}

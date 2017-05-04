@@ -58,6 +58,11 @@ public class ItsClkTransmitterIoc extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		ItsClkTransmitterIoc ioc = new ItsClkTransmitterIoc("itsClkTrans01Ioc", "itsmqttbroker.dat", "/dev/ttyACM0");

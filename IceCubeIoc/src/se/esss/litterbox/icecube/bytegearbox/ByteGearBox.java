@@ -1,7 +1,6 @@
 package se.esss.litterbox.icecube.bytegearbox;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -15,7 +14,6 @@ import java.util.Iterator;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.eclipse.paho.client.mqttv3.internal.websocket.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -67,27 +65,10 @@ public class ByteGearBox
         	byteGearList.add(new ByteGear(iterator.next()));
         }
 	}
+	@SuppressWarnings("unchecked")
 	public ByteGearBox(URL url) throws Exception
 	{
-		this(url, null);
-	}
-	@SuppressWarnings("unchecked")
-	public ByteGearBox(URL url, String itsnetWebLoginInfoPath) throws Exception
-	{
 		URLConnection uc = url.openConnection();
-		if (itsnetWebLoginInfoPath != null)
-		{
-		    InputStream fis = new FileInputStream(itsnetWebLoginInfoPath);
-		    InputStreamReader isr = new InputStreamReader(fis);
-		    BufferedReader br = new BufferedReader(isr);
-		    String line = br.readLine();
-		    br.close();
-		    JSONObject itsnetWebLoginInfo = (JSONObject) new JSONParser().parse(line);
-
-			String userpass = (String) itsnetWebLoginInfo.get("username") + ":" + (String) itsnetWebLoginInfo.get("key");
-			String basicAuth = "Basic " + new String(Base64.encodeBytes(userpass.getBytes()));
-			uc.setRequestProperty ("Authorization", basicAuth);
-		}
 	  
 		InputStream is = uc.getInputStream();
 		BufferedReader rd = new BufferedReader(new InputStreamReader(is));
@@ -195,13 +176,58 @@ public class ByteGearBox
         file.flush();
         file.close();
 	}
+	public String[] printReadData()
+	{
+		int stringSize = 1;
+		for (int ii = 0; ii < byteGearList.size(); ++ii)
+		{
+			stringSize = stringSize + byteGearList.get(ii).getReadToothList().size() + 1;
+		}
+		String[] readDataStringArray = new String[stringSize]; 
+		stringSize = 0;
+		readDataStringArray[stringSize]  = "broker = " + broker + " topic = " + topic + " readByteLength = " + readByteLength;
+		++stringSize;
+		for (int ii = 0; ii < byteGearList.size(); ++ii)
+		{
+			String[] byteGearListReadArray = byteGearList.get(ii).printReadData();
+			for (int ij = 0; ij < byteGearListReadArray.length; ++ij)
+			{
+				readDataStringArray[stringSize]  = (ii + 1) + "\t" + byteGearListReadArray[ij];
+				++stringSize;
+			}
+		}
+		return readDataStringArray;
+	}
+	public String[]  printWriteData()
+	{
+		int stringSize = 1;
+		for (int ii = 0; ii < byteGearList.size(); ++ii)
+		{
+			stringSize = stringSize + byteGearList.get(ii).getWriteToothList().size() + 1;
+		}
+		String[] writeDataStringArray = new String[stringSize]; 
+		stringSize = 0;
+		writeDataStringArray[stringSize]  = "broker = " + broker + " topic = " + topic + " writeByteLength = " + writeByteLength;
+		++stringSize;
+		for (int ii = 0; ii < byteGearList.size(); ++ii)
+		{
+			String[] byteGearListWriteArray = byteGearList.get(ii).printWriteData();
+			for (int ij = 0; ij < byteGearListWriteArray.length; ++ij)
+			{
+				writeDataStringArray[stringSize]  = (ii + 1) + "\t" + byteGearListWriteArray[ij];
+				++stringSize;
+			}
+		}
+		return writeDataStringArray;
+	}
 	public static void main(String[] args) throws Exception 
 	{
-		URL url = new URL("https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoCpu.json");
-		ByteGearBox byteGearBox = new ByteGearBox(url, "itsnetWebLoginInfo.dat");
+//		URL url = new URL("https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoPsu.json");
+//		ByteGearBox byteGearBox = new ByteGearBox(url, "itsnetWebLoginInfo.dat");
 //		ByteGearBox byteGearBox = new ByteGearBox("klyPlcProtoCpu.json");
 //		URL url = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json");
 //		ByteGearBox byteGearBox = new ByteGearBox(url);
-		byteGearBox.writeToFile("test.json", true);
+//		byteGearBox.writeToFile("test.json", true);
+//		byteGearBox.printWriteData();
 	}
 }

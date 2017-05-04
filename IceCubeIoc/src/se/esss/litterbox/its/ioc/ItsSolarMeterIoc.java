@@ -53,6 +53,11 @@ public class ItsSolarMeterIoc extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "itsmqttbroker.dat", "/dev/rfcomm3");

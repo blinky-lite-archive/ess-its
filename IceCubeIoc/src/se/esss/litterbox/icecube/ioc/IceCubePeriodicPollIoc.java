@@ -46,19 +46,6 @@ public abstract class IceCubePeriodicPollIoc extends SimpleMqttClient implements
 	public abstract byte[] getDataFromGizmo();
 	public abstract void handleBrokerMqttMessage(String topic, byte[] message);
 	@Override
-	public void connectionLost(Throwable arg0) 
-	{
-		while (!isConnected())
-		{
-			try
-			{
-				Thread.sleep(5000);
-				setStatus("Lost connection. Trying to reconnect." );
-				reconnect();
-			} catch (Exception e) {setStatus("Error: " + e.getMessage());}
-		}
-	}
-	@Override
 	public void newMessage(String topic, byte[] message) 
 	{
 		setStatus(getClientId() + " recieved message on topic: " + topic);

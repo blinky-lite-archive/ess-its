@@ -17,6 +17,11 @@ public class ItsRaspiWebCamIocTester extends SimpleMqttClient
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{

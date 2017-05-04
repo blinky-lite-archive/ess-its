@@ -68,6 +68,7 @@ public class ByteGear
 		for (int ii = 0; ii < readToothList.size(); ++ii)
 		{
 			readToothList.get(ii).setData(byteArray, readOffset);
+//			System.out.println(ii + " name = " + name + " " + readToothList.get(ii).printData());
 		}
 	}
 	public void setWriteData(byte[] byteArray)
@@ -81,7 +82,7 @@ public class ByteGear
 	{
 		for (int ii = 0; ii < readToothList.size(); ++ii)
 		{
-			readToothList.get(ii).getData(byteArray, writeOffset);
+			readToothList.get(ii).getData(byteArray, readOffset);
 		}
 	}
 	public void getWriteData(byte[] byteArray) 
@@ -111,5 +112,25 @@ public class ByteGear
 		outputData.put("readToothList", readList);
 		outputData.put("writeToothList", writeList);
 		return outputData;
+	}
+	public String[] printReadData()
+	{
+		String[] readDataStringArray = new String[1 + readToothList.size()];
+		readDataStringArray[0] = "Name = " + name + " readByteOff = " + Integer.toBinaryString(readOffset);
+        for (int ii = 0; ii < readToothList.size(); ++ii)
+        {
+        	readDataStringArray[ii + 1] = "\t" + (ii + 1) + "\t" + readToothList.get(ii).printData();
+        }
+        return readDataStringArray;
+	}
+	public String[] printWriteData()
+	{
+		String[] writeDataStringArray = new String[1 + writeToothList.size()];
+		writeDataStringArray[0] = "Name = " + name + " writeByteOff = " + Integer.toBinaryString(writeOffset);
+        for (int ii = 0; ii < writeToothList.size(); ++ii)
+        {
+        	writeDataStringArray[ii + 1] = "\t" + (ii + 1) + "\t" + writeToothList.get(ii).printData();
+        }
+        return writeDataStringArray;
 	}
 }

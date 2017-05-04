@@ -1,10 +1,12 @@
 package se.esss.litterbox.icecube.bytegearbox;
+import java.util.Date;
+
 import org.json.simple.JSONObject;
 
 public class ByteTooth 
 {
 	
-	private static boolean littleEndian =  true;
+	private static boolean littleEndian =  false;
 
 	private String name = "";
 	private String description = "";
@@ -76,7 +78,7 @@ public class ByteTooth
 		}
 		if (toothType.equals("INT"))
 		{
-			byte[] byteChunk = new byte[2];
+			byte[] byteChunk = new byte[4];
 			for (int ii = 0; ii < 4; ++ii) byteChunk[ii] = byteArray[offset + ii];
 			value = bytesToInt(byteChunk, littleEndian);
 		}
@@ -85,6 +87,12 @@ public class ByteTooth
 			byte[] byteChunk = new byte[8];
 			for (int ii = 0; ii < 8; ++ii) byteChunk[ii] = byteArray[offset + ii];
 			value = bytesToDouble(byteChunk, littleEndian);
+		}
+		if (toothType.equals("S7DT"))
+		{
+			byte[] byteChunk = new byte[8];
+			for (int ii = 0; ii < 8; ++ii) byteChunk[ii] = byteArray[offset + ii];
+			value = bytesToLong(byteChunk, littleEndian);
 		}
 	}
 	public void getData(byte[] byteArray, int byteGearWriteOffset) 
@@ -128,6 +136,11 @@ public class ByteTooth
 		if (toothType.equals("DOUBLE"))
 		{
 			byte[] byteChunk = doubleToBytes(value, littleEndian);;
+			for (int ii = 0; ii < 8; ++ii) byteArray[offset + ii] = byteChunk[ii];
+		}
+		if (toothType.equals("S7DT"))
+		{
+			byte[] byteChunk = longToBytes(value, littleEndian);
 			for (int ii = 0; ii < 8; ++ii) byteArray[offset + ii] = byteChunk[ii];
 		}
 	}
@@ -363,5 +376,48 @@ public class ByteTooth
 		}
 		return Double.toString(Double.longBitsToDouble(asLong));
 	}
+    private static String BCDtoString(byte bcd) 
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        byte high = (byte) (bcd & 0xf0);
+        high >>>= (byte) 4;    
+        high = (byte) (high & 0x0f);
+        byte low = (byte) (bcd & 0x0f);
+        
+        sb.append(high);
+        sb.append(low);
+        
+        return sb.toString();
+    }
+    @SuppressWarnings("deprecation")
+	public Date getDateFromStep7DateAndTime() throws Exception
+    {
+    	if (!toothType.equals("S7DT")) throw new Exception ("ToothType does not equal S7DT");
+		byte[] longBytes = longToBytes(value, littleEndian);
+		int milliSec = Integer.parseInt(BCDtoString(longBytes[6]));
+		int sec = Integer.parseInt(BCDtoString(longBytes[5]));
+		int min = Integer.parseInt(BCDtoString(longBytes[4])); 
+		int hour = Integer.parseInt(BCDtoString(longBytes[3])); 
+		int day = Integer.parseInt(BCDtoString(longBytes[2])); 
+		int month = Integer.parseInt(BCDtoString(longBytes[1])) - 1; 
+		int millenium = 100;
+		if (longBytes[0] < 0) millenium = 0;
+		int year = Integer.parseInt(BCDtoString(longBytes[0])) + millenium; 
 
+		Date now = new Date();
+		now.setYear(year);
+		now.setMonth(month);
+		now.setDate(day);
+		now.setHours(hour);
+		now.setMinutes(min);
+		now.setSeconds(sec);
+		now.setTime(now.getTime() + milliSec);
+		return now;
+    }
+	public String printData()
+	{
+		return "name = " + name + "\t" + "type = " + toothType + "\t" + "bitOff = " + bitOffsetFromGear + "\t" + "byteOff = " + byteOffsetFromGear + "\t" + "value = " + value;
+		
+	}
 }

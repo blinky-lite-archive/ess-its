@@ -26,6 +26,11 @@ public class ItsDht11Ioc extends IceCubeSerialIoc
 	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		ItsDht11Ioc ioc = new ItsDht11Ioc("itsDht1101Ioc", "itsmqttbroker.dat", "/dev/rfcomm2");

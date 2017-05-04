@@ -169,6 +169,11 @@ public class ItsCernModulatorIoc extends IceCubeTcpIoc
 
 		}
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		ItsCernModulatorIoc ioc = new ItsCernModulatorIoc("itsCernModIoc", "itsmqttbroker.dat", "192.168.5.4", 8000);

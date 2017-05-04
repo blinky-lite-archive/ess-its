@@ -74,6 +74,11 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 		fis.read(data);
 		fis.close();
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		ItsCernModulatorTester bigBlue = new ItsCernModulatorTester("ItsCernModTester", "itsmqttbroker.dat");

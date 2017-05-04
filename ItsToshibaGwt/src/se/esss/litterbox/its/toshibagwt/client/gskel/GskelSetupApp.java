@@ -14,8 +14,6 @@ import se.esss.litterbox.its.toshibagwt.client.EntryPointAppService;
 import se.esss.litterbox.its.toshibagwt.client.EntryPointAppServiceAsync;
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxService;
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxServiceAsync;
-import se.esss.litterbox.its.toshibagwt.client.mqttdata.MqttService;
-import se.esss.litterbox.its.toshibagwt.client.mqttdata.MqttServiceAsync;
 
 public class GskelSetupApp 
 {
@@ -25,7 +23,6 @@ public class GskelSetupApp
 	private GskelMessageDialog messageDialog;
 	private GskelFrameDialog frameDialog;
 	private boolean mobile = false;
-	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
 	private final EntryPointAppServiceAsync entryPointAppService = GWT.create(EntryPointAppService.class);
 	private final ByteGearBoxServiceAsync byteGearBoxService = GWT.create(ByteGearBoxService.class);
 	private boolean settingsPermitted;
@@ -42,7 +39,6 @@ public class GskelSetupApp
 	public GskelMessageDialog getMessageDialog() {return messageDialog;}
 	public GskelFrameDialog getFrameDialog() {return frameDialog;}
 	public GskelTabLayoutPanel getGskelTabLayoutPanel() {return gskelTabLayoutPanel;}
-	public MqttServiceAsync getMqttService() {return mqttService;}
 	public EntryPointAppServiceAsync getEntryPointAppService() {return entryPointAppService;}
 	public ByteGearBoxServiceAsync getByteGearBoxService() {return byteGearBoxService;}
 	public boolean isSettingsPermitted() {return settingsPermitted;}

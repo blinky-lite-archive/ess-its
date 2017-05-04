@@ -19,14 +19,15 @@ public class KlyPlcProtoDioGearBox
 		byteToothRead[6]		= new ByteTooth("N_LATCH",	"BOOLEAN",		0, 		6, 		false, 		"false", 	"Never Latch");
 		byteToothRead[7]		= new ByteTooth("IsFIRST",	"BOOLEAN",		0, 		7, 		false, 		"false", 	"First variable interlocked before the CPU alarm trips");
 		byteToothRead[8]		= new ByteTooth("INVERT_DO","BOOLEAN",		1, 		0, 		false, 		"false", 	"Invert DO field value");
-		byteToothRead[9]		= new ByteTooth("TMPST",	"LONG",			2, 		0, 		false, 		"0", 	"Time-stamp");
+		byteToothRead[9]		= new ByteTooth("TMPST",	"S7DT",			2, 		0, 		false, 		"0", 	"Time-stamp");
 		byteToothRead[10]		= new ByteTooth("DTYP",		"BYTE",			10, 	0, 		false, 		"0", 	"Device type");
 		byteToothRead[11]		= new ByteTooth("ERR",		"BYTE",			11, 	0, 		false, 		"0", 	"Error code");
 
-		ByteTooth[] byteToothWrite = new ByteTooth[3];
+		ByteTooth[] byteToothWrite = new ByteTooth[4];
 		byteToothWrite[0]	= new ByteTooth("DISABLE",	"BOOLEAN",		0, 		0, 		true, 		"false", 	"Interlocks disabled");
 		byteToothWrite[1]	= new ByteTooth("FORCE",	"BOOLEAN",		0, 		1, 		true, 		"false", 	"Force the variable to the simulation value");
 		byteToothWrite[2]	= new ByteTooth("SVAL",		"BOOLEAN",		0, 		2, 		true, 		"false", 	"Simulation value");
+		byteToothWrite[3]	= new ByteTooth("WR_DATA",	"BOOLEAN",		0, 		3, 		true, 		"false", 	"Write Data");
 
 		ByteGear[] byteGearE = new 	ByteGear[14];
 		byteGearE[0] = new ByteGear("KLY-RFS-HZ:EmStop", 		0, 			0);

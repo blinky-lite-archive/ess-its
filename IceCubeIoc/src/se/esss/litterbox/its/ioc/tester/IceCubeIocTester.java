@@ -31,6 +31,11 @@ public class IceCubeIocTester  extends SimpleMqttClient
 			catch (ParseException nfe) {nfe.printStackTrace();}
 		}
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{

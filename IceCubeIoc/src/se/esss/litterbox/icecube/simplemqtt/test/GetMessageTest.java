@@ -40,6 +40,11 @@ public class GetMessageTest  extends SimpleMqttClient
 			}
 		}
 */	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception  
 	{
 		String userName = args[0];
@@ -55,6 +60,7 @@ public class GetMessageTest  extends SimpleMqttClient
 		Thread.sleep(10000);
 		getMessageTest.reconnect();
 	}
+
 
 
 }

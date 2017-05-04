@@ -6,6 +6,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import se.esss.litterbox.its.toshibagwt.client.EntryPointApp;
 import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteGearBoxGwt;
+import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteGearGwt;
+
 
 public  class ByteGearBoxData 
 {
@@ -25,9 +27,17 @@ public  class ByteGearBoxData
 		byteDataUpdateTimer.scheduleRepeating(timerPeriodMillis);
 		byteGearBoxDataPanel = new ByteGearBoxDataPanel(this);
 	}
-	public void setWriteData()
+	public void setWriteData(ByteGearGwt byteGearGwt)
 	{
-		entryPointApp.getSetup().getByteGearBoxService().publishMessage(byteGearBoxGwt.getTopic() + "/set", byteGearBoxGwt.getWriteData(), entryPointApp.getSetup().isSettingsPermitted(), new SetWriteDataAsyncCallback());
+		try
+		{
+			String topic  = byteGearBoxGwt.getTopic() + "/set";
+			byte[] newSettingMessage = new byte[byteGearBoxGwt.getWriteByteLength() * 2];
+			for (int ii = 0; ii < byteGearBoxGwt.getWriteByteLength(); ++ii) newSettingMessage[ii] = byteGearBoxGwt.getWriteData()[ii];
+			byteGearGwt.getWriteByteTooth("WR_DATA").setValue("false");
+			for (int ii = 0; ii < byteGearBoxGwt.getWriteByteLength(); ++ii) newSettingMessage[ii + byteGearBoxGwt.getWriteByteLength()] = byteGearBoxGwt.getWriteData()[ii];
+			entryPointApp.getSetup().getByteGearBoxService().publishMessage(topic, newSettingMessage, entryPointApp.getSetup().isSettingsPermitted(), new SetWriteDataAsyncCallback());
+		} catch (Exception e){ GWT.log(e.getMessage());}
 	}
 	private static class ByteDataUpdateTimer extends Timer
 	{

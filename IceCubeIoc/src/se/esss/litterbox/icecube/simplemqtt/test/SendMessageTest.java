@@ -14,6 +14,11 @@ public class SendMessageTest extends SimpleMqttClient
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+	}
 	public static void main(String[] args) throws Exception  
 	{
 		String userName = args[0];

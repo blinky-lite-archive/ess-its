@@ -24,6 +24,18 @@ h1 {
  	background-color: #0095CD;
 	color: #FFFFFF;
 }
+.byteToothName {
+ 	background-color: #0095CD;
+	color: #8ae234;
+}
+.byteToothType {
+ 	background-color: #0095CD;
+	color: #204a87;
+}
+.byteToothDesc {
+ 	background-color: #0095CD;
+	color: #fce94f;
+}
 .skelTab {
 	background-color: #FFFFFF;
 	color: #0095CD;
