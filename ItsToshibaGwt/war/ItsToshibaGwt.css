@@ -36,6 +36,48 @@ h1 {
  	background-color: #0095CD;
 	color: #fce94f;
 }
+.stateButtonPreConFalse {
+ 	background-color: #babdb6;
+	font-size: 2em;
+	font-weight: bold;
+	color: #888a85
+}
+.stateButtonPreConTrue {
+ 	background-color: #fcaf3e;
+	font-size: 2em;
+	font-weight: bold;
+	color: #000000
+}
+.stateButtonSetMatch {
+ 	background-color: #f9ff00;
+	font-size: 2em;
+	font-weight: bold;
+	color: #000000
+}
+.stateButtonActMatch {
+ 	background-color: #00ff00;
+	font-size: 2em;
+	font-weight: bold;
+	color: #000000
+}
+.stateButtonReset {
+ 	background-color: #ef2929;
+	font-size: 2em;
+	font-weight: bold;
+	color: #000000
+}
+.stateButtonOff {
+ 	background-color: #ff00ff;
+	font-size: 2em;
+	font-weight: bold;
+	color: #000000
+}
+.stateButtonPressed {
+ 	background-color: #ffffff;
+	font-size: 2em;
+	font-weight: bold;
+	color: #204a87
+}
 .skelTab {
 	background-color: #FFFFFF;
 	color: #0095CD;
