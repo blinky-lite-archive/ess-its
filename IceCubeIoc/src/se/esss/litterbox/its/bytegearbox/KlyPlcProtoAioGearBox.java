@@ -49,7 +49,7 @@ public class KlyPlcProtoAioGearBox
 		byteGearE[3] = new ByteGear("KLY_Oil_TSn_WatInletTemp", 		132, 	78);
 		byteGearE[4] = new ByteGear("KLY_Sol_TSn_WatInletTemp", 		176, 	104);
 		byteGearE[5] = new ByteGear("KLY_Sol_TSn_WatInletTempMan", 		220, 	130);
-		byteGearE[6] = new ByteGear("KLY_Sol_TSn_WatInletTemp", 		264, 	156);
+		byteGearE[6] = new ByteGear("KLY_Sol_TSn_WatOutletTemp", 		264, 	156);
 		byteGearE[7] = new ByteGear("KLY_Sol_FSn_WatOutletFlow", 		308, 	182);
 		byteGearE[8] = new ByteGear("KLY_Sol_TSn_SurfTemp", 			352, 	208);
 		byteGearE[9] = new ByteGear("KLY_Win_FSn_WatOutletFlow", 		396, 	234);

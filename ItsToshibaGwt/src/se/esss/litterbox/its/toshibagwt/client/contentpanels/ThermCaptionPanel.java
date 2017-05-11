@@ -26,11 +26,11 @@ public class ThermCaptionPanel extends CaptionPanel
 	private String red = "#ff0000";
 	private String yellow = "#ffff00";
 	private String green = "#00ff00";
-	private String plotWidth = "50px";
+	private String plotWidth = "75px";
 	private String plotHeight = "90px";
-	private int fontPixelSize = 15;
-	private int chartAreaPixelLeftOffset = 35;
-	private int chartAreaPixelWidth = 20;
+	private int fontPixelSize = 12;
+	private int chartAreaPixelLeftOffset = 50;
+	private int chartAreaPixelWidth = 25;
 	private double chartAreaOpacity = 0.5;
 	private String chartAreaBackgroundColor = "#aaaaaa";
 	private String plotBackgroundColor = "#0095CD";
@@ -81,7 +81,7 @@ public class ThermCaptionPanel extends CaptionPanel
 		thermPlotPanel.initialize();
 		VerticalPanel vp1 = new VerticalPanel();
 		vp1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		vp1.setWidth("100%");
+		vp1.setWidth(plotWidth);
 		vp1.add(interlockLabel);
 		vp1.add(thermPlotPanel);
 		add(vp1);

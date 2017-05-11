@@ -109,7 +109,6 @@ public class ThermPlotPanel extends VerticalPanel
 		vaxis.setTicks(ticks);
 		TextStyle textStyle = TextStyle.create();
 		textStyle.setColor(textColor);
-		textStyle.setFontSize(10);
 		vaxis.setTextStyle(textStyle);
 		Gridlines gridlines = Gridlines.create();
 		gridlines.setColor(gridlineColor);
