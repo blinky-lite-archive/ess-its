@@ -78,6 +78,7 @@ public class EntryPointApp implements EntryPoint
 			for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
 			{
 				entryPointApp.getSetup().addPanel(entryPointApp.getByteGearBoxData()[ii].getByteGearBoxDataPanel(), entryPointApp.getByteGearBoxData()[ii].getByteGearBoxGwt().getTopic());
+				entryPointApp.getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 1).getParent().setVisible(false);
 			}
 		}
 		

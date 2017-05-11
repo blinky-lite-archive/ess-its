@@ -91,7 +91,7 @@ public class StateButtonPanel extends CaptionPanel
 			this.initStyleName = initStyleName;
 			button = new Button(title);
 			button.setStyleName(initStyleName);
-			button.setSize("7.0em", "2.0em");
+			button.setSize("8.0em", "2.0em");
 			button.setEnabled(stateButtonPanel.settingsEnabled);
 //			button.setEnabled(false);
 			button.addClickHandler(this);
@@ -234,4 +234,5 @@ public class StateButtonPanel extends CaptionPanel
 			}
 			
 		}
-	}}
+	}
+}
