@@ -18,9 +18,9 @@ public class ItsCernModulatorIoc extends IceCubeTcpIoc
 	private int numReadbackBytes = 118;
 	private int numWaveformBytes = 3600;
 
-	public ItsCernModulatorIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber) throws Exception 
+	public ItsCernModulatorIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, inetAddress, portNumber);
+		super(clientId, mqttBrokerInfoFilePath, inetAddress, portNumber, keepAliveInterval);
 		setByteDevice = new ByteDeviceList(cernmodSettingUrl);
 		readByteDevice = new ByteDeviceList(cernmodReadingUrl);
 	}
@@ -169,14 +169,9 @@ public class ItsCernModulatorIoc extends IceCubeTcpIoc
 
 		}
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsCernModulatorIoc ioc = new ItsCernModulatorIoc("itsCernModIoc", "itsmqttbroker.dat", "192.168.5.4", 8000);
+		ItsCernModulatorIoc ioc = new ItsCernModulatorIoc("itsCernModIoc", "itsmqttbroker.dat", "192.168.5.4", 8000, 30);
 		ioc.setPeriodicPollPeriodmillis(1000);
 		ioc.startIoc("itsCernMod/set/#", "itsCernMod/get/mod");
 	}

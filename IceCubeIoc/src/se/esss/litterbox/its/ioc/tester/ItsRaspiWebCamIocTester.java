@@ -6,9 +6,9 @@ import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
 public class ItsRaspiWebCamIocTester extends SimpleMqttClient
 {
-	public ItsRaspiWebCamIocTester(String clientId, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception 
+	public ItsRaspiWebCamIocTester(String clientId, String mqttBrokerInfoFilePath, boolean cleanSession, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, cleanSession);
+		super(clientId, mqttBrokerInfoFilePath, cleanSession, keepAliveInterval);
 		// TODO Auto-generated constructor stub
 	}
 	@Override
@@ -25,7 +25,7 @@ public class ItsRaspiWebCamIocTester extends SimpleMqttClient
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
-		ItsRaspiWebCamIocTester iocTest = new ItsRaspiWebCamIocTester("itsRaspiWebCamIocTester", "../itsmqtttestbroker.dat", false);
+		ItsRaspiWebCamIocTester iocTest = new ItsRaspiWebCamIocTester("itsRaspiWebCamIocTester", "../itsmqtttestbroker.dat", false, 30);
 		boolean retained = true;
 		JSONObject outputData = new JSONObject();
 		outputData.put("width", "800");

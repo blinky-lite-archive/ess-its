@@ -9,9 +9,9 @@ public abstract class IceCubeSerialIoc extends IceCubePeriodicPollIoc
 	private SerialReadWrite serialReadWrite;
 
 
-	public IceCubeSerialIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
+	public IceCubeSerialIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath);
+		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
 		serialReadWrite = new SerialReadWrite(serialPortName);
 	}
 	public String writeReadSerialData(String command, int timeoutsecs)

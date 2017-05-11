@@ -15,9 +15,9 @@ public abstract class IceCubeTcpIoc extends IceCubePeriodicPollIoc
 	ServerSocket serverSocket;
 	Socket clientSocket;
 
-	public IceCubeTcpIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber) throws Exception 
+	public IceCubeTcpIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath);
+		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
 		InetAddress addr = InetAddress.getByName(inetAddress);
 		setStatus("Waiting for client to accept...");
 		serverSocket = new ServerSocket(portNumber, 20, addr);

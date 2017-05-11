@@ -13,12 +13,13 @@ public abstract class IceCubePeriodicPollIoc extends SimpleMqttClient implements
 	private int subscribeQos = 0;
 	private int publishQos = 0;
 	private boolean cleanSession = false;
-	private boolean runPeriodicPoll = false;
+	private boolean runPeriodicPoll = true;
 	private int periodicPollPeriodmillis = 1000;
 	private String publishTopic;
 	private boolean newIncomingMessage = false;
 	private String incomingMessageTopic;
 	private byte[] incomingMessage;
+	private Thread pollThread;
 
 	public int getPublishQos() {return publishQos;}
 	public int getSubscribeQos() {return subscribeQos;}
@@ -30,9 +31,9 @@ public abstract class IceCubePeriodicPollIoc extends SimpleMqttClient implements
 	public void setPublishTopic(String publishTopic) {this.publishTopic = publishTopic;}
 	public void setPeriodicPollPeriodmillis(int periodicPollPeriodmillis) {this.periodicPollPeriodmillis = periodicPollPeriodmillis;}
 
-	public IceCubePeriodicPollIoc(String clientId, String mqttBrokerInfoFilePath) throws Exception 
+	public IceCubePeriodicPollIoc(String clientId, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, false);
+		super(clientId, mqttBrokerInfoFilePath, false, keepAliveInterval);
 		cleanSession = false;
 	}
 	public void startIoc(String subscribeTopic, String publishTopic) throws Exception
@@ -40,8 +41,9 @@ public abstract class IceCubePeriodicPollIoc extends SimpleMqttClient implements
 		this.setPublishTopic(publishTopic);
     	subscribe(subscribeTopic, getSubscribeQos());
 		setStatus("Ready for messages");
-		new Thread(this).start();
 		runPeriodicPoll = true;
+		pollThread = new Thread(this);
+		pollThread.start();
 	}
 	public abstract byte[] getDataFromGizmo();
 	public abstract void handleBrokerMqttMessage(String topic, byte[] message);
@@ -56,18 +58,33 @@ public abstract class IceCubePeriodicPollIoc extends SimpleMqttClient implements
 	@Override
 	public void run() 
 	{
-		while(runPeriodicPoll)
+		while(true)
 		{
 			try {Thread.sleep((long)periodicPollPeriodmillis);} catch (InterruptedException e) {}
-			byte[] gizmoData = getDataFromGizmo();
-			if (gizmoData != null)
-				try {publishMessage(publishTopic, gizmoData, publishQos, true);} catch (Exception e) {}
-			if (newIncomingMessage)
+			if (runPeriodicPoll)
 			{
-				handleBrokerMqttMessage(incomingMessageTopic, incomingMessage);
-				newIncomingMessage = false;
+				byte[] gizmoData = getDataFromGizmo();
+				if (gizmoData != null)
+					try {publishMessage(publishTopic, gizmoData, publishQos, true);} catch (Exception e) {}
+				if (newIncomingMessage)
+				{
+					handleBrokerMqttMessage(incomingMessageTopic, incomingMessage);
+					newIncomingMessage = false;
+				}
 			}
 		}
+	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		try 
+		{
+			setStatus("Stopping periodic poll...");
+			runPeriodicPoll = false;
+			reconnect();
+			runPeriodicPoll = true;
+			setStatus("Starting periodic poll...");
+		} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
 	}
 	public String[] runExternalProcess(String command, boolean linux, boolean getInfo) throws Exception 
 	{

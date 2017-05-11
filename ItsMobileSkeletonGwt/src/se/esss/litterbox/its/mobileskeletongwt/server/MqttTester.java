@@ -11,7 +11,7 @@ public class MqttTester  extends SimpleMqttClient
 {
 	public MqttTester(String clientIdBase, String mqttBrokerInfoFilePath) throws Exception 
 	{
-		super(clientIdBase, mqttBrokerInfoFilePath, false);
+		super(clientIdBase, mqttBrokerInfoFilePath, false, 30);
 	}
 	@Override
 	public void connectionLost(Throwable arg0) {}

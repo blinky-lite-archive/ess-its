@@ -9,9 +9,9 @@ import se.esss.litterbox.icecube.simplemqtt.SimpleMqttClient;
 
 public class IceCubeIocTester  extends SimpleMqttClient
 {
-	public IceCubeIocTester(String clientIdBase, String mqttBrokerInfoFilePath) throws Exception 
+	public IceCubeIocTester(String clientIdBase, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
-		super(clientIdBase, mqttBrokerInfoFilePath, false);
+		super(clientIdBase, mqttBrokerInfoFilePath, false, keepAliveInterval);
 	}
 	@Override
 	public void connectionLost(Throwable arg0) {}
@@ -39,7 +39,7 @@ public class IceCubeIocTester  extends SimpleMqttClient
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
-		IceCubeIocTester ioCtester = new IceCubeIocTester("ItsIocTester", "itsmqttbroker.dat");
+		IceCubeIocTester ioCtester = new IceCubeIocTester("ItsIocTester", "itsmqttbroker.dat", 1);
 
 		boolean retained = true;
 		JSONObject outputData = new JSONObject();
@@ -73,8 +73,8 @@ public class IceCubeIocTester  extends SimpleMqttClient
 		outputData.put("rfPowLvl", "2.5");
 		ioCtester.publishMessage("itsRfSigGen01/set/rf", outputData.toJSONString().getBytes(), 0, retained);
 		
-		Thread.sleep(3000);
-		System.exit(0);
+//		Thread.sleep(3000);
+//		System.exit(0);
 		
 	}
 

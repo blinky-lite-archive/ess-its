@@ -8,9 +8,9 @@ import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 
 public class ItsGeigerIoc extends IceCubeSerialIoc
 {
-	public ItsGeigerIoc(String domain, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
+	public ItsGeigerIoc(String domain, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(domain, mqttBrokerInfoFilePath, serialPortName);
+		super(domain, mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
 	}
 	@Override
 	public byte[] getDataFromGizmo() 
@@ -36,14 +36,9 @@ public class ItsGeigerIoc extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsGeigerIoc ioc = new ItsGeigerIoc("itsGeiger01Ioc",  "itsmqttbroker.dat", "/dev/rfcomm1");
+		ItsGeigerIoc ioc = new ItsGeigerIoc("itsGeiger01Ioc",  "itsmqttbroker.dat", "/dev/rfcomm1", 30);
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsGeiger01/set/#", "itsGeiger01/get/cpm");
 	}

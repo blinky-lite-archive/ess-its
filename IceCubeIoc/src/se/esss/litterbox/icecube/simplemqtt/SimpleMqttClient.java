@@ -36,7 +36,9 @@ public abstract class SimpleMqttClient implements MqttCallback
 	private String baseStatusTabby = "\t";
 	private CountDownLatch disconnectLatch = new CountDownLatch(0);
 	private ArrayList<MqttMessageInfo> mqttMessageInfoSubscribeList;
+	private int keepAliveInterval = 30;
 
+	public int getKeepAliveInterval() {return keepAliveInterval;}
 	public String getClientId() {return clientId;}
 	public PrintStream getStatusPrintStream() {return statusPrintStream;}
 	public int getNoBaseStatusTabs() {return noBaseStatusTabs;}
@@ -46,6 +48,7 @@ public abstract class SimpleMqttClient implements MqttCallback
 	public void setPrintStatus(boolean printStatus) {this.printStatus = printStatus;}
 	public void setStatusPrintStream(PrintStream statusPrintStream) {this.statusPrintStream = statusPrintStream;}
 	public void setCleanSession(boolean cleanSession) {this.cleanSession = cleanSession;}
+	public void setKeepAliveInterval(int keepAliveInterval) {this.keepAliveInterval = keepAliveInterval;}
 	public void setNoBaseStatusTabs(int noBaseStatusTabs) 
 	{
 		this.noBaseStatusTabs = noBaseStatusTabs;
@@ -53,17 +56,18 @@ public abstract class SimpleMqttClient implements MqttCallback
 		if (noBaseStatusTabs > 0) for (int ii = 0; ii < noBaseStatusTabs; ++ii) baseStatusTabby = baseStatusTabby + "\t";
 	}
 
-	public SimpleMqttClient(String clientId, String brokerUrl, String brokerKey, String brokerSecret, boolean cleanSession) throws Exception
+	public SimpleMqttClient(String clientId, String brokerUrl, String brokerKey, String brokerSecret, boolean cleanSession, int keepAliveInterval) throws Exception
 	{
 		this.brokerUrl = brokerUrl;
 		this.brokerKey = brokerKey;
 		this.brokerSecret = brokerSecret;
 		this.clientId = clientId; 
 		this.cleanSession = cleanSession;
+		this.keepAliveInterval = keepAliveInterval; 
 		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();
 		connect();
 	}
-	public SimpleMqttClient(String clientId, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception
+	public SimpleMqttClient(String clientId, String mqttBrokerInfoFilePath, boolean cleanSession, int keepAliveInterval) throws Exception
 	{
 	    InputStream fis = new FileInputStream(mqttBrokerInfoFilePath);
 	    InputStreamReader isr = new InputStreamReader(fis);
@@ -76,6 +80,7 @@ public abstract class SimpleMqttClient implements MqttCallback
 		this.brokerSecret = (String) mqttdata.get("secret");
 		this.clientId = clientId; 
 		this.cleanSession = cleanSession;
+		this.keepAliveInterval = keepAliveInterval; 
 		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();
 		connect();
 	}
@@ -89,7 +94,7 @@ public abstract class SimpleMqttClient implements MqttCallback
 		MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
 		
 		mqttConnectOptions.setCleanSession(cleanSession);
-		mqttConnectOptions.setKeepAliveInterval(30);
+		mqttConnectOptions.setKeepAliveInterval(keepAliveInterval);
 		mqttConnectOptions.setUserName(brokerKey);
 		mqttConnectOptions.setPassword(brokerSecret.toCharArray());
 
@@ -135,14 +140,19 @@ public abstract class SimpleMqttClient implements MqttCallback
 	{
 		return mqttClient.isConnected();
 	}
-	public void reconnect() throws Exception 
+	public void reconnect()  throws Exception
 	{
-		Thread.sleep(5000);
-		connect();
+		while(!isConnected())
+		{
+			Thread.sleep(2000);
+			setStatus("Trying to reconnect...");
+			try {connect();} catch (Exception e) {}
+		}
 		if (mqttMessageInfoSubscribeList.size() > 0)
 		{
 			for (int ii = 0; ii < mqttMessageInfoSubscribeList.size(); ++ii)
 			{
+				setStatus("Resubscribing to: " + mqttMessageInfoSubscribeList.get(ii).getTopicString());
 				mqttClient.subscribe(mqttMessageInfoSubscribeList.get(ii).getTopicString(), mqttMessageInfoSubscribeList.get(ii).getQos());
 			}
 		}

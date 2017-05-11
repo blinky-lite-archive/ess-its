@@ -18,9 +18,9 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	private Socket getSocket() {return socket;}
 	private ArrayList<byte[]> writeMessageBuffer = new ArrayList<byte[]>();
 
-	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxUrl, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath) throws Exception 
+	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxUrl, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath);
+		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
 		byteGearBox = new ByteGearBox(new URL(byteGearBoxUrl));
 		writeMessageBuffer.add(byteGearBox.getWriteData());
 		this.socket = new Socket( gizmoInetAddress, gizmoPortNumber);
@@ -37,26 +37,26 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	{
 	    InputStream in = getSocket().getInputStream();
 	    DataInputStream dis = new DataInputStream(in);
-/*	    byte[] data = new byte[len];
+	    byte[] data = new byte[len];
 	    for (int ii = 0; ii < len; ++ii) data[ii] = 0;
 	    int icount = 0;
-		setStatus(icount + "\tlen" + len);
+//		setStatus(icount + "\tlen" + len);
 	    try
 	    {
 		    while (icount < len)
 		    {
 		    	data[icount] = dis.readByte();
-				setStatus(icount + "\t" + data[icount]);
+//				setStatus(icount + "\t" + data[icount]);
 		    	++icount;
 		    }
 	    } catch (Exception e)
 	    {
 	    	setStatus(e.getMessage());
 	    } 	    
-	    printReadData(data);
+//	    printReadData(data);
 	    return data;
-*/	    
-	    byte[] data = new byte[len];
+	    
+/*	    byte[] data = new byte[len];
 	    int numBytes = dis.read(data);
 	    byte[] readData = new byte[numBytes];
 	    for (int ii = 0; ii < numBytes; ++ii) 
@@ -65,7 +65,7 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	    }
 	    byteGearBox.setReadData(readData);
 	    return readData;
-
+*/
 	}
 	public void printReadData(byte[] data) throws Exception
 	{

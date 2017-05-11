@@ -94,7 +94,7 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		boolean reconnectOk = true;
 		public ByteGearBoxServiceImpClient(ByteGearBoxServiceImpl byteGearBoxServiceImpl, String clientId, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception 
 		{
-			super(clientId, mqttBrokerInfoFilePath, cleanSession);
+			super(clientId, mqttBrokerInfoFilePath, cleanSession, 30);
 			this.byteGearBoxServiceImpl = byteGearBoxServiceImpl; 
 		}
 		@Override

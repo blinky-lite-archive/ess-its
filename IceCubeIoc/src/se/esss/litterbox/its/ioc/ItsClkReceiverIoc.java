@@ -9,9 +9,9 @@ import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 {
 
-	public ItsClkReceiverIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
+	public ItsClkReceiverIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, serialPortName);
+		super(clientId, mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
 	}
 	@Override
 	public byte[] getDataFromGizmo() 
@@ -56,11 +56,6 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	public static void main(String[] args) throws Exception 
 	{
 		if (args.length != 1)
@@ -69,7 +64,7 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			System.exit(1);
 		}
 		String mainTopic = args[0];
-		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc(mainTopic + "Ioc", "itsmqttbroker.dat", "/dev/ttyACM0");
+		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc(mainTopic + "Ioc", "itsmqttbroker.dat", "/dev/ttyACM0", 30);
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc(mainTopic + "/set/#", mainTopic + "/get/signal");
 	}

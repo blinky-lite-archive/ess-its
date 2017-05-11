@@ -8,9 +8,9 @@ import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 
 public class ItsSolarMeterIoc extends IceCubeSerialIoc
 {
-	public ItsSolarMeterIoc(String domain, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
+	public ItsSolarMeterIoc(String domain, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(domain, mqttBrokerInfoFilePath, serialPortName);
+		super(domain, mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
 	}
 	@Override
 	public byte[] getDataFromGizmo() 
@@ -53,14 +53,9 @@ public class ItsSolarMeterIoc extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "itsmqttbroker.dat", "/dev/rfcomm3");
+		ItsSolarMeterIoc ioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "itsmqttbroker.dat", "/dev/rfcomm3", 30);
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsSolarMeter01/set/#", "itsSolarMeter01/get/cond");
 	}

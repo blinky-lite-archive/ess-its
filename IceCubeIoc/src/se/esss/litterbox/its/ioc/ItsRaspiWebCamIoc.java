@@ -19,9 +19,9 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 	String mainTopic = "";
 	private long imageCounter = 0;
 
-	public ItsRaspiWebCamIoc(String clientId, String mainTopic, String mqttBrokerInfoFilePath) throws Exception 
+	public ItsRaspiWebCamIoc(String clientId, String mainTopic, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath);
+		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
 		this.mainTopic = mainTopic;
 	}
 	@SuppressWarnings("unchecked")
@@ -86,18 +86,13 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 		}
 		
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
 		String iocName = "ItsIceCube08CamIoc";	//args[0];
 		String mainTopic = "itsIceCube08Cam";	//args[1];
 		int periodicPoll = 5000;	//Integer.parseInt(args[2]);
-		ItsRaspiWebCamIoc ioc = new ItsRaspiWebCamIoc(iocName, mainTopic, "itsmqttbroker.dat");
+		ItsRaspiWebCamIoc ioc = new ItsRaspiWebCamIoc(iocName, mainTopic, "itsmqttbroker.dat", 30);
 		ioc.setPeriodicPollPeriodmillis(periodicPoll);
 		ioc.startIoc(mainTopic + "/set", mainTopic + "/image/jpg");
 		

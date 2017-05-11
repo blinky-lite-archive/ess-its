@@ -5,9 +5,9 @@ public class ItsEnvMonIoc
 
 	public static void main(String[] args) throws Exception 
 	{
-		ItsGeigerIoc gioc = new ItsGeigerIoc("itsGeiger01Ioc", "itsmqttbroker.dat", "/dev/rfcomm1");
+		ItsGeigerIoc gioc = new ItsGeigerIoc("itsGeiger01Ioc", "itsmqttbroker.dat", "/dev/rfcomm1", 30);
 //		ItsDht11Ioc dioc = new ItsDht11Ioc("itsDht1101Ioc", "itsmqttbroker.dat", "/dev/rfcomm2");
-		ItsSolarMeterIoc sioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "itsmqttbroker.dat", "/dev/rfcomm3");
+		ItsSolarMeterIoc sioc = new ItsSolarMeterIoc("itsSolarMeter01Ioc", "itsmqttbroker.dat", "/dev/rfcomm3", 30);
 
 		gioc.setPeriodicPollPeriodmillis(2000);
 //		dioc.setPeriodicPollPeriodmillis(2000);

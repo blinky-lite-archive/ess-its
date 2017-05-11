@@ -9,9 +9,9 @@ import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 public class ItsClkTransmitterIoc extends IceCubeSerialIoc
 {
 
-	public ItsClkTransmitterIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
+	public ItsClkTransmitterIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, serialPortName);
+		super(clientId, mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
 		// TODO Auto-generated constructor stub
 	}
 	@Override
@@ -58,14 +58,9 @@ public class ItsClkTransmitterIoc extends IceCubeSerialIoc
 			catch (ParseException nfe) {}
 		}
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsClkTransmitterIoc ioc = new ItsClkTransmitterIoc("itsClkTrans01Ioc", "itsmqttbroker.dat", "/dev/ttyACM0");
+		ItsClkTransmitterIoc ioc = new ItsClkTransmitterIoc("itsClkTrans01Ioc", "itsmqttbroker.dat", "/dev/ttyACM0", 30);
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsClkTrans01/set/#", "itsClkTrans01/get/");
 	}

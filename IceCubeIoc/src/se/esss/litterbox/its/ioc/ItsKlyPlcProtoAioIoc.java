@@ -6,15 +6,10 @@ public class ItsKlyPlcProtoAioIoc extends ItsByteGearBoxIoc
 {
 
 	public ItsKlyPlcProtoAioIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxUrl,
-			String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath)
+			String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval)
 			throws Exception 
 	{
-		super(clientId, periodicPollPeriodmillis, byteGearBoxUrl, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath);
-	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
+		super(clientId, periodicPollPeriodmillis, byteGearBoxUrl, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, keepAliveInterval);
 	}
 	public static void main(String[] args) throws Exception 
 	{
@@ -24,7 +19,7 @@ public class ItsKlyPlcProtoAioIoc extends ItsByteGearBoxIoc
 		String gizmoInetAddress = "192.168.1.65";
 		int gizmoPortNumber = 3001;
 		String mqttBrokerInfoFilePath = "itsmqttbroker.dat";
-		new ItsKlyPlcProtoAioIoc(iocName, periodicPollPeriodmillis, byteGearBoxUrl, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath);
+		new ItsKlyPlcProtoAioIoc(iocName, periodicPollPeriodmillis, byteGearBoxUrl, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 30);
 	}
 
 

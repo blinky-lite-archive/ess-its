@@ -10,12 +10,12 @@ public class MqttServiceImpClient extends SimpleMqttClient
 	
 	public MqttServiceImpClient(MqttServiceImpl mqttServiceImpl, String clientIdBase, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception 
 	{
-		super(clientIdBase, mqttBrokerInfoFilePath, cleanSession);
+		super(clientIdBase, mqttBrokerInfoFilePath, cleanSession, 30);
 		this.mqttServiceImpl = mqttServiceImpl;
 	}
 	public MqttServiceImpClient(MqttServiceImpl mqttServiceImpl, String clientId, String brokerUrl, String brokerKey, String brokerSecret, boolean cleanSession) throws Exception 
 	{
-		super(clientId, brokerUrl, brokerKey,brokerSecret, cleanSession);
+		super(clientId, brokerUrl, brokerKey,brokerSecret, cleanSession, 30);
 		this.mqttServiceImpl = mqttServiceImpl;
 	}
 

@@ -6,9 +6,9 @@ import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 
 public class ItsDht11Ioc extends IceCubeSerialIoc
 {
-	public ItsDht11Ioc(String clientId, String mqttBrokerInfoFilePath, String serialPortName) throws Exception 
+	public ItsDht11Ioc(String clientId, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, serialPortName);
+		super(clientId, mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
 	}
 	@Override
 	public byte[] getDataFromGizmo() 
@@ -26,14 +26,9 @@ public class ItsDht11Ioc extends IceCubeSerialIoc
 	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
 	}
-	@Override
-	public void lostMqttConnection(Throwable arg0) 
-	{
-		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
-	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsDht11Ioc ioc = new ItsDht11Ioc("itsDht1101Ioc", "itsmqttbroker.dat", "/dev/rfcomm2");
+		ItsDht11Ioc ioc = new ItsDht11Ioc("itsDht1101Ioc", "itsmqttbroker.dat", "/dev/rfcomm2", 30);
 		ioc.setPeriodicPollPeriodmillis(2000);
 		ioc.startIoc("itsDht1101/set/#", "itsDht1101/get/cond");
 	}

@@ -13,9 +13,9 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 	URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
 	ByteDeviceList setByteDevice;
 	ByteDeviceList readByteDevice;
-	public ItsCernModulatorTester(String clientId, String mqttBrokerInfoFilePath) throws Exception 
+	public ItsCernModulatorTester(String clientId, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, false);
+		super(clientId, mqttBrokerInfoFilePath, false, keepAliveInterval);
 		setByteDevice = new ByteDeviceList(cernmodSettingUrl);
 		readByteDevice = new ByteDeviceList(cernmodReadingUrl);
 	}
@@ -81,7 +81,7 @@ public class ItsCernModulatorTester extends SimpleMqttClient
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsCernModulatorTester bigBlue = new ItsCernModulatorTester("ItsCernModTester", "itsmqttbroker.dat");
+		ItsCernModulatorTester bigBlue = new ItsCernModulatorTester("ItsCernModTester", "itsmqttbroker.dat", 30);
 		
 		bigBlue.setByteDevice.getDevice("cathode voltage").setValue("40.0");
 		bigBlue.setByteDevice.getDevice("trigger pulsewidth").setValue("2800");
