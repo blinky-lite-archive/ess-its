@@ -6,6 +6,7 @@ public class MqttServiceImpClient extends SimpleMqttClient
 {
 
 	MqttServiceImpl mqttServiceImpl;
+	boolean reconnectOk = true;
 	
 	public MqttServiceImpClient(MqttServiceImpl mqttServiceImpl, String clientIdBase, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception 
 	{
@@ -22,6 +23,20 @@ public class MqttServiceImpClient extends SimpleMqttClient
 	public void newMessage(String topic, byte[] message) 
 	{
 		mqttServiceImpl.setMessage(topic, message);
+	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		if (!reconnectOk)
+		{
+			try 
+			{
+				unsubscribeAll();
+				disconnect();
+				return;
+			} catch (Exception e) {setStatus("Error on disconnect: " + arg0.getMessage());}
+		}
+		try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
 	}
 
 }

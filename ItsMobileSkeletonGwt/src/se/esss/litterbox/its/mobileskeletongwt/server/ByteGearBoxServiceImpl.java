@@ -1,6 +1,7 @@
 package se.esss.litterbox.its.mobileskeletongwt.server;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -21,10 +22,11 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	ByteGearBoxServiceImpClient byteGearBoxServiceImpClient;
 	ByteGearBox[] byteGearBox;
 	String[] gearBoxUrls = {
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoCpu.json",
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoAio.json",
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoDio.json",
-			"https://aig.esss.lu.se:8443/ItsByteGearBoxServer/gearbox/klyPlcProtoPsu.json"};
+			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json",
+			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoAio.json",
+			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoDio.json",
+			"https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoPsu.json"};
+
 
 	public void init()
 	{
@@ -33,12 +35,10 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		{
 			boolean cleanSession = false;
 			int subscribeQos = 0;
-			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsMobileSkeletonWebApp", getMqttDataPath(), cleanSession);
-			String itsnetWebLoginInfo = getItsnetWebLoginInfoPath();
+			byteGearBoxServiceImpClient = new ByteGearBoxServiceImpClient(this, "ItsMobileSkeletonGearBoxServ", getMqttDataPath(), cleanSession);
 			for (int ii = 0; ii < gearBoxUrls.length; ++ii)
 			{
-//				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]));
-				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]), itsnetWebLoginInfo);
+				byteGearBox[ii] = new ByteGearBox(new URL(gearBoxUrls[ii]));
 				byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/set", subscribeQos);
 				byteGearBoxServiceImpClient.subscribe(byteGearBox[ii].getTopic() + "/get", subscribeQos);
 			}
@@ -50,7 +50,17 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	}
 	public void destroy()
 	{
-		
+		try 
+		{
+			byteGearBoxServiceImpClient.reconnectOk = false;
+			byteGearBoxServiceImpClient.unsubscribeAll();
+			byteGearBoxServiceImpClient.disconnect();
+			System.out.println("Ending ItsByteGearBoxServerWebApp");
+		} catch (Exception e) 
+		{
+			System.out.println("Error: " + e.getMessage());
+
+		}
 	}
 	private String getMqttDataPath() throws Exception
 	{
@@ -58,14 +68,6 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		tmpFile = new File(tmpFile.getParent());
 		tmpFile = new File(tmpFile.getParent());
 		return tmpFile.getPath() + "/itsmqttbroker.dat";
-		
-	}
-	public String getItsnetWebLoginInfoPath() throws Exception
-	{
-		File tmpFile = new File(getServletContext().getRealPath("./"));
-		tmpFile = new File(tmpFile.getParent());
-		tmpFile = new File(tmpFile.getParent());
-		return tmpFile.getPath() + "/itsnetWebLoginInfo.dat";
 		
 	}
 	public void setMessage(String topic, byte[] message)
@@ -76,20 +78,51 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 			{
 				if (topic.indexOf("/set") >= 0)
 				{
-					byteGearBox[ii].setWriteData(message);
+					int numWriteMessages = message.length / byteGearBox[ii].getWriteByteLength();
+					byte[] lastMessage = new byte[byteGearBox[ii].getWriteByteLength()];
+					for (int ij = 0; ij < byteGearBox[ii].getWriteByteLength(); ++ij)
+					{
+						lastMessage[ij] = message[ij + byteGearBox[ii].getWriteByteLength() * (numWriteMessages - 1)];
+					}
+					byteGearBox[ii].setWriteData(lastMessage);
 					return;
 				}
 				if (topic.indexOf("/get") >= 0)
 				{
-					byteGearBox[ii].setReadData(message);
+					int numReadMessages = message.length / byteGearBox[ii].getReadByteLength();
+					byte[] lastMessage = new byte[byteGearBox[ii].getReadByteLength()];
+					for (int ij = 0; ij < byteGearBox[ii].getReadByteLength(); ++ij)
+					{
+						lastMessage[ij] = message[ij + byteGearBox[ii].getReadByteLength() * (numReadMessages - 1)];
+					}
+					byteGearBox[ii].setReadData(lastMessage);
 					return;
 				}
 			}
 		}
 	}
+	public void printReadData(byte[] data, String topic, ByteGearBox byteGearBox) throws Exception
+	{
+		System.out.println("Printing " + getServletContext().getRealPath("/") + topic + "ReadData.out");
+		PrintWriter pw = new PrintWriter(getServletContext().getRealPath("/") + topic + "ReadData.out");
+		for (int ii = 0; ii < data.length; ++ii)
+		{
+			pw.println("(" + ii + ",\t" + data[ii] + ")\t");
+		}
+		pw.println();
+		byteGearBox.setReadData(data);
+		String[] readDataStringArray = byteGearBox.printReadData();
+		for (int ii = 0; ii < readDataStringArray.length; ++ii)
+		{
+			pw.println(readDataStringArray[ii]);
+		}
+		
+		pw.close();
+	}
 	static class ByteGearBoxServiceImpClient extends SimpleMqttClient
 	{
 		ByteGearBoxServiceImpl byteGearBoxServiceImpl;
+		boolean reconnectOk = true;
 		public ByteGearBoxServiceImpClient(ByteGearBoxServiceImpl byteGearBoxServiceImpl, String clientId, String mqttBrokerInfoFilePath, boolean cleanSession) throws Exception 
 		{
 			super(clientId, mqttBrokerInfoFilePath, cleanSession);
@@ -99,6 +132,20 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 		public void newMessage(String topic, byte[] message) 
 		{
 			byteGearBoxServiceImpl.setMessage(topic, message);
+		}
+		@Override
+		public void lostMqttConnection(Throwable arg0) 
+		{
+			if (!reconnectOk)
+			{
+				try 
+				{
+					unsubscribeAll();
+					disconnect();
+					return;
+				} catch (Exception e) {setStatus("Error on disconnect: " + arg0.getMessage());}
+			}
+			try {reconnect();} catch (Exception e) {setStatus("Error on reconnect: " + arg0.getMessage());}
 		}
 	}
 	private static ByteToothGwt convertByteTooth(ByteTooth byteTooth)
@@ -151,7 +198,10 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	{
 		ByteGearBoxGwt[] byteGearBoxGwt = new ByteGearBoxGwt[byteGearBox.length];
 		for (int ii = 0; ii < byteGearBox.length; ++ii)
+		{
 			byteGearBoxGwt[ii] = convertByteGearBox(byteGearBox[ii]);
+
+		}
 		return byteGearBoxGwt;
 	}
 	@Override
@@ -249,6 +299,7 @@ public class ByteGearBoxServiceImpl extends RemoteServiceServlet implements Byte
 	{
 		if (!settingsEnabled) throw new Exception("Settings to Mqtt Broker are not permitted");
 		byteGearBoxServiceImpClient.publishMessage(topic, message, 0, true);
+		Thread.sleep(5000);
 		return "ok";
 	}
 

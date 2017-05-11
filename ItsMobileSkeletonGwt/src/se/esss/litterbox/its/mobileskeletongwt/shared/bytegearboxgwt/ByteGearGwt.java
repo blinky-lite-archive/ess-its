@@ -61,7 +61,7 @@ public class ByteGearGwt implements Serializable
 	{
 		for (int ii = 0; ii < readToothList.size(); ++ii)
 		{
-			readToothList.get(ii).getData(byteArray, writeOffset);
+			readToothList.get(ii).getData(byteArray, readOffset);
 		}
 	}
 	public void getWriteData(byte[] byteArray) 

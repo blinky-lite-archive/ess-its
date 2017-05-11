@@ -53,5 +53,11 @@ public class MqttTester  extends SimpleMqttClient
 		
 		
 	}
+	@Override
+	public void lostMqttConnection(Throwable arg0) 
+	{
+		// TODO Auto-generated method stub
+		
+	}
 
 }

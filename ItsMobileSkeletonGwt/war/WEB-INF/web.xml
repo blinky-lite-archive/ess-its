@@ -9,19 +9,21 @@
   <servlet>
     <servlet-name>entrypointappServlet</servlet-name>
     <servlet-class>se.esss.litterbox.its.mobileskeletongwt.server.EntryPointAppServiceImpl</servlet-class>
-    <!--     <load-on-startup /> -->
+   <!--     <load-on-startup /> -->
   </servlet>
   
   <servlet>
     <servlet-name>mqttServlet</servlet-name>
     <servlet-class>se.esss.litterbox.its.mobileskeletongwt.server.MqttServiceImpl</servlet-class>
     <!--     <load-on-startup /> -->
+    <load-on-startup /> 
   </servlet>
   
   <servlet>
     <servlet-name>bytegearboxServlet</servlet-name>
     <servlet-class>se.esss.litterbox.its.mobileskeletongwt.server.ByteGearBoxServiceImpl</servlet-class>
     <!--     <load-on-startup /> -->
+    <load-on-startup /> 
   </servlet>
   
   <servlet-mapping>
@@ -37,7 +39,6 @@
     <url-pattern>/mobileskeletongwt/bytegearbox</url-pattern>
   </servlet-mapping>
   
-  
   <filter>
 	<filter-name>gwtCacheControlFilter</filter-name>
 	<filter-class>se.esss.litterbox.its.mobileskeletongwt.server.GWTCacheControlFilter</filter-class>
@@ -52,24 +53,5 @@
   <welcome-file-list>
     <welcome-file>ItsMobileSkeletonGwt.html</welcome-file>
   </welcome-file-list>
-  
-  <security-constraint>
-      <web-resource-collection>
-          <web-resource-name>*</web-resource-name>
-          <url-pattern>/*</url-pattern>
-          <http-method>GET</http-method>
-          <http-method>POST</http-method>
-      </web-resource-collection>
-      <auth-constraint>
-          <role-name>webAppSettingsPermitted</role-name>
-          <role-name>webAppViewOnly</role-name>
-      </auth-constraint>
-      <user-data-constraint>
-          <transport-guarantee>NONE</transport-guarantee>
-      </user-data-constraint>
-	</security-constraint>
-	<login-config>
-		<auth-method>BASIC</auth-method>
-	</login-config>
-  
+
 </web-app>

@@ -28,7 +28,7 @@ public class MqttServiceImpl extends RemoteServiceServlet implements MqttService
 		messages = new byte[topics.length][];
 		try 
 		{
-			mqttClient = new MqttServiceImpClient(this, "ItsMobileSkeletonWebApp", getMqttDataPath(), cleanSession);
+			mqttClient = new MqttServiceImpClient(this, "ItsMobileSkeletonMqTTServ", getMqttDataPath(), cleanSession);
 			for (int ii = 0; ii < topics.length; ++ii)
 			{	
 				messages[ii] = "noData".getBytes();
