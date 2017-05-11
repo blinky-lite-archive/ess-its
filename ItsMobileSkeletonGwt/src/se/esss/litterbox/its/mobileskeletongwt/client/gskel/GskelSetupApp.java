@@ -25,9 +25,9 @@ public class GskelSetupApp
 	private GskelMessageDialog messageDialog;
 	private GskelFrameDialog frameDialog;
 	private boolean mobile = false;
-	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
 	private final EntryPointAppServiceAsync entryPointAppService = GWT.create(EntryPointAppService.class);
 	private final ByteGearBoxServiceAsync byteGearBoxService = GWT.create(ByteGearBoxService.class);
+	private final MqttServiceAsync mqttService = GWT.create(MqttService.class);
 	private boolean settingsPermitted;
 	private VerticalPanel mainVerticalPanel = new VerticalPanel();
 	private HorizontalPanel titlePanel = new HorizontalPanel();
@@ -42,9 +42,9 @@ public class GskelSetupApp
 	public GskelMessageDialog getMessageDialog() {return messageDialog;}
 	public GskelFrameDialog getFrameDialog() {return frameDialog;}
 	public GskelTabLayoutPanel getGskelTabLayoutPanel() {return gskelTabLayoutPanel;}
-	public MqttServiceAsync getMqttService() {return mqttService;}
 	public EntryPointAppServiceAsync getEntryPointAppService() {return entryPointAppService;}
 	public ByteGearBoxServiceAsync getByteGearBoxService() {return byteGearBoxService;}
+	public MqttServiceAsync getMqttService() {return mqttService;}
 	public boolean isSettingsPermitted() {return settingsPermitted;}
 	public HorizontalPanel getTitlePanel() {return titlePanel;}
 // Setters
