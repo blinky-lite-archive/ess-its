@@ -8,7 +8,9 @@ import com.google.gwt.user.client.ui.Label;
 
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxData;
 import se.esss.litterbox.its.toshibagwt.client.callbacks.CheckIpAddresslAsyncCallback;
+import se.esss.litterbox.its.toshibagwt.client.contentpanels.PlotterPanel;
 import se.esss.litterbox.its.toshibagwt.client.contentpanels.SummaryPanel;
+import se.esss.litterbox.its.toshibagwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.toshibagwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteGearBoxGwt;
 
@@ -56,6 +58,19 @@ public class EntryPointApp implements EntryPoint
 		}
 		throw new Exception("ByteGearBoxData topic " + topic + " not found");
 	}
+	void loadGearBoxDataPanels()
+	{
+		for (int ii = 0; ii < getByteGearBoxData().length; ++ii)
+		{
+			getSetup().addPanel(getByteGearBoxData()[ii].getByteGearBoxDataPanel(), getByteGearBoxData()[ii].getByteGearBoxGwt().getTopic());
+			getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 2).getParent().setVisible(false);
+		}
+	}
+	void loadPlotPanel()
+	{
+		getSetup().addPanel(new PlotterPanel(this), "Plots");
+		new TabLoadWaiter(200, 2, this);
+	}
 	static class GetByteGearBoxGwtAsyncCallback implements AsyncCallback<ByteGearBoxGwt[]>
 	{
 		EntryPointApp entryPointApp;
@@ -75,12 +90,28 @@ public class EntryPointApp implements EntryPoint
 				entryPointApp.getByteGearBoxData()[ii] = new ByteGearBoxData(byteGearBoxGwt[ii], entryPointApp.getByteGearBoxDataTimerPeriodMillis(), entryPointApp);
 			}
 			entryPointApp.getSetup().addPanel(new SummaryPanel(entryPointApp), "Summary");
-			for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
-			{
-				entryPointApp.getSetup().addPanel(entryPointApp.getByteGearBoxData()[ii].getByteGearBoxDataPanel(), entryPointApp.getByteGearBoxData()[ii].getByteGearBoxGwt().getTopic());
-				entryPointApp.getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 1).getParent().setVisible(false);
-			}
+			new TabLoadWaiter(5000, 1, entryPointApp);
 		}
 		
+	}
+	static class TabLoadWaiter extends GskelLoadWaiter
+	{
+		EntryPointApp entryPointApp;
+		public TabLoadWaiter(int loopTimeMillis, int itask, EntryPointApp entryPointApp) 
+		{
+			super(loopTimeMillis, itask);
+			this.entryPointApp = entryPointApp;
+		}
+		@Override
+		public boolean isLoaded() 
+		{
+			return true;
+		}
+		@Override
+		public void taskAfterLoad() 
+		{
+			if (getItask() == 1) entryPointApp.loadPlotPanel();
+			if (getItask() == 2) entryPointApp.loadGearBoxDataPanels();
+		}
 	}
 }

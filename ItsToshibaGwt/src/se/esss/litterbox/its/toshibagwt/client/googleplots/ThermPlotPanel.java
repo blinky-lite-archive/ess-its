@@ -1,4 +1,4 @@
-package se.esss.litterbox.its.toshibagwt.client.contentpanels;
+package se.esss.litterbox.its.toshibagwt.client.googleplots;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.VerticalPanel;

@@ -10,10 +10,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import se.esss.litterbox.its.toshibagwt.client.EntryPointApp;
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxData;
+import se.esss.litterbox.its.toshibagwt.client.googleplots.ThermPlotPanel;
 import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteGearGwt;
 import se.esss.litterbox.its.toshibagwt.shared.bytegearboxgwt.ByteToothGwt;
 
-public class ThermCaptionPanel extends CaptionPanel
+public class ByteToothTempGaugePlot extends CaptionPanel
 {
 	private ThermPlotPanel thermPlotPanel;
 	private boolean loaded = false;
@@ -42,7 +43,7 @@ public class ThermCaptionPanel extends CaptionPanel
 	public boolean isLoaded() {return loaded;}
 	public ThermPlotPanel getThermPlotPanel() {return thermPlotPanel;}
 	
-	public ThermCaptionPanel(String captionTitle, String topic, String byteGearName, String valByteToothName, String lolo, String low, String high, String hihi, EntryPointApp entryPointApp)
+	public ByteToothTempGaugePlot(String captionTitle, String topic, String byteGearName, String valByteToothName, String lolo, String low, String high, String hihi, EntryPointApp entryPointApp)
 	{
 		super(captionTitle);
 		try 

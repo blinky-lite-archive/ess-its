@@ -143,7 +143,7 @@ public class OpModePanel extends CaptionPanel implements ClickHandler
 			}
 			for (int ii = 0; ii < opModePanel.entryPointApp.getByteGearBoxData().length; ++ii)
 			{
-				opModePanel.entryPointApp.getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 1).getParent().setVisible(opModePanel.showExpertSettings);
+				opModePanel.entryPointApp.getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 2).getParent().setVisible(opModePanel.showExpertSettings);
 			}
 			
 		}

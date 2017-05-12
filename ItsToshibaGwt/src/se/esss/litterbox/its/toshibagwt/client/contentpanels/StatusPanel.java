@@ -11,7 +11,7 @@ import se.esss.litterbox.its.toshibagwt.client.gskel.GskelLoadWaiter;
 
 public class StatusPanel extends CaptionPanel
 {
-	ThermCaptionPanel[] statPanel = new ThermCaptionPanel[15];
+	ByteToothTempGaugePlot[] statPanel = new ByteToothTempGaugePlot[15];
 	private int plotLoadTimeMs = 100;
 	Date startTime = new Date();
 	EntryPointApp entryPointApp;
@@ -24,21 +24,21 @@ public class StatusPanel extends CaptionPanel
 		this.setCaptionHTML("<font size=\"+2\">Status</font>");
 		Grid statPanelGrid = new Grid (ngridRow,ngridCol);
 		
-		statPanel[0] = new ThermCaptionPanel("IP I", 		"klyPlcProtoAio", "KLY_IP_ISn_Current",				"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI", 	entryPointApp);
-		statPanel[1] = new ThermCaptionPanel("Fil I", 		"klyPlcProtoPsu", "FILAMENT",						"IMON",	"I_LOLO",	"I_LOW","I_HIGH",	"I_HIHI",	entryPointApp);
-		statPanel[2] = new ThermCaptionPanel("Fil W", 		"klyPlcProtoPsu", "FILAMENT",						"WMON",	"W_LOLO",	"W_LOW","W_HIGH",	"W_HIHI",	entryPointApp);
-		statPanel[3] = new ThermCaptionPanel("Sol1 I",		"klyPlcProtoPsu", "SOLENOID1",						"IMON",	"I_LOLO",	"I_LOW","I_HIGH",	"I_HIHI",	entryPointApp);
-		statPanel[4] = new ThermCaptionPanel("Sol2 I", 		"klyPlcProtoPsu", "SOLENOID2",						"IMON",	"I_LOLO",	"I_LOW","I_HIGH",	"I_HIHI",	entryPointApp);
-		statPanel[5] = new ThermCaptionPanel("Oil Sur T", 	"klyPlcProtoAio", "KLY_Oil_TSn_SurfTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[6] = new ThermCaptionPanel("Sol In T", 	"klyPlcProtoAio", "KLY_Sol_TSn_WatInletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[7] = new ThermCaptionPanel("Sol Out T", 	"klyPlcProtoAio", "KLY_Sol_TSn_WatOutletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[8] = new ThermCaptionPanel("Sol Surf T", 	"klyPlcProtoAio", "KLY_Sol_TSn_SurfTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[9] = new ThermCaptionPanel("Win Out T", 	"klyPlcProtoAio", "KLY_Win_TSn_WatOutletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[10] = new ThermCaptionPanel("Win Slv T", 	"klyPlcProtoAio", "KLY_Win_TSn_WatOutletSleeveTemp","EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[11] = new ThermCaptionPanel("Col Top T", 	"klyPlcProtoAio", "KLY_Coll_TSn_TopTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[12] = new ThermCaptionPanel("Col Edgp T", "klyPlcProtoAio", "KLY_Coll_TSn_EdgeTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[13] = new ThermCaptionPanel("Body In T", 	"klyPlcProtoAio", "KLY_Body_TSn_WatInletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
-		statPanel[14] = new ThermCaptionPanel("Body Out T", "klyPlcProtoAio", "KLY_Body_TSn_WatOutletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[0] = new ByteToothTempGaugePlot("IP I", 		"klyPlcProtoAio", "KLY_IP_ISn_Current",				"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI", 	entryPointApp);
+		statPanel[1] = new ByteToothTempGaugePlot("Fil I", 		"klyPlcProtoPsu", "FILAMENT",						"IMON",	"I_LOLO",	"I_LOW","I_HIGH",	"I_HIHI",	entryPointApp);
+		statPanel[2] = new ByteToothTempGaugePlot("Fil W", 		"klyPlcProtoPsu", "FILAMENT",						"WMON",	"W_LOLO",	"W_LOW","W_HIGH",	"W_HIHI",	entryPointApp);
+		statPanel[3] = new ByteToothTempGaugePlot("Sol1 I",		"klyPlcProtoPsu", "SOLENOID1",						"IMON",	"I_LOLO",	"I_LOW","I_HIGH",	"I_HIHI",	entryPointApp);
+		statPanel[4] = new ByteToothTempGaugePlot("Sol2 I", 	"klyPlcProtoPsu", "SOLENOID2",						"IMON",	"I_LOLO",	"I_LOW","I_HIGH",	"I_HIHI",	entryPointApp);
+		statPanel[5] = new ByteToothTempGaugePlot("Oil Sur T", 	"klyPlcProtoAio", "KLY_Oil_TSn_SurfTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[6] = new ByteToothTempGaugePlot("Sol In T", 	"klyPlcProtoAio", "KLY_Sol_TSn_WatInletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[7] = new ByteToothTempGaugePlot("Sol Out T", 	"klyPlcProtoAio", "KLY_Sol_TSn_WatOutletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[8] = new ByteToothTempGaugePlot("Sol Surf T", "klyPlcProtoAio", "KLY_Sol_TSn_SurfTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[9] = new ByteToothTempGaugePlot("Win Out T", 	"klyPlcProtoAio", "KLY_Win_TSn_WatOutletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[10] = new ByteToothTempGaugePlot("Win Slv T", "klyPlcProtoAio", "KLY_Win_TSn_WatOutletSleeveTemp","EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[11] = new ByteToothTempGaugePlot("Col Top T", "klyPlcProtoAio", "KLY_Coll_TSn_TopTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[12] = new ByteToothTempGaugePlot("Col Edgp T","klyPlcProtoAio", "KLY_Coll_TSn_EdgeTemp",			"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[13] = new ByteToothTempGaugePlot("Body In T",	"klyPlcProtoAio", "KLY_Body_TSn_WatInletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
+		statPanel[14] = new ByteToothTempGaugePlot("Body Out T","klyPlcProtoAio", "KLY_Body_TSn_WatOutletTemp",		"EGU",	"LOLO",		"LOW",	"HIGH",		"HIHI",		entryPointApp);
 		
 		int igridRow = 0;
 		int igridCol = 0;
