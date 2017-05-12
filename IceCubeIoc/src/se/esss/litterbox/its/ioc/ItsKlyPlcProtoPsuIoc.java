@@ -1,5 +1,7 @@
 package se.esss.litterbox.its.ioc;
 
+import org.json.simple.JSONObject;
+
 import se.esss.litterbox.icecube.ioc.ItsByteGearBoxIoc;
 
 public class ItsKlyPlcProtoPsuIoc extends ItsByteGearBoxIoc
@@ -10,7 +12,29 @@ public class ItsKlyPlcProtoPsuIoc extends ItsByteGearBoxIoc
 	{
 		super(clientId, periodicPollPeriodmillis, byteGearBoxUrl, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, keepAliveInterval);
 	}
-
+	@SuppressWarnings("unchecked")
+	@Override
+	public byte[] getDataFromGizmo() 
+	{
+		byte[] gizmoReadData = super.getDataFromGizmo();
+		
+		try
+		{
+			getByteGearBox().setReadData(gizmoReadData);
+			JSONObject outputData = new JSONObject();
+			outputData.put("filV", getByteGearBox().getByteGear("FILAMENT").getReadByteTooth("VMON").getValue());
+			outputData.put("filI", getByteGearBox().getByteGear("FILAMENT").getReadByteTooth("IMON").getValue());
+			outputData.put("filW", getByteGearBox().getByteGear("FILAMENT").getReadByteTooth("WMON").getValue());
+			outputData.put("sol1V", getByteGearBox().getByteGear("SOLENOID1").getReadByteTooth("VMON").getValue());
+			outputData.put("sol1I", getByteGearBox().getByteGear("SOLENOID1").getReadByteTooth("IMON").getValue());
+			outputData.put("sol2V", getByteGearBox().getByteGear("SOLENOID2").getReadByteTooth("VMON").getValue());
+			outputData.put("sol2I", getByteGearBox().getByteGear("SOLENOID2").getReadByteTooth("IMON").getValue());
+			publishMessage(getByteGearBox().getTopic() + "/json01", outputData.toJSONString().getBytes(), this.getPublishQos(), true);	
+			
+		}catch (Exception e) {setStatus("Error: " + e.getMessage());}
+		
+		return gizmoReadData;
+	}
 	public static void main(String[] args) throws Exception 
 	{
 		String iocName = "itsKlyPlcProtoPsuIoc";

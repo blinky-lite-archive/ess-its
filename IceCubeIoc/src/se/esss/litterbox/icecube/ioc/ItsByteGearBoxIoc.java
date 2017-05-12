@@ -18,6 +18,8 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	private Socket getSocket() {return socket;}
 	private ArrayList<byte[]> writeMessageBuffer = new ArrayList<byte[]>();
 
+	public ByteGearBox getByteGearBox() {return byteGearBox;}
+
 	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxUrl, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
