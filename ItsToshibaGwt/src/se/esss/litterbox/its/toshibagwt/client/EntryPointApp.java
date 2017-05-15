@@ -7,8 +7,8 @@ import com.google.gwt.user.client.ui.Label;
 //import com.google.gwt.user.client.ui.RootLayoutPanel;
 
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxData;
+import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxPlotter;
 import se.esss.litterbox.its.toshibagwt.client.callbacks.CheckIpAddresslAsyncCallback;
-import se.esss.litterbox.its.toshibagwt.client.contentpanels.PlotterPanel;
 import se.esss.litterbox.its.toshibagwt.client.contentpanels.SummaryPanel;
 import se.esss.litterbox.its.toshibagwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.toshibagwt.client.gskel.GskelSetupApp;
@@ -68,7 +68,7 @@ public class EntryPointApp implements EntryPoint
 	}
 	void loadPlotPanel()
 	{
-		getSetup().addPanel(new PlotterPanel(this), "Plots");
+		getSetup().addPanel(new ByteGearBoxPlotter(getByteGearBoxData(), this), "Plotter");
 		new TabLoadWaiter(200, 2, this);
 	}
 	static class GetByteGearBoxGwtAsyncCallback implements AsyncCallback<ByteGearBoxGwt[]>
@@ -90,7 +90,7 @@ public class EntryPointApp implements EntryPoint
 				entryPointApp.getByteGearBoxData()[ii] = new ByteGearBoxData(byteGearBoxGwt[ii], entryPointApp.getByteGearBoxDataTimerPeriodMillis(), entryPointApp);
 			}
 			entryPointApp.getSetup().addPanel(new SummaryPanel(entryPointApp), "Summary");
-			new TabLoadWaiter(5000, 1, entryPointApp);
+			new TabLoadWaiter(1000, 1, entryPointApp);
 		}
 		
 	}

@@ -7,6 +7,7 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.LineChart;
 import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
+import com.googlecode.gwt.charts.client.options.ChartArea;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
 
@@ -27,6 +28,10 @@ public class TimeLineChartPlotPanel extends HorizontalPanel
 	private String plotWidth;
 	private String plotHeight;
 	private boolean loaded = false;
+	private int chartAreaPixelLeftOffset = 40;
+	private int chartAreaPixelWidth = 500;
+	private int chartAreaPixelTopOffset = 40;
+	private int chartAreaPixelHeight = 500;
 	
 	public int getNumPts() {return numPts;}
 	public int getNumTraces() {return numTraces;}
@@ -38,6 +43,10 @@ public class TimeLineChartPlotPanel extends HorizontalPanel
 	public String getPlotHeight() {return plotHeight;}
 	public boolean isLoaded() {return loaded;}
 
+	public void setChartAreaPixelLeftOffset(int chartAreaPixelLeftOffset) {this.chartAreaPixelLeftOffset = chartAreaPixelLeftOffset;}
+	public void setChartAreaPixelWidth(int chartAreaPixelWidth) {this.chartAreaPixelWidth = chartAreaPixelWidth;}
+	public void setChartAreaPixelTopOffset(int chartAreaPixelTopOffset) {this.chartAreaPixelTopOffset = chartAreaPixelTopOffset;}
+	public void setChartAreaPixelHeight(int chartAreaPixelHeight) {this.chartAreaPixelHeight = chartAreaPixelHeight;}
 
 	public TimeLineChartPlotPanel(int numPts, int numTraces, String title, String haxisLabel, String yaxisLabel, String[] legend, String plotWidth, String plotHeight) 
 	{
@@ -76,6 +85,12 @@ public class TimeLineChartPlotPanel extends HorizontalPanel
 		options.setTitle(title);
 		options.setHAxis(HAxis.create(haxisLabel));
 		options.setVAxis(VAxis.create(yaxisLabel));
+		ChartArea chartArea = ChartArea.create();
+		chartArea.setLeft(chartAreaPixelLeftOffset);
+		chartArea.setWidth(chartAreaPixelWidth);
+		chartArea.setTop(chartAreaPixelTopOffset);
+		chartArea.setHeight(chartAreaPixelHeight);
+		options.setChartArea(chartArea);
 
 	}
 	public void draw(double timeSec, double[] yaxisData) 
