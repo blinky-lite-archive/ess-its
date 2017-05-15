@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -48,6 +49,9 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 	private double[] valMult;
 	private TimeLineChartPlotPanel timeLineChartPlot = null;
 	private Grid controlAndPlotGrid = new Grid(2,1);
+	private Label[] readings = new Label[maxNumTraces];
+	private int[] itraceMapping = new int[maxNumTraces];
+	NumberFormat twoPlaces = NumberFormat.getFormat("#.##");
 
 	
 	private ByteGearBoxData[] byteGearBoxData;
@@ -56,19 +60,20 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 	{
 		super(true, entryPointApp);
 		this.byteGearBoxData = byteGearBoxData;
-		traceDefinitionGrid = new Grid(maxNumTraces + 1, 6);
+		traceDefinitionGrid = new Grid(maxNumTraces + 1, 7);
 		traceDefinitionGrid.setWidget(0, 0, new Label("Trace"));
 		traceDefinitionGrid.setWidget(0, 1, new Label("ByteGearBox"));
 		traceDefinitionGrid.setWidget(0, 2, new Label("ByteGear"));
 		traceDefinitionGrid.setWidget(0, 3, new Label("ByteGearTooth"));
 		traceDefinitionGrid.setWidget(0, 4, new Label("Mult."));
 		traceDefinitionGrid.setWidget(0, 5, new Label("Enabled"));
+		traceDefinitionGrid.setWidget(0, 6, new Label("Reading"));
 
 		traceDefinitionGrid.setBorderWidth(1);
 		CellFormatter cf = traceDefinitionGrid.getCellFormatter();
 		for (int irow = 0; irow <= maxNumTraces; ++irow)
 		{
-			for (int icol = 0; icol < 6; ++icol)
+			for (int icol = 0; icol < 7; ++icol)
 			{
 				cf.setHorizontalAlignment(irow, icol, HasHorizontalAlignment.ALIGN_CENTER);
 				cf.setVerticalAlignment(irow, icol, HasVerticalAlignment.ALIGN_MIDDLE);	
@@ -119,6 +124,10 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 			enabledCheckBox[ii].setValue(false);
 			enabledCheckBox[ii].setEnabled(false);
 			traceDefinitionGrid.setWidget(ii + 1, 5, enabledCheckBox[ii]);
+			
+			readings[ii] = new Label("");
+			readings[ii].setWidth("5.0em");
+			traceDefinitionGrid.setWidget(ii + 1, 6, readings[ii]);
 		}
 		
 		startPlotButton.setEnabled(false);
@@ -174,6 +183,7 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 			if (valByteTooth[ii].getType().equals("S7DT"))  valData = "0";
 			
 			yaxisData[ii] = Double.parseDouble(valData) * valMult[ii];
+			readings[itraceMapping[ii]].setText(twoPlaces.format(yaxisData[ii] / valMult[ii]));
 		}
 		timeLineChartPlot.draw(timeSec, yaxisData);
 	}
@@ -196,6 +206,7 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 			multiplierListBox[itrace].setEnabled(false);
 			enabledCheckBox[itrace].setEnabled(false);
 			enabledCheckBox[itrace].setValue(false);
+			readings[itrace].setText("");
 			checkNumberTracesEnabled();
 			igearSelected[itrace] = -1;
 			itoothSelected[itrace] = -1;
@@ -227,6 +238,7 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 			multiplierListBox[itrace].setEnabled(false);
 			enabledCheckBox[itrace].setEnabled(false);
 			enabledCheckBox[itrace].setValue(false);
+			readings[itrace].setText("");
 			checkNumberTracesEnabled();
 			itoothSelected[itrace] = -1;
 			igearSelected[itrace] = byteGearListBox[itrace].getSelectedIndex() - 1;
@@ -255,6 +267,7 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 			multiplierListBox[itrace].setEnabled(false);
 			enabledCheckBox[itrace].setEnabled(false);
 			enabledCheckBox[itrace].setValue(false);
+			readings[itrace].setText("");
 			checkNumberTracesEnabled();
 			itoothSelected[itrace] = byteToothListBox[itrace].getSelectedIndex() - 1;
 			if (igearSelected[itrace] >= 0)
@@ -341,6 +354,7 @@ public class ByteGearBoxPlotter extends GskelVerticalPanel
 							ByteGearBoxData byteGearBoxDataPick = byteGearBoxData[byteGearBoxListBox[ii].getSelectedIndex() - 1];
 							ByteGearGwt byteGearPick = byteGearBoxDataPick.getByteGearBoxGwt().getByteGear(byteGearName[itrace]);
 							valByteTooth[itrace] = byteGearPick.getReadByteTooth(valByteToothName[itrace]);
+							itraceMapping[itrace] = ii;
 							++itrace;
 						}
 					}
