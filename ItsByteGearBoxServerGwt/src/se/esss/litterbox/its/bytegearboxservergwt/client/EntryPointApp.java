@@ -9,6 +9,7 @@ import se.esss.litterbox.its.bytegearboxservergwt.client.bytegearboxservice.Byte
 import se.esss.litterbox.its.bytegearboxservergwt.client.callbacks.CheckIpAddresslAsyncCallback;
 import se.esss.litterbox.its.bytegearboxservergwt.client.gskel.GskelSetupApp;
 import se.esss.litterbox.its.bytegearboxservergwt.shared.bytegearboxgwt.ByteGearBoxGwt;
+import se.esss.litterbox.its.bytegearboxservergwt.client.bytegearboxservice.ByteGearBoxPlotter;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -61,6 +62,10 @@ public class EntryPointApp implements EntryPoint
 			for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
 			{
 				entryPointApp.getByteGearBoxData()[ii] = new ByteGearBoxData(byteGearBoxGwt[ii], entryPointApp.getByteGearBoxDataTimerPeriodMillis(), entryPointApp);
+			}
+			entryPointApp.getSetup().addPanel(new ByteGearBoxPlotter(entryPointApp.getByteGearBoxData(), entryPointApp), "Plotter");
+			for (int ii = 0; ii < byteGearBoxGwt.length; ++ii)
+			{
 				entryPointApp.getSetup().addPanel(entryPointApp.getByteGearBoxData()[ii].getByteGearBoxDataPanel(), entryPointApp.getByteGearBoxData()[ii].getByteGearBoxGwt().getTopic());
 			}
 		}
