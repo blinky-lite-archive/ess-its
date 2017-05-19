@@ -70,7 +70,7 @@ public class LlrfPanel extends GskelVerticalPanel
 		hp1.add(settingsAndGaugePanel);
 		String[] timingChannelName = {"ScpTrg", "RFGate", "PMTrg", "CH4"};
 		hp1.add(new IceCubeTimerPanel("LLRF Timer", llrfIceCubetimerMqttTopic, timingChannelName, settingsPermitted, entryPointApp));
-		String[] plotLegend = {"Input","Output"};
+		String[] plotLegend = {"Forward","Reflected"};
 		powerPlot = new TimePlotCaptionPanel(500, "Klystron Power", "dBm", plotLegend, "600px", "400px");
 		hp1.add(powerPlot);
 		add(hp1);
@@ -214,11 +214,11 @@ public class LlrfPanel extends GskelVerticalPanel
 			rfPowerReading2.setText(NumberFormat.getFormat("###.####").format(powerRead[1]));
 			powerPlot.updateReadings(powerRead);
 			double[] wattRead = new double[2];
-			wattRead[0] = Math.pow(10.0, (powerRead[0] - 30.0) / 10.0);
-			wattRead[1] = Math.pow(10.0, (powerRead[1] - 60.0) / 10.0);
+			wattRead[0] = Math.pow(10.0, (powerRead[0] - 60.0) / 10.0);
+			wattRead[1] = Math.pow(10.0, (powerRead[1] - 30.0) / 10.0);
 			rfWattReading1.setText(NumberFormat.getFormat("###.####").format(wattRead[0]));
 			rfWattReading2.setText(NumberFormat.getFormat("###.####").format(wattRead[1]));
-			klystronPowerGaugeCaptionPanel.updateReadings(wattRead[1]);
+			klystronPowerGaugeCaptionPanel.updateReadings(wattRead[0]);
 			
 		}
 		catch(Exception e)

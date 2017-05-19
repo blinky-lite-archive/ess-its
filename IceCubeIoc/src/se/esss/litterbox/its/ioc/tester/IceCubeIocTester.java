@@ -69,12 +69,12 @@ public class IceCubeIocTester  extends SimpleMqttClient
 //		ioCtester.subscribe("itsRfSigGen01/set/rf", 0);
 		
 		outputData.put("rfPowOn", "OFF");
-		outputData.put("rfFreq", "353.0");
-		outputData.put("rfPowLvl", "2.5");
+		outputData.put("rfFreq", "704");
+		outputData.put("rfPowLvl", "-20.0");
 		ioCtester.publishMessage("itsRfSigGen01/set/rf", outputData.toJSONString().getBytes(), 0, retained);
 		
-//		Thread.sleep(3000);
-//		System.exit(0);
+		Thread.sleep(3000);
+		System.exit(0);
 		
 	}
 

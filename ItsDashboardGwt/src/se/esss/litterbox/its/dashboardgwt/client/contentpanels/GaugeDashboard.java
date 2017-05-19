@@ -315,7 +315,7 @@ public class GaugeDashboard extends VerticalPanel
 		{
 			try
 			{
-				double wattRead = Math.pow(10.0, (Double.parseDouble(getJsonValue("power2")) - 60.0) / 10.0);
+				double wattRead = Math.pow(10.0, (Double.parseDouble(getJsonValue("power1")) - 60.0) / 10.0);
 				statPanel[0 + rfSystemOffset].updateReadings(wattRead);
 				entryPointApp.klystronPower = wattRead;
 			}
