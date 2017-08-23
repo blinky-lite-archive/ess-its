@@ -4,6 +4,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Grid;
@@ -64,7 +65,7 @@ public class StateButtonPanel extends CaptionPanel
 		
 		urt.scheduleRepeating(500);
 	}
-	static class StateButton extends Timer implements ClickHandler
+	static class StateButton extends Timer implements ClickHandler, AsyncCallback<String>
 	{
 		Button button;
 		StateButtonPanel stateButtonPanel;
@@ -191,9 +192,18 @@ public class StateButtonPanel extends CaptionPanel
 				{
 					stateButtonPanel.cpuByteGear.getWriteByteTooth(stateButtonPanel.stateButton[ii].writeCommand).setValue("false");
 				}
+				stateButtonPanel.cpuByteGear.getWriteByteTooth("TEST_ALL_AD").setValue("false");
 				stateButtonPanel.cpuByteGear.getWriteByteTooth(writeCommand).setValue("true");
 				stateButtonPanel.cpuByteGear.getWriteByteTooth("WR_DATA").setValue("true");
 				stateButtonPanel.cpuByteGearBoxData.setWriteData(stateButtonPanel.cpuByteGear);
+				if (writeCommand.equals("RESET"))
+				{
+					String[][] jsonArray = new String[1][2];
+					jsonArray[0][0] = "reset";
+					jsonArray[0][1] = "TRUE";
+					stateButtonPanel.entryPointApp.getSetup().getMqttService().publishJsonArray("toshibaFastInterlock/set", jsonArray, stateButtonPanel.entryPointApp.getSetup().isSettingsPermitted(), this);
+				}
+
 			} catch (Exception e) {GWT.log(e.getMessage());}
 		}
 		@Override
@@ -203,6 +213,10 @@ public class StateButtonPanel extends CaptionPanel
 			buttonPushed = false;
 			this.cancel();
 		}
+		@Override
+		public void onFailure(Throwable caught) {GWT.log("Error on FastInterlock reset: " + caught.getMessage());}
+		@Override
+		public void onSuccess(String result) {}
 	}
 	static class UpdateReadingsTimer extends Timer
 	{

@@ -19,6 +19,13 @@
     <load-on-startup /> 
   </servlet>
   
+  <servlet>
+    <servlet-name>mqttServlet</servlet-name>
+    <servlet-class>se.esss.litterbox.its.toshibagwt.server.MqttServiceImpl</servlet-class>
+    <!--     <load-on-startup /> -->
+    <load-on-startup /> 
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>entrypointappServlet</servlet-name>
     <url-pattern>/toshibagwt/entrypointapp</url-pattern>
@@ -29,6 +36,11 @@
     <url-pattern>/toshibagwt/bytegearbox</url-pattern>
   </servlet-mapping>
     
+  <servlet-mapping>
+    <servlet-name>mqttServlet</servlet-name>
+    <url-pattern>/toshibagwt/mqtt</url-pattern>
+  </servlet-mapping>
+  
   <filter>
 	<filter-name>gwtCacheControlFilter</filter-name>
 	<filter-class>se.esss.litterbox.its.toshibagwt.server.GWTCacheControlFilter</filter-class>

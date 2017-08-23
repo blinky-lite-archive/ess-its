@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Label;
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxData;
 import se.esss.litterbox.its.toshibagwt.client.bytegearboxservice.ByteGearBoxPlotter;
 import se.esss.litterbox.its.toshibagwt.client.callbacks.CheckIpAddresslAsyncCallback;
+import se.esss.litterbox.its.toshibagwt.client.contentpanels.FastInterLockPanel;
 import se.esss.litterbox.its.toshibagwt.client.contentpanels.SummaryPanel;
 import se.esss.litterbox.its.toshibagwt.client.gskel.GskelLoadWaiter;
 import se.esss.litterbox.its.toshibagwt.client.gskel.GskelSetupApp;
@@ -63,7 +64,7 @@ public class EntryPointApp implements EntryPoint
 		for (int ii = 0; ii < getByteGearBoxData().length; ++ii)
 		{
 			getSetup().addPanel(getByteGearBoxData()[ii].getByteGearBoxDataPanel(), getByteGearBoxData()[ii].getByteGearBoxGwt().getTopic());
-			getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 2).getParent().setVisible(false);
+			getSetup().getGskelTabLayoutPanel().getTabWidget(ii + 3).getParent().setVisible(false);
 		}
 	}
 	void loadPlotPanel()
@@ -90,6 +91,7 @@ public class EntryPointApp implements EntryPoint
 				entryPointApp.getByteGearBoxData()[ii] = new ByteGearBoxData(byteGearBoxGwt[ii], entryPointApp.getByteGearBoxDataTimerPeriodMillis(), entryPointApp);
 			}
 			entryPointApp.getSetup().addPanel(new SummaryPanel(entryPointApp), "Summary");
+			entryPointApp.getSetup().addPanel(new FastInterLockPanel(entryPointApp), "Fast Interlock");
 			new TabLoadWaiter(1000, 1, entryPointApp);
 		}
 		
