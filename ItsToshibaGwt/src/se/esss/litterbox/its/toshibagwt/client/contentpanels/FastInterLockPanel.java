@@ -32,12 +32,14 @@ public class FastInterLockPanel extends GskelVerticalPanel
 	double reflPowLvl;
 	boolean pinSwitchOn = false;
 	boolean arcDetTrip = false;
+	boolean aftDetTrip = false;
 	boolean reflPowerTrip = false;
 	boolean updateSettings = true;
 	ByteGearGwt cpuByteGear = null;
 	ByteGearBoxData cpuByteGearBoxData = null;
 	Image reflPowerTripImage = null;
 	Image arcDetTripImage = null;
+	Image aftDetTripImage = null;
 	TextBox reflPowerTripLevelTextbox = new TextBox();
 
 
@@ -50,7 +52,7 @@ public class FastInterLockPanel extends GskelVerticalPanel
 			cpuByteGear = cpuByteGearBoxData.getByteGearBoxGwt().getByteGear("CPU_CONF");
 		} catch (Exception e) {GWT.log(e.getMessage());}
 		
-		Grid buttonGrid = new Grid(3,3);
+		Grid buttonGrid = new Grid(4,2);
 		CellFormatter buttonGridCellFormatter = buttonGrid.getCellFormatter();
 		ColumnFormatter buttonGridColumnFormatter = buttonGrid.getColumnFormatter();
 		buttonGridColumnFormatter.setWidth(1, "200px");
@@ -84,8 +86,15 @@ public class FastInterLockPanel extends GskelVerticalPanel
 		arcDetTripPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		arcDetTripImage = new Image("images/redlight.png");
 		arcDetTripImage.setSize("3.0em", "3.0em");
-		arcDetTripPanel.add(new Label("Arc Det. Trip  : "));
+		arcDetTripPanel.add(new Label("CERN Arc Det. Trip  : "));
 		arcDetTripPanel.add(arcDetTripImage);
+		
+		HorizontalPanel aftDetTripPanel = new HorizontalPanel();
+		aftDetTripPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		aftDetTripImage = new Image("images/redlight.png");
+		aftDetTripImage.setSize("3.0em", "3.0em");
+		aftDetTripPanel.add(new Label("AFT Arc Det. Trip  : "));
+		aftDetTripPanel.add(aftDetTripImage);
 		
 		HorizontalPanel rfTripLevelPanel = new HorizontalPanel();
 		rfTripLevelPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -99,15 +108,16 @@ public class FastInterLockPanel extends GskelVerticalPanel
 		buttonGrid.setWidget(2, 0, arcTestButton);
 		buttonGrid.setWidget(0, 1, reflPowerTripPanel);
 		buttonGrid.setWidget(1, 1, arcDetTripPanel);
-		buttonGrid.setWidget(2, 1, rfTripLevelPanel);
-		buttonGrid.setWidget(2, 2, new ReflPowerTripLvlButtonGrid());
-		for (int ii = 0; ii < 3; ++ii)
+		buttonGrid.setWidget(2, 1, aftDetTripPanel);
+		buttonGrid.setWidget(3, 0, rfTripLevelPanel);
+		buttonGrid.setWidget(3, 1, new ReflPowerTripLvlButtonGrid());
+		for (int ii = 0; ii < 4; ++ii)
 		{
 			buttonGridCellFormatter.setHorizontalAlignment(ii, 0, HasHorizontalAlignment.ALIGN_LEFT);
 			buttonGridCellFormatter.setHorizontalAlignment(ii, 1, HasHorizontalAlignment.ALIGN_RIGHT);
-			buttonGridCellFormatter.setHorizontalAlignment(ii, 2, HasHorizontalAlignment.ALIGN_LEFT);
 			
 		}
+		buttonGridCellFormatter.setHorizontalAlignment(3, 1, HasHorizontalAlignment.ALIGN_LEFT);
 		CaptionPanel cp = new CaptionPanel("Fast Interlock");
 		cp.setCaptionHTML("<font size=\"+2\">Fast Interlock</font>");
 		cp.add(buttonGrid);
@@ -267,11 +277,13 @@ public class FastInterLockPanel extends GskelVerticalPanel
 				{
 					fastInterLockPanel.pinSwitchButton.setStyleName("stateButtonPreConTrue");
 				}
+				fastInterLockPanel.aftDetTrip = false;
 				fastInterLockPanel.arcDetTrip = false;
 				fastInterLockPanel.reflPowerTrip = false;
 				if (getJsonValue("trip").equals("TRUE"))
 				{
 					if (getJsonValue("tripType").equals("arcDet")) fastInterLockPanel.arcDetTrip = true;
+					if (getJsonValue("tripType").equals("aftDet")) fastInterLockPanel.aftDetTrip = true;
 					if (getJsonValue("tripType").equals("reflPower")) fastInterLockPanel.reflPowerTrip = true;
 				}
 				if (fastInterLockPanel.reflPowerTrip)
@@ -289,6 +301,14 @@ public class FastInterLockPanel extends GskelVerticalPanel
 				else
 				{
 					fastInterLockPanel.arcDetTripImage.setUrl("images/greenlight.png");
+				}
+				if (fastInterLockPanel.aftDetTrip)
+				{
+					fastInterLockPanel.aftDetTripImage.setUrl("images/redlight.png");
+				}
+				else
+				{
+					fastInterLockPanel.aftDetTripImage.setUrl("images/greenlight.png");
 				}
 				
 			}catch (Exception e) {GWT.log(e.getMessage());}
