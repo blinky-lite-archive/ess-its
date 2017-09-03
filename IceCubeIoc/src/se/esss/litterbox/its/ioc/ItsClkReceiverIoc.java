@@ -8,10 +8,24 @@ import se.esss.litterbox.icecube.ioc.serial.IceCubeSerialIoc;
 
 public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 {
+	JSONObject setChannelJsonData = null;
+	String mainTopic;
 
-	public ItsClkReceiverIoc(String clientId, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
+	public ItsClkReceiverIoc(String mainTopic, String mqttBrokerInfoFilePath, String serialPortName, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
+		super(mainTopic + "Ioc", mqttBrokerInfoFilePath, serialPortName, keepAliveInterval);
+		this.mainTopic = mainTopic;
+	}
+	@SuppressWarnings("unchecked")
+	private void initialize() throws Exception
+	{
+		setChannelJsonData = new JSONObject();
+		for (int ii  = 0; ii < 4; ++ii)
+		{
+			String chan = Integer.toString(ii + 1);
+			setChannelJsonData.put("channel" + chan, "1 100 200");
+		}
+		publishMessage(mainTopic + "/set/channel", setChannelJsonData.toJSONString().getBytes(), 0, true);
 	}
 	@Override
 	public byte[] getDataFromGizmo() 
@@ -44,16 +58,26 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			try
 			{
 				JSONParser parser = new JSONParser();		
-				JSONObject jsonData = (JSONObject) parser.parse(new String(message));
+				setChannelJsonData = (JSONObject) parser.parse(new String(message));
 				for (int ii  = 0; ii < 4; ++ii)
 				{
 					String chan = Integer.toString(ii + 1);
-					String channelData = (String) jsonData.get("channel" + chan);
+					String channelData = (String) setChannelJsonData.get("channel" + chan);
 					writeReadSerialData("channelSet " + chan + " " + channelData, 10);
 					try {Thread.sleep(500);} catch (InterruptedException e) {}
 				}
 			}
 			catch (ParseException nfe) {}
+		}
+		if (topic.indexOf("/get/channel") >= 0)
+		{
+			try 
+			{
+				publishMessage(mainTopic + "/echo/channel", setChannelJsonData.toJSONString().getBytes(), 0, true);
+			} catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	public static void main(String[] args) throws Exception 
@@ -64,9 +88,10 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			System.exit(1);
 		}
 		String mainTopic = args[0];
-		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc(mainTopic + "Ioc", "itsmqttbroker.dat", "/dev/ttyACM0", 30);
+		ItsClkReceiverIoc ioc = new ItsClkReceiverIoc(mainTopic, "itsmqttbroker.dat", "/dev/ttyACM0", 30);
 		ioc.setPeriodicPollPeriodmillis(2000);
-		ioc.startIoc(mainTopic + "/set/#", mainTopic + "/get/signal");
+		ioc.startIoc(mainTopic + "/#", mainTopic + "/get/signal");
+		ioc.initialize();
 	}
 
 }
