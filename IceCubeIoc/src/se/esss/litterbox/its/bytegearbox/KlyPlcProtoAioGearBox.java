@@ -90,7 +90,7 @@ public class KlyPlcProtoAioGearBox
 			byteGearBox.getByteGearList().add(byteGearE[ii]);
 		}
 		
-		byteGearBox.writeToFile("klyPlcProtoAio.json",false);
+		byteGearBox.writeToFile("klyPlcProtoAio.json",true);
 	}
 
 }

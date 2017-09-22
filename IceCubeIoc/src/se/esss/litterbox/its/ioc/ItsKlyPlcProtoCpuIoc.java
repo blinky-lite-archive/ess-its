@@ -14,11 +14,11 @@ public class ItsKlyPlcProtoCpuIoc extends ItsByteGearBoxIoc
 	{
 		String iocName = "itsKlyPlcProtoCpuIoc";
 		int periodicPollPeriodmillis = Integer.parseInt(args[0]);
-		String byteGearBoxUrl = "https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/gearbox/klyPlcProtoCpu.json";
+		String byteGearBoxFilePath = "klyPlcProtoCpu.json";
 		String gizmoInetAddress = "192.168.1.65";
 		int gizmoPortNumber = 3000;
 		String mqttBrokerInfoFilePath = "itsmqttbroker.dat";
-		new ItsKlyPlcProtoCpuIoc(iocName, periodicPollPeriodmillis, byteGearBoxUrl, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 1);
+		new ItsKlyPlcProtoCpuIoc(iocName, periodicPollPeriodmillis, byteGearBoxFilePath, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 1);
 	}
 
 }

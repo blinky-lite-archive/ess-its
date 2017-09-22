@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.URL;
 import java.util.ArrayList;
 
 import se.esss.litterbox.icecube.bytegearbox.ByteGearBox;
@@ -17,20 +16,24 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	private Socket socket = null;
 	private Socket getSocket() {return socket;}
 	private ArrayList<byte[]> writeMessageBuffer = new ArrayList<byte[]>();
+	private String byteGearBoxFilePath;
 
 	public ByteGearBox getByteGearBox() {return byteGearBox;}
 
-	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxUrl, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
+	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxFilePath, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
-		byteGearBox = new ByteGearBox(new URL(byteGearBoxUrl));
+		byteGearBox = new ByteGearBox(byteGearBoxFilePath);
 		writeMessageBuffer.add(byteGearBox.getWriteData());
 		this.socket = new Socket( gizmoInetAddress, gizmoPortNumber);
 		setPeriodicPollPeriodmillis(periodicPollPeriodmillis);
 		startIoc(byteGearBox.getTopic() + "/set", byteGearBox.getTopic() + "/get");
+    	subscribe(byteGearBox.getTopic() + "/getJson", getSubscribeQos());
+    	this.byteGearBoxFilePath = byteGearBoxFilePath;
 	}
 	private void sendBytes(byte[] myByteArray)  throws Exception
 	{
+	    byteGearBox.setWriteData(myByteArray);
 	    OutputStream out = getSocket().getOutputStream(); 
 	    DataOutputStream dos = new DataOutputStream(out);
 	    dos.write(myByteArray, 0, myByteArray.length);
@@ -55,6 +58,7 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	    {
 	    	setStatus(e.getMessage());
 	    } 	    
+	    byteGearBox.setReadData(data);
 //	    printReadData(data);
 	    return data;
 	    
@@ -115,17 +119,25 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	@Override
 	public void handleBrokerMqttMessage(String topic, byte[] message) 
 	{
-		int numWriteMessages = message.length / byteGearBox.getWriteByteLength();
-		for (int ii = 0; ii < numWriteMessages; ++ii)
+		if (topic.equals(byteGearBox.getTopic() + "/set"))
 		{
-			byte[] newMessage = new byte[byteGearBox.getWriteByteLength()];
-			for (int ij = 0; ij < byteGearBox.getWriteByteLength(); ++ij)
+			int numWriteMessages = message.length / byteGearBox.getWriteByteLength();
+			for (int ii = 0; ii < numWriteMessages; ++ii)
 			{
-				newMessage[ij] = message[ij + byteGearBox.getWriteByteLength() * ii];
+				byte[] newMessage = new byte[byteGearBox.getWriteByteLength()];
+				for (int ij = 0; ij < byteGearBox.getWriteByteLength(); ++ij)
+				{
+					newMessage[ij] = message[ij + byteGearBox.getWriteByteLength() * ii];
+				}
+				writeMessageBuffer.add(newMessage);
 			}
-			writeMessageBuffer.add(newMessage);
-		}
-		
-	}
+		    byteGearBox.setWriteData(writeMessageBuffer.get(writeMessageBuffer.size() - 1));
+			try {byteGearBox.writeToFile(byteGearBoxFilePath, false);} catch (Exception e) {}
 
+		}
+		if (topic.equals(byteGearBox.getTopic() + "/getJson"))
+		{
+			try {publishMessage(byteGearBox.getTopic() + "/json", byteGearBox.getJsonObject().toJSONString().getBytes(), getPublishQos(), true);} catch (Exception e) {}
+		}
+	}
 }
