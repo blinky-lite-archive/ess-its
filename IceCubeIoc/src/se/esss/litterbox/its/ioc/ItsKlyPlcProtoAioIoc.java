@@ -44,11 +44,11 @@ public class ItsKlyPlcProtoAioIoc extends ItsByteGearBoxIoc
 	{
 		String iocName = "itsKlyPlcProtoAioIoc";
 		int periodicPollPeriodmillis = Integer.parseInt(args[0]);
-		String byteGearBoxFilePath = "klyPlcProtoAio.json";
+		String byteGearBoxURLString = "http://se-esss-litterbox.github.io/bytegearbox/klyPlcProtoAio.json";
 		String gizmoInetAddress = "192.168.1.65";
 		int gizmoPortNumber = 3001;
 		String mqttBrokerInfoFilePath = "itsmqttbroker.dat";
-		new ItsKlyPlcProtoAioIoc(iocName, periodicPollPeriodmillis, byteGearBoxFilePath, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 30);
+		new ItsKlyPlcProtoAioIoc(iocName, periodicPollPeriodmillis, byteGearBoxURLString, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 30);
 	}
 
 

@@ -2,11 +2,16 @@ package se.esss.litterbox.icecube.ioc;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import se.esss.litterbox.icecube.bytegearbox.ByteGearBox;
 
@@ -16,20 +21,34 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 	private Socket socket = null;
 	private Socket getSocket() {return socket;}
 	private ArrayList<byte[]> writeMessageBuffer = new ArrayList<byte[]>();
-	private String byteGearBoxFilePath;
+	private URL byteGearBoxURL;
 
 	public ByteGearBox getByteGearBox() {return byteGearBox;}
 
-	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxFilePath, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
+	public ItsByteGearBoxIoc(String clientId, int periodicPollPeriodmillis, String byteGearBoxURLString, String gizmoInetAddress, int gizmoPortNumber, String mqttBrokerInfoFilePath, int keepAliveInterval) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
-		byteGearBox = new ByteGearBox(byteGearBoxFilePath);
+		byteGearBoxURL = new URL(byteGearBoxURLString);
+		byteGearBox = new ByteGearBox(byteGearBoxURL);
 		writeMessageBuffer.add(byteGearBox.getWriteData());
 		this.socket = new Socket( gizmoInetAddress, gizmoPortNumber);
 		setPeriodicPollPeriodmillis(periodicPollPeriodmillis);
 		startIoc(byteGearBox.getTopic() + "/set", byteGearBox.getTopic() + "/get");
-    	subscribe(byteGearBox.getTopic() + "/getJson", getSubscribeQos());
-    	this.byteGearBoxFilePath = byteGearBoxFilePath;
+    	subscribe(byteGearBox.getTopic() + "/get/set", getSubscribeQos());
+    	
+		try 
+		{
+			Path path = Paths.get(byteGearBox.getTopic() + ".dat");
+			byte[] data = Files.readAllBytes(path);
+			writeMessageBuffer.add(data);
+			byteGearBox.setWriteData(data);
+		}
+		catch (Exception e) 
+		{
+			writeMessageBuffer.add(byteGearBox.getWriteData());
+			setStatus("Error in reading to file write data: " + e.getMessage());
+		}
+
 	}
 	private void sendBytes(byte[] myByteArray)  throws Exception
 	{
@@ -131,13 +150,19 @@ public abstract class ItsByteGearBoxIoc extends IceCubePeriodicPollIoc
 				}
 				writeMessageBuffer.add(newMessage);
 			}
-		    byteGearBox.setWriteData(writeMessageBuffer.get(writeMessageBuffer.size() - 1));
-			try {byteGearBox.writeToFile(byteGearBoxFilePath, false);} catch (Exception e) {}
+			try 
+			{
+				FileOutputStream fos = new FileOutputStream(byteGearBox.getTopic() + ".dat");
+				fos.write(writeMessageBuffer.get(writeMessageBuffer.size() - 1));
+				fos.close();
+			}
+			catch (Exception e) {setStatus("Error in writing to file write data: " + e.getMessage());}
 
 		}
-		if (topic.equals(byteGearBox.getTopic() + "/getJson"))
+		if (topic.equals(byteGearBox.getTopic() + "/get/set"))
 		{
-			try {publishMessage(byteGearBox.getTopic() + "/json", byteGearBox.getJsonObject().toJSONString().getBytes(), getPublishQos(), true);} catch (Exception e) {}
+			try {publishMessage(byteGearBox.getTopic() + "/echo/set", writeMessageBuffer.get(writeMessageBuffer.size() - 1), getPublishQos(), true);} 
+			catch (Exception e) {setStatus("Error in publishing write data: " + e.getMessage());}
 		}
 	}
 }
