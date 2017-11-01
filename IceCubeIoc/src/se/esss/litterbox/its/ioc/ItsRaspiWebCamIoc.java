@@ -15,7 +15,7 @@ import se.esss.litterbox.icecube.ioc.IceCubePeriodicPollIoc;
 
 public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 {
-	private String cameraCommand = "raspistill -t 3000 -o raspiWebCamImage.jpg";
+	private String cameraCommand = "raspistill -w 800 -h 600 -rot 0 -t 3000 -o raspiWebCamImage.jpg";
 	String mainTopic = "";
 	private long imageCounter = 0;
 
@@ -73,8 +73,6 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 				if (info != null) cameraCommand  = cameraCommand + " -h " + info;
 				info = (String) jsonData.get("rot");
 				if (info != null) cameraCommand  = cameraCommand + " -rot " + info;
-				info = (String) jsonData.get("exp");
-				if (info != null) cameraCommand  = cameraCommand + " -exp " + info;
 				info = (String) jsonData.get("timeout");
 				if (info != null) cameraCommand  = cameraCommand + " -t " + info;
 				info = (String) jsonData.get("interval");
@@ -86,26 +84,14 @@ public class ItsRaspiWebCamIoc extends IceCubePeriodicPollIoc
 		}
 		
 	}
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception 
 	{
-		String iocName = "ItsIceCube08CamIoc";	//args[0];
-		String mainTopic = "itsIceCube08Cam";	//args[1];
-		int periodicPoll = 5000;	//Integer.parseInt(args[2]);
+		String iocName = args[0];
+		String mainTopic = args[1];
+		int periodicPoll = Integer.parseInt(args[2]);
 		ItsRaspiWebCamIoc ioc = new ItsRaspiWebCamIoc(iocName, mainTopic, "itsmqttbroker.dat", 30);
 		ioc.setPeriodicPollPeriodmillis(periodicPoll);
 		ioc.startIoc(mainTopic + "/set", mainTopic + "/image/jpg");
-		
-		boolean retained = true;
-		JSONObject outputData = new JSONObject();
-		outputData.put("width", "800");
-		outputData.put("height", "600");
-		outputData.put("rot", "180");
-//		outputData.put("interval", "2000");
-		outputData.put("timeout", "5000");
-//		outputData.put("exp", "night");
-		ioc.publishMessage(mainTopic + "/set", outputData.toJSONString().getBytes(), 0, retained);
-
 	}
 
 }
