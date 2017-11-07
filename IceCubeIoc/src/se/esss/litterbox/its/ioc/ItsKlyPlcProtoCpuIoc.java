@@ -18,7 +18,7 @@ public class ItsKlyPlcProtoCpuIoc extends ItsByteGearBoxIoc
 		String gizmoInetAddress = "192.168.1.65";
 		int gizmoPortNumber = 3000;
 		String mqttBrokerInfoFilePath = "itsmqttbroker.dat";
-		new ItsKlyPlcProtoCpuIoc(iocName, periodicPollPeriodmillis, byteGearBoxURLString, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 1);
+		new ItsKlyPlcProtoCpuIoc(iocName, periodicPollPeriodmillis, byteGearBoxURLString, gizmoInetAddress, gizmoPortNumber, mqttBrokerInfoFilePath, 30);
 	}
 
 }
