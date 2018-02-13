@@ -5,14 +5,12 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import se.esss.litterbox.icecube.ioc.IceCubePeriodicPollIoc;
 
 public abstract class IceCubeTcpIoc extends IceCubePeriodicPollIoc 
 {
-	ServerSocket serverSocket;
 	Socket clientSocket;
 
 	public IceCubeTcpIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber, int keepAliveInterval) throws Exception 
@@ -20,10 +18,10 @@ public abstract class IceCubeTcpIoc extends IceCubePeriodicPollIoc
 		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
 		InetAddress addr = InetAddress.getByName(inetAddress);
 		setStatus("Waiting for client to accept...");
-		serverSocket = new ServerSocket(portNumber, 20, addr);
-		clientSocket = serverSocket.accept();
+		clientSocket = new Socket(addr, portNumber);
 		setStatus("...Client accepted");
 	}
+
 	public void sendBytes(byte[] myByteArray)  throws Exception
 	{
 	    OutputStream out = clientSocket.getOutputStream(); 

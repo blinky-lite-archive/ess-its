@@ -66,8 +66,9 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 					writeReadSerialData("channelSet " + chan + " " + channelData, 10);
 					try {Thread.sleep(500);} catch (InterruptedException e) {}
 				}
+				publishChanParameters();
 			}
-			catch (ParseException nfe) {}
+			catch (ParseException nfe) {} 
 		}
 		if (topic.indexOf("/get/channel") >= 0)
 		{
@@ -78,7 +79,25 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 			{
 				e.printStackTrace();
 			}
+			publishChanParameters();
 		}
+	}
+	@SuppressWarnings("unchecked")
+	private void publishChanParameters()
+	{
+		JSONObject outputData = new JSONObject();
+		for (int ii  = 0; ii < 4; ++ii)
+		{
+			String chan = Integer.toString(ii + 1);
+			String channelData = (String) setChannelJsonData.get("channel" + chan);
+			
+			String[] channelDataSplit = channelData.split(" ");
+			int startTime = Integer.parseInt(channelDataSplit[1]);
+			int stopTime = Integer.parseInt(channelDataSplit[2]);
+			outputData.put("chanStart" + chan, Integer.toString(startTime));
+			outputData.put("chanWidth" + chan, Integer.toString(stopTime - startTime));
+		}
+		try {publishMessage(mainTopic + "/archive/channel", outputData.toJSONString().getBytes(), 0, true);}catch (Exception e) {e.printStackTrace();}
 	}
 	public static void main(String[] args) throws Exception 
 	{
