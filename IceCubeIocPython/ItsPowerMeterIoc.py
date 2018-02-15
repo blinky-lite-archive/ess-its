@@ -45,7 +45,7 @@ class PowerMeterIOC(GenericIOC):
         self.powerMeter.connect()
         self.powerMeter.preset()
         time.sleep(2)
-        #self.powerMeter.recall_state(1)
+        self.powerMeter.recall_state(1)
         self.powerMeter.turn_on_measurements()
 
     def getDataFromDevice(self):
@@ -65,9 +65,9 @@ if __name__ == "__main__":
     itsPowerMeterIOC.handleIncomingMessage = handleIncomingMessage
     itsPowerMeterIOC.periodicPollPeriodSecs = 0
     itsPowerMeterIOC.mqttStart(
-            clientId       = "itsPowerMeter02Ioc",
-            subscribeTopic = "itsPowerMeter02/set/#",
-            publishTopic   = "itsPowerMeter02/get")
+            clientId       = "itsPowerMeter01Ioc",
+            subscribeTopic = "itsPowerMeter01/set/#",
+            publishTopic   = "itsPowerMeter01/get")
     itsPowerMeterIOC.client.user_data_set(itsPowerMeterIOC.powerMeter)
 
     itsPowerMeterIOC.run()
