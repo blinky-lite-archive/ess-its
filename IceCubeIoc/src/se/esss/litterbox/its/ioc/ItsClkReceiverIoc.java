@@ -1,5 +1,11 @@
 package se.esss.litterbox.its.ioc;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -17,14 +23,27 @@ public class ItsClkReceiverIoc  extends IceCubeSerialIoc
 		this.mainTopic = mainTopic;
 	}
 	@SuppressWarnings("unchecked")
-	private void initialize() throws Exception
+	private void initialize() throws Exception 
 	{
-		setChannelJsonData = new JSONObject();
-		for (int ii  = 0; ii < 4; ++ii)
-		{
-			String chan = Integer.toString(ii + 1);
-			setChannelJsonData.put("channel" + chan, "1 100 200");
-		}
+		JSONObject setChannelJsonData;
+	    try
+	    {
+	    	InputStream fis = new FileInputStream("initClkRecvr.dat");
+		    InputStreamReader isr = new InputStreamReader(fis);
+		    BufferedReader br = new BufferedReader(isr);
+		    String line = br.readLine();
+		    br.close();
+		    setChannelJsonData = (JSONObject) new JSONParser().parse(line);
+	    }
+	    catch (IOException | ParseException e)
+	    {
+			setChannelJsonData = new JSONObject();
+			for (int ii  = 0; ii < 4; ++ii)
+			{
+				String chan = Integer.toString(ii + 1);
+				setChannelJsonData.put("channel" + chan, "1 100 200");
+			}
+	    }
 		publishMessage(mainTopic + "/set/channel", setChannelJsonData.toJSONString().getBytes(), 0, true);
 	}
 	@Override
