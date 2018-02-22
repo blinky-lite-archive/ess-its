@@ -6,9 +6,11 @@ import java.net.URL;
 import org.json.simple.JSONObject;
 
 import se.esss.litterbox.icecube.bytedevice.ByteDeviceList;
-import se.esss.litterbox.icecube.ioc.tcp.IceCubeTcpIoc;
+import se.esss.litterbox.icecube.ioc.tcp.IceCubeTcpServerIoc;
 
-public class ItsCernModulatorIoc extends IceCubeTcpIoc
+// Make sure the ip of the raspberry pi matches the ip of the ioc listed below
+// the modulator looks for a device at this address
+public class ItsCernModulatorIoc extends IceCubeTcpServerIoc
 {
 	URL cernmodSettingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolSet.csv");
 	URL cernmodReadingUrl = new URL("https://aig.esss.lu.se:8443/IceCubeDeviceProtocols/protocols/CernModulatorProtocolRead.csv");
