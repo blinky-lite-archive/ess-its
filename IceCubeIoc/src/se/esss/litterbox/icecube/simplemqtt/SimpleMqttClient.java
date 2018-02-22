@@ -65,7 +65,7 @@ public abstract class SimpleMqttClient implements MqttCallback
 		this.cleanSession = cleanSession;
 		this.keepAliveInterval = keepAliveInterval; 
 		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();
-		connect();
+//		connect();
 	}
 	public SimpleMqttClient(String clientId, String mqttBrokerInfoFilePath, boolean cleanSession, int keepAliveInterval) throws Exception
 	{
@@ -82,7 +82,7 @@ public abstract class SimpleMqttClient implements MqttCallback
 		this.cleanSession = cleanSession;
 		this.keepAliveInterval = keepAliveInterval; 
 		mqttMessageInfoSubscribeList = new ArrayList<MqttMessageInfo>();
-		connect();
+//		connect();
 	}
 	public void setStatus(String status)
 	{

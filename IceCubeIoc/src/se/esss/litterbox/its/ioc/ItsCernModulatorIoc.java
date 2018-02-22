@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import se.esss.litterbox.icecube.bytedevice.ByteDeviceList;
 import se.esss.litterbox.icecube.ioc.tcp.IceCubeTcpServerIoc;
 
-// Make sure the ip of the raspberry pi matches the ip of the ioc listed below
+// Make sure the ip of the raspberry pi matches what the modulator wants
 // the modulator looks for a device at this address
 public class ItsCernModulatorIoc extends IceCubeTcpServerIoc
 {
@@ -20,9 +20,9 @@ public class ItsCernModulatorIoc extends IceCubeTcpServerIoc
 	private int numReadbackBytes = 118;
 	private int numWaveformBytes = 3600;
 
-	public ItsCernModulatorIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber, int keepAliveInterval) throws Exception 
+	public ItsCernModulatorIoc(String clientId, String mqttBrokerInfoFilePath, int portNumber, int keepAliveInterval) throws Exception 
 	{
-		super(clientId, mqttBrokerInfoFilePath, inetAddress, portNumber, keepAliveInterval);
+		super(clientId, mqttBrokerInfoFilePath, portNumber, keepAliveInterval);
 		setByteDevice = new ByteDeviceList(cernmodSettingUrl);
 		readByteDevice = new ByteDeviceList(cernmodReadingUrl);
 	}
@@ -173,7 +173,7 @@ public class ItsCernModulatorIoc extends IceCubeTcpServerIoc
 	}
 	public static void main(String[] args) throws Exception 
 	{
-		ItsCernModulatorIoc ioc = new ItsCernModulatorIoc("itsCernModIoc", "itsmqttbroker.dat", "192.168.5.4", 8000, 30);
+		ItsCernModulatorIoc ioc = new ItsCernModulatorIoc("itsCernModIoc", "itsmqttbroker.dat", 8000, 30);
 		ioc.setPeriodicPollPeriodmillis(1000);
 		ioc.startIoc("itsCernMod/set/#", "itsCernMod/get/mod");
 	}

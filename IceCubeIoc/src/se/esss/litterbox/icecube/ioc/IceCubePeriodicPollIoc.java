@@ -38,6 +38,7 @@ public abstract class IceCubePeriodicPollIoc extends SimpleMqttClient implements
 	}
 	public void startIoc(String subscribeTopic, String publishTopic) throws Exception
 	{
+		connect();
 		this.setPublishTopic(publishTopic);
     	subscribe(subscribeTopic, getSubscribeQos());
 		setStatus("Ready for messages");

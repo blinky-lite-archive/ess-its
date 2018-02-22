@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -15,12 +14,11 @@ public abstract class IceCubeTcpServerIoc extends IceCubePeriodicPollIoc
 	ServerSocket serverSocket;
 	Socket clientSocket;
 
-	public IceCubeTcpServerIoc(String clientId, String mqttBrokerInfoFilePath, String inetAddress, int portNumber, int keepAliveInterval) throws Exception 
+	public IceCubeTcpServerIoc(String clientId, String mqttBrokerInfoFilePath, int portNumber, int keepAliveInterval) throws Exception 
 	{
 		super(clientId, mqttBrokerInfoFilePath, keepAliveInterval);
-		InetAddress addr = InetAddress.getByName(inetAddress);
 		setStatus("Waiting for client to accept...");
-		serverSocket = new ServerSocket(portNumber, 20, addr);
+		serverSocket = new ServerSocket(portNumber);
 		clientSocket = serverSocket.accept();
 		setStatus("...Client accepted");
 	}
